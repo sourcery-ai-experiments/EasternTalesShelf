@@ -45,17 +45,45 @@
     <a href="#" onclick="toggleMenu()">Close</a>
     <!-- Add additional menu items here -->
 </div>
+<div class="filter-bar">
+    <form id="filterForm">
+        <select class="form-select" name="status">
+            <option value="">All Statuses</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="PLANNING">Planning</option>
+            <option value="CURRENT">Current</option>
+        </select>
+        <select class="form-select" name="country_made">
+            <option value="">All Countries</option>
+            <option value="japan">Japan</option>
+            <option value="korea">Korea</option>
+            <!-- Add other countries as needed -->
+        </select>
+        <select class="form-select" name="media_type">
+            <option value="">All Types</option>
+            <option value="manga">Manga</option>
+            <option value="novel">Novel</option>
+            <!-- Add other types as needed -->
+        </select>
+        <button type="button" onclick="applyFilters()" class="btn btn-primary">Filter</button>
+    </form>
+</div>
+
 
 <!-- Main Content Area -->
 <div id="main">
     <span class="menu-icon" onclick="toggleMenu()">&#9776; Menu</span>
     <div class="content-area">
         {% for entry in manga_entries %}
-        <div class="grid-item" style="background-image: url('{{ entry.coverImage }}'); background-size: cover; background-position: center;">
-            {{ entry.english }} <!-- Assuming 'english' is the key for the English title -->
+        <div class="grid-item" 
+            style="background-image: url('{{ entry.cover_image }}'); background-size: cover; background-position: center;"
+            data-status="{{ entry.on_list_status }}"
+            data-country="{{ entry.country_made }}"
+            data-type="{{ entry.media_type }}">
+            {{ entry.title_english }} <!-- Assuming 'english' is the key for the English title -->
             <div class="stats">
-                Chapters: {{ entry.chapters }}<br>
-                Progress: {{ entry.progress }}<br>
+                Chapters: {{ entry.all_chapters }}<br>
+                Progress: {{ entry.chapters_progress }}<br>
                 Status: {{ entry.on_list_status }}<br>
             </div>
         </div>
