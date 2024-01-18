@@ -5,12 +5,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Link to your custom stylesheet -->
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <!-- Add to the head of your HTML -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sticky-footer/">
     <title>My Reading List</title>
 
 </head>
@@ -39,48 +42,111 @@
         </ul>
     </div>
 </nav>
+<header>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Eastern Tales Shelf</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">All Books</a>
+            </li>
+            <option value="">All Types</option>
+            <option value="MANGA">Manga</option>
+            <option value="NOVEL">Novel</option>
+          </ul>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+  </header>
 
-<!-- Side Menu -->
-<div id="side-menu">
-    <a href="#" onclick="toggleMenu()">Close</a>
-    <!-- Add additional menu items here -->
-</div>
-<div class="filter-bar">
-    <form id="filterForm">
-        <select class="form-select" name="status">
+<!-- LEFT Side Menu -->
+<div id="side-menu" class="bg-dark text-white p-3">
+    <input type="text" id="titleFilter" class="form-control mb-3" placeholder="Search by title" oninput="filterEntries()">
+
+    <h5>List</h5>
+    <div class="mb-3">
+        <select class="form-select" id="status" onchange="filterEntries()">
             <option value="">All Statuses</option>
             <option value="COMPLETED">Completed</option>
             <option value="PLANNING">Planning</option>
             <option value="CURRENT">Current</option>
         </select>
-        <select class="form-select" name="country_made">
-            <option value="">All Countries</option>
-            <option value="japan">Japan</option>
-            <option value="korea">Korea</option>
-            <!-- Add other countries as needed -->
-        </select>
-        <select class="form-select" name="media_type">
+    </div>
+
+    <h5>Country</h5>
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="japan" id="countryJapan" onchange="filterEntries()">
+            <label class="form-check-label" for="countryJapan">Japan</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="korea" id="countryKorea" onchange="filterEntries()">
+            <label class="form-check-label" for="countryKorea">Korea</label>
+        </div>
+        <!-- Repeat for other countries -->
+    </div>
+
+    <h5>Media Type</h5>
+    <div class="mb-3">
+        <select class="form-select" id="mediaTypeFilter" onchange="filterEntries()">
             <option value="">All Types</option>
-            <option value="manga">Manga</option>
-            <option value="novel">Novel</option>
-            <!-- Add other types as needed -->
+            <option value="MANGA">Manga</option>
+            <option value="NOVEL">Novel</option>
+            <!-- Repeat for other types -->
         </select>
-        <button type="button" onclick="applyFilters()" class="btn btn-primary">Filter</button>
-    </form>
+    </div>
+
+    <!-- Add more filters as needed -->
 </div>
+
+<!-- RIIIIIIIIIIIIIIIIIIIIIIIIIIIIGHT Side Menu -->
+<div id="side-menu-right" class="bg-dark text-white p-3">
+    
+
+    <h5>title</h5>
+    
+
+    <h5>progress</h5>
+    
+
+    <h5>status</h5>
+    
+
+    
+</div>
+
+
+
 
 
 <!-- Main Content Area -->
 <div id="main">
-    <span class="menu-icon" onclick="toggleMenu()">&#9776; Menu</span>
+    
     <div class="content-area">
         {% for entry in manga_entries %}
-        <div class="grid-item" 
+        <!-- Add the AniList URL to each entry as data-anilist-url or similar -->
+        <!--<a href="{{ entry.anilist_url }}" target="_blank" class="grid-link">--> <!-- Ensure you have the correct URL variable from your context -->
+        <div class="grid-item"
+            onclick="showDetails(this)"
             style="background-image: url('{{ entry.cover_image }}'); background-size: cover; background-position: center;"
             data-status="{{ entry.on_list_status }}"
             data-country="{{ entry.country_made }}"
-            data-type="{{ entry.media_type }}">
-            {{ entry.title_english }} <!-- Assuming 'english' is the key for the English title -->
+            data-type="{{ entry.media_type }}"
+            data-title="{{ entry.title_english }}"
+            data-aos="fade-up" 
+            data-aos-offset="200"
+            data-aos-duration="1000">
+            
+            <div class="grid-item-title">{{ entry.title_english }}</div> <!-- Assuming 'english' is the key for the English title -->
             <div class="stats">
                 Chapters: {{ entry.all_chapters }}<br>
                 Progress: {{ entry.chapters_progress }}<br>
@@ -92,16 +158,23 @@
 </div>
 
 
+
 <!-- Footer -->
-<footer class="bg-dark text-center text-white footer">
-    <div class="container p-4">
-        <!-- Footer Content -->
-        <section class="mb-4">
-            <p>Some footer content here.</p>
-        </section>
+<footer class="footer mt-auto py-3 bg-light">
+    <div class="container">
+      <span class="text-muted">Place sticky footer content here.</span>
     </div>
-</footer>
+  </footer>
 
-
+<!-- Add before the closing body tag of your HTML -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+    offset: 120, // offset (in px) from the original trigger point
+    delay: 0, // values from 0 to 3000, with step 50ms
+    duration: 1000 // values from 0 to 3000, with step 50ms
+  });
+</script>
+  
 </body>
 </html>
