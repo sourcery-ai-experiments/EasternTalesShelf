@@ -131,11 +131,11 @@ window.onload = function() {
 };
 
 
-function showDetails(element) {
+function showDetails2(element) {
     // Get the data from the clicked element
     var title = $(element).data('title');
     var status = $(element).data('status');
-    var progress = 'Chapters: ' + $(element).data('chapters') + ' Progress: ' + $(element).data('progress'); // Add more details as needed
+    var progress = 'Chapters: ' + $(element).data('all-chapters') + ' Progress: ' + $(element).data('chapters-progress'); // Add more details as needed
 
     // Set the data in the sidebar
     $('#side-menu-right h5:nth-of-type(1)').text(title);
@@ -145,3 +145,92 @@ function showDetails(element) {
     // Show the sidebar
     $('#side-menu-right').addClass('active');
 }
+
+
+
+
+function showDetails(element) {
+    var title = $(element).data('title');
+    var status = $(element).data('status');
+    var chapters = $(element).data('chapters');
+    var progress = $(element).data('progress');
+    var coverImage = $(element).data('cover');
+    var anilistUrl = $(element).data('anilist-url');
+
+    // Populate sidebar elements
+    $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
+    $('#sidebar-title').text(title);
+    $('#sidebar-info').html('Chapters: ' + chapters + '<br>Progress: ' + progress + '<br>Status: ' + status);
+    $('#sidebar-link').attr('href', anilistUrl);
+
+    // Show the sidebar with Bootstrap styling
+    $('#side-menu-right').addClass('active');
+}
+
+
+
+/*
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('chatbot-toggle').addEventListener('click', function() {
+        var chatBody = document.getElementById('chatbot-body');
+        chatBody.style.display = chatBody.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('chatbot-send').addEventListener('click', function() {
+        var input = document.getElementById('chatbot-input');
+        if(input.value.trim() !== '') {
+            var newMessage = document.createElement('div');
+            newMessage.textContent = input.value;
+            document.getElementById('chatbot-messages').appendChild(newMessage);
+            input.value = '';
+        }
+    });
+});
+*/
+
+
+
+
+
+// Insert this code into chat-script.js
+function toggleChatbot() {
+    var chatbot = document.getElementById('chatbot');
+    // Toggle the visibility without affecting the chat history
+    chatbot.style.display = chatbot.style.display === 'none' ? 'flex' : 'none';
+}
+
+function sendMessage() {
+    var input = document.getElementById('chatInput');
+    var messageText = input.value.trim();
+    if (messageText) {
+        // Add user message
+        addMessage('user', messageText);
+        input.value = ''; // Clear the input
+        // Simulate a bot response
+        setTimeout(function() {
+            addMessage('bot', "Let me think...");
+        }, 1000);
+    }
+}
+
+function addMessage(sender, text) {
+    var messagesContainer = document.getElementById('chatMessages');
+    var messageBubble = document.createElement('div');
+    messageBubble.classList.add('chat-bubble', sender);
+    var avatar = document.createElement('span');
+    avatar.classList.add('avatar');
+    messageBubble.appendChild(avatar);
+    messageBubble.appendChild(document.createTextNode(text));
+    messagesContainer.appendChild(messageBubble);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+document.getElementById('chatInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+
+

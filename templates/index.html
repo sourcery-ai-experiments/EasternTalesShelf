@@ -14,6 +14,13 @@
     <!-- Add to the head of your HTML -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
     <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sticky-footer/">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+
+    
+
     <title>My Reading List</title>
 
 </head>
@@ -23,6 +30,46 @@
 
 <!-- Link to your custom script file -->
 <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
+
+
+
+<!--
+
+<div id="chatbot">
+    <div id="chatbot-header">
+        <button id="chatbot-toggle" >Chat</button>
+    </div>
+    <div id="chatbot-body" style="display: none;">
+        <div id="chatbot-messages">
+            gsfgsdfgsdfg
+            sdgsdfgsdfg
+        </div>
+        <input type="text" id="chatbot-input" placeholder="Type a message...">
+        <button id="chatbot-send">Send</button>
+    </div>
+</div>
+
+->
+
+<!-- Chatbot Interface -->
+<div id="chatbot" class="chatbot-container">
+    <div class="chat-header">Chat with us!</div>
+    <div class="chat-messages" id="chatMessages">
+        <!-- Bot message example -->
+        <div class="chat-bubble bot">
+            <span class="avatar bot"></span>Hello! How can I assist you today?
+        </div>
+    </div>
+    <div class="input-area">
+        <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off">
+        <button type="button" onclick="sendMessage()">Send</button>
+
+    </div>
+</div>
+<button class="toggle-chatbot" onclick="toggleChatbot()">☰</button>
+
+
 <!-- Top Navigation Bar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container-fluid justify-content-center">
@@ -59,10 +106,7 @@
             <option value="MANGA">Manga</option>
             <option value="NOVEL">Novel</option>
           </ul>
-          <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-          </form>
+          
         </div>
       </div>
     </nav>
@@ -108,22 +152,13 @@
     <!-- Add more filters as needed -->
 </div>
 
-<!-- RIIIIIIIIIIIIIIIIIIIIIIIIIIIIGHT Side Menu -->
-<div id="side-menu-right" class="bg-dark text-white p-3">
-    
-
-    <h5>title</h5>
-    
-
-    <h5>progress</h5>
-    
-
-    <h5>status</h5>
-    
-
-    
+<!-- Right Side Menu -->
+<div id="side-menu-right" class="bg-dark text-white p-3 sidebar-hidden">
+    <img id="sidebar-cover" src="" class="img-fluid" alt="Cover">
+    <h5 id="sidebar-title"></h5>
+    <p id="sidebar-info"></p>
+    <a href="#" id="sidebar-link" class="btn btn-primary">Go to AniList</a>
 </div>
-
 
 
 
@@ -142,6 +177,10 @@
             data-country="{{ entry.country_made }}"
             data-type="{{ entry.media_type }}"
             data-title="{{ entry.title_english }}"
+            data-chapters="{{ entry.all_chapters }}"
+            data-progress="{{ entry.chapters_progress }}"
+            data-anilist-url="{{ entry.anilist_url }}"
+            data-cover="{{ entry.cover_image }}"
             data-aos="fade-up" 
             data-aos-offset="200"
             data-aos-duration="1000">
