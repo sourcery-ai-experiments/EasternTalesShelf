@@ -200,6 +200,7 @@ function toggleChatbot() {
 }
 
 function sendMessage() {
+    console.log('Enter was pressed and sendMessage called');
     var input = document.getElementById('chatInput');
     var messageText = input.value.trim();
     if (messageText) {
@@ -225,12 +226,18 @@ function addMessage(sender, text) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-document.getElementById('chatInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
+document.addEventListener('DOMContentLoaded', function() {
+    var chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    } else {
+        console.error('chatInput element not found!');
     }
 });
-
 
 
