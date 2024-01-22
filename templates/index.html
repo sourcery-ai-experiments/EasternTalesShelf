@@ -122,7 +122,8 @@
             <option value="">All Statuses</option>
             <option value="COMPLETED">Completed</option>
             <option value="PLANNING">Planning</option>
-            <option value="CURRENT">Current</option>
+            <option value="CURRENT">Reading</option>
+            <option value="PAUSED">On Hold</option>
         </select>
     </div>
 
@@ -175,7 +176,7 @@
             style="background-image: url('{{ entry.cover_image }}'); background-size: cover; background-position: center;"
             data-status="{{ entry.on_list_status }}"
             data-country="{{ entry.country_made }}"
-            data-type="{{ entry.media_type }}"
+            data-type="{{ entry.media_format }}"
             data-title="{{ entry.title_english }}"
             data-chapters="{{ entry.all_chapters }}"
             data-progress="{{ entry.chapters_progress }}"
