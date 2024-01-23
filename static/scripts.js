@@ -200,6 +200,7 @@ function addMessage(sender, text) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Code for chatInput
     var chatInput = document.getElementById('chatInput');
     if (chatInput) {
         chatInput.addEventListener('keypress', function(e) {
@@ -211,6 +212,34 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('chatInput element not found!');
     }
-});
 
+    // Code for syncButton
+    var syncButton = document.getElementById('syncButton');
+    if (syncButton) {
+        syncButton.addEventListener('click', function() {
+            fetch('http://10.147.17.146:8057/sync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Sync successful:', data.message);
+                    alert('Sync successful!');
+                } else {
+                    console.error('Sync failed:', data.message);
+                    alert('Sync failed: ' + data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error);
+            });
+        });
+    } else {
+        console.error('syncButton element not found!');
+    }
+});
 
