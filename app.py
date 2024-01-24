@@ -14,4 +14,4 @@ def home():
     return render_template('index.html', manga_entries=manga_entries)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='10.147.17.21', port=5000, debug=True)
