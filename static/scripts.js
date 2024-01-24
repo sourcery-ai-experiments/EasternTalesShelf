@@ -7,6 +7,46 @@ function toggleMenu() {
     }
 }
 
+// this prevents AOS to move down page each reloding.
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+
+
+
+  window.onload = function() {
+    var items = document.querySelectorAll('.grid-item');
+    var cumulativeHeight = 0;
+    items.forEach(function(item) {
+        if (item.style.display !== 'none') {
+            // Make sure to include margins if they contribute to the overall height
+            cumulativeHeight += item.offsetHeight + 10; // Assuming 10px margin, adjust if necessary
+        }
+    });
+
+    var windowHeight = window.innerHeight;
+
+    // Check if cumulative height of items exceeds the window height
+    if (cumulativeHeight > windowHeight) {
+        // Initialize AOS
+        setTimeout(function(){
+            AOS.init({
+                offset: 120,
+                duration: 1000,
+            
+            });
+        }, 100); // Adjust the timeout as needed
+    } else {
+        // Here we might need to refresh or disable AOS if it was previously initialized
+        // AOS.refreshHard(); // Uncomment if necessary
+    }
+    
+    // Also bind AOS refresh to window resize to handle dynamic changes
+    window.addEventListener('resize', function(){
+        AOS.refresh();
+    });
+};
+
 
 function filterEntries() {
     const titleFilter = document.getElementById('titleFilter').value.toLowerCase();
@@ -72,36 +112,7 @@ window.addEventListener('resize', () => {
 
 
 
-window.onload = function() {
-    var items = document.querySelectorAll('.grid-item');
-    var cumulativeHeight = 0;
-    items.forEach(function(item) {
-        if (item.style.display !== 'none') {
-            // Make sure to include margins if they contribute to the overall height
-            cumulativeHeight += item.offsetHeight + 10; // Assuming 10px margin, adjust if necessary
-        }
-    });
 
-    var windowHeight = window.innerHeight;
-
-    // Check if cumulative height of items exceeds the window height
-    if (cumulativeHeight > windowHeight) {
-        // Initialize AOS
-        AOS.init({
-            offset: 120,
-            duration: 1000,
-           
-        });
-    } else {
-        // Here we might need to refresh or disable AOS if it was previously initialized
-        // AOS.refreshHard(); // Uncomment if necessary
-    }
-    
-    // Also bind AOS refresh to window resize to handle dynamic changes
-    window.addEventListener('resize', function(){
-        AOS.refresh();
-    });
-};
 
 
 function showDetails2(element) {
@@ -139,27 +150,6 @@ function showDetails(element) {
     // Show the sidebar with Bootstrap styling
     $('#side-menu-right').addClass('active');
 }
-
-
-
-/*
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('chatbot-toggle').addEventListener('click', function() {
-        var chatBody = document.getElementById('chatbot-body');
-        chatBody.style.display = chatBody.style.display === 'none' ? 'block' : 'none';
-    });
-
-    document.getElementById('chatbot-send').addEventListener('click', function() {
-        var input = document.getElementById('chatbot-input');
-        if(input.value.trim() !== '') {
-            var newMessage = document.createElement('div');
-            newMessage.textContent = input.value;
-            document.getElementById('chatbot-messages').appendChild(newMessage);
-            input.value = '';
-        }
-    });
-});
-*/
 
 
 
@@ -214,32 +204,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Code for syncButton
-    var syncButton = document.getElementById('syncButton');
-    if (syncButton) {
-        syncButton.addEventListener('click', function() {
-            fetch('http://10.147.17.146:8057/sync', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log('Sync successful:', data.message);
-                    alert('Sync successful!');
-                } else {
-                    console.error('Sync failed:', data.message);
-                    alert('Sync failed: ' + data.message);
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('An error occurred: ' + error);
-            });
+var syncButton = document.getElementById('syncButton');
+if (syncButton) {
+    syncButton.addEventListener('click', function() {
+        fetch('http://10.147.17.146:8057/sync', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Sync successful:', data.message);
+                alert('Sync successful!');
+                fetch('http://10.147.17.146:8057/log_sync', { method: 'POST' }) // Send a request to log the sync success
+                .then(() => {
+                    window.location.reload(); // Reload the page after closing the alert
+                });
+            } else {
+                console.error('Sync failed:', data.message);
+                alert('Sync failed: ' + data.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred: ' + error);
         });
-    } else {
-        console.error('syncButton element not found!');
-    }
+    });
+} else {
+    console.error('syncButton element not found!');
+}
 });
 
