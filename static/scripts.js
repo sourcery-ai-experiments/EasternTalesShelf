@@ -7,6 +7,9 @@ function toggleMenu() {
     }
 }
 
+
+var currentFilterType = 'ALL'; // Default to 'ALL' on page load
+
 // this prevents AOS to move down page each reloding.
 if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
@@ -47,6 +50,11 @@ if ('scrollRestoration' in history) {
     });
 };
 
+function filterByType(filterType) {
+    currentFilterType = filterType; // Set the global filter type
+    updateNavigationStyles(filterType);
+    filterEntries(); // Apply all filters
+}
 
 function filterEntries() {
     const titleFilter = document.getElementById('titleFilter').value.toLowerCase();
@@ -54,6 +62,13 @@ function filterEntries() {
     const countryKorea = document.getElementById('countryKorea').checked;
     const mediaTypeFilter = document.getElementById('mediaTypeFilter').value;
     const statusFilter = document.getElementById('status').value;
+
+    const filterLogic = {
+        'NOVEL': (country, type) => country === 'JP' && type === 'NOVEL',
+        'MANHWA': (country, type) => country === 'KR' && type === 'MANGA',
+        'MANGA': (country, type) => country === 'JP' && type === 'MANGA',
+        'ALL': () => true
+    };
 
     // Get all the grid items
     const items = document.querySelectorAll('.grid-item');
@@ -63,23 +78,46 @@ function filterEntries() {
         const country = item.getAttribute('data-country') || '';
         const type = item.getAttribute('data-type') || '';
         const itemStatus = item.getAttribute('data-status') || '';
-
-        // Determine whether item should be visible
+        
+        // Determine whether item should be visible based on the navbar filter and side menu filters
         const matchesTitle = titleFilter === '' || title.includes(titleFilter);
         const matchesCountry = (!countryJapan && !countryKorea) || 
-                                (countryJapan && country === 'japan') || 
-                                (countryKorea && country === 'korea');
+                                (countryJapan && country === 'JP') || 
+                                (countryKorea && country === 'KR');
         const matchesType = mediaTypeFilter === '' || type === mediaTypeFilter;
         const matchesStatus = statusFilter === '' || itemStatus.toLowerCase() === statusFilter.toLowerCase();
+        const matchesFilterType = filterLogic[currentFilterType](country, type);
 
-        if (matchesTitle && matchesCountry && matchesType && matchesStatus) {
+        if (matchesTitle && matchesCountry && matchesType && matchesStatus && matchesFilterType) {
             item.style.display = '';
         } else {
             item.style.display = 'none';
         }
     });
+
     AOS.refresh();
 }
+
+// Initialize the page with 'ALL' filter applied
+filterByType('ALL');
+
+
+
+function updateNavigationStyles(selectedFilter) {
+    // Remove 'active' class from all nav links
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+
+    // Add 'active' class to the selected nav link
+    const selectedNavLink = document.querySelector(`.navbar-nav .nav-link[onclick*="${selectedFilter}"]`);
+    if (selectedNavLink) {
+        selectedNavLink.classList.add('active');
+    }
+}
+
+// Initialize the page with 'All' filter applied
+filterByType('ALL');
 
 
 
@@ -110,11 +148,6 @@ window.addEventListener('resize', () => {
 
 
 
-
-
-
-
-
 function showDetails2(element) {
     // Get the data from the clicked element
     var title = $(element).data('title');
@@ -140,6 +173,7 @@ function showDetails(element) {
     var progress = $(element).data('progress');
     var coverImage = $(element).data('cover');
     var anilistUrl = $(element).data('anilist-url');
+    
 
     // Populate sidebar elements
     $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
