@@ -92,4 +92,4 @@ def get_10_newest_entries(media_type: str):
     return  newest_10_entries
 
 test = get_10_newest_entries('MANGA')
-print(test)
+#print(test)
