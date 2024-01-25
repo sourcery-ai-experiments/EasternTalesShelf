@@ -233,17 +233,12 @@ function showDetails(element) {
     $('#sidebar-info').html('Chapters: ' + chapters + '<br>Progress: ' + progress + '<br>Status: ' + status);
     $('#sidebar-description').html(description);
     
-    
-    
-
-
-    //console.log(typeof externalLinks); // This will print the type to the console
-
     //Retrieve the data which is already parsed as an object (array in this case)
     var externalLinks = $(element).data('external-links');
     var linksHtml = '<h5 class="mb-2">Links</h5>';
 
-    externalLinks.forEach(function(url) {
+    // Process each URL in the external links
+    externalLinks.forEach(function(url) { // Make sure to pass 'url' here
         var serviceName = "Some other site"; // Default text if service is not in the map
 
         // Check the URL against the serviceMap to find a readable name
@@ -271,15 +266,6 @@ function showDetails(element) {
 
     // Show the sidebar with Bootstrap styling
     $('#side-menu-right').addClass('active');
-    // Inside the forEach loop
-    Object.keys(serviceMap).forEach(function(key) {
-        if(url.includes(key)) {
-            var service = serviceMap[key];
-            serviceName = service.name;
-            linksHtml += '<a href="' + url + '" class="list-group-item list-group-item-action" target="_blank">' +
-                        '<i class="' + service.icon + '"></i> ' + serviceName + '</a>';
-        }
-    });
 }
 
 
