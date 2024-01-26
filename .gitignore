@@ -56,6 +56,12 @@ coverage.xml
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+# for eslint
+node_modules
+package-lock.json
+package.json
+eslint.config.js
+
 
 
 *api_keys.py

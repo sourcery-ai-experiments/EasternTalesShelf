@@ -34,7 +34,9 @@ def get_manga_list():
 
             # Now let's sort the fetched data before returning it
             manga_list.sort(key=lambda x: parse_timestamp(x['last_updated_on_site']), reverse=True)
-
+            # Print only the genres of each manga
+            # for manga in manga_list:
+            #     print(manga['genres'])  # This will print the genres field of each manga
             return manga_list
     except Error as e:
         print("Error while connecting to MariaDB", e)
