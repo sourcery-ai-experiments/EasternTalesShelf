@@ -203,13 +203,6 @@ window.addEventListener('resize', () => {
   
 
 
-
-
-
-
-// LINKS CATEGORIZATIONS
-
-
 function showDetails(element) {
     var title = $(element).data('title');
     var status = $(element).data('status');
@@ -227,12 +220,26 @@ function showDetails(element) {
         // Add more mappings as needed
     };
     
+
+
     // Populate sidebar elements
     $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
     $('#sidebar-title').text(title);
     $('#sidebar-info').html('Chapters: ' + chapters + '<br>Progress: ' + progress + '<br>Status: ' + status);
+    // Set the description
     $('#sidebar-description').html(description);
     
+
+    // Check if the description is longer than 5 lines
+    if ($('#sidebar-description').prop('scrollHeight') > 90) { // 90px is 5 lines here
+        $('#sidebar-readmore').show().text('Read More');
+        $('#sidebar-description').addClass('collapse');
+    } else {
+        $('#sidebar-readmore').hide();
+        $('#sidebar-description').removeClass('collapse');
+    }
+
+
     //Retrieve the data which is already parsed as an object (array in this case)
     var externalLinks = $(element).data('external-links');
     var linksHtml = '<h5 class="mb-2">Links</h5>';
@@ -269,6 +276,17 @@ function showDetails(element) {
 }
 
 
+$('#sidebar-readmore').click(function() {
+    var content = $('#sidebar-description');
+    content.toggleClass('expanded'); // Toggle the 'expanded' class instead of 'collapse'
+    
+    if (content.hasClass('expanded')) {
+        $(this).text('Read Less');
+        content.removeClass('collapse');
+    } else {
+        $(this).text('Read More');
+        content.addClass('collapse');
+    }});
 
 
 
