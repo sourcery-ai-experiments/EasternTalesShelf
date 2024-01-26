@@ -109,14 +109,22 @@
     <img id="sidebar-cover" src="" class="img-fluid" alt="Cover">
     <h5 id="sidebar-title"></h5>
     <p id="sidebar-info"></p>
-    <p id="sidebar-description"></p>
+    <a href="#" id="sidebar-link" class="btn btn-primary" target="_blank">Go to AniList</a>
+    <!-- Description paragraph with a unique ID for collapse control -->
+    <p id="sidebar-description" class="collapse"></p>
+
+    <!-- Button to control the collapse of the paragraph -->
+    <button id ="sidebar-readmore" class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-description" aria-expanded="false" aria-controls="sidebar-description">
+        Read More
+    </button>
+
     <div id="sidebar-external-links" class="list-group mt-3">
         <!-- Links will be inserted here -->
     </div>
     <div id="sidebar-genres" class="mt-3">
         <!-- Genres will be inserted here -->
     </div>
-    <a href="#" id="sidebar-link" class="btn btn-primary" target="_blank">Go to AniList</a>
+    
 </div>
 
 
@@ -180,7 +188,7 @@
 
 
 <!-- Footer -->
-<footer class="footer mt-auto py-3 bg-dark-custom fixed-bottom">
+<footer class="footer mt-auto py-3 bg-dark-custom">
     <div class="container">
         <span class="text-muted">Place sticky footer content here.</span>
     </div>
