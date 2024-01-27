@@ -202,7 +202,6 @@ window.addEventListener('resize', () => {
 });
   
 
-
 function showDetails(element) {
     var title = $(element).data('title');
     var status = $(element).data('status');
@@ -211,8 +210,6 @@ function showDetails(element) {
     var coverImage = $(element).data('cover');
     var anilistUrl = $(element).data('anilist-url');
     var description = $(element).data('description');
-    var externalLinks = $(element).data('external-links');
-    var genres = $(element).data('genres');
     var serviceMap = {
         'kakao.com': 'KakaoPage KR',
         'tapas.io': 'Tapas',
@@ -220,15 +217,15 @@ function showDetails(element) {
         // Add more mappings as needed
     };
     
-
-
+    // Retrieve the raw data from the data attributes
+    var externalLinksData = $(element).attr('data-external-links');
+    var genresData = $(element).attr('data-genres');
+    
     // Populate sidebar elements
     $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
     $('#sidebar-title').text(title);
     $('#sidebar-info').html('Chapters: ' + chapters + '<br>Progress: ' + progress + '<br>Status: ' + status);
-    // Set the description
     $('#sidebar-description').html(description);
-    
 
     // Check if the description is longer than 5 lines
     if ($('#sidebar-description').prop('scrollHeight') > 90) { // 90px is 5 lines here
@@ -239,35 +236,37 @@ function showDetails(element) {
         $('#sidebar-description').removeClass('collapse');
     }
 
-
-    //Retrieve the data which is already parsed as an object (array in this case)
-    var externalLinks = $(element).data('external-links');
-    var linksHtml = '<h5 class="mb-2">Links</h5>';
-
-    // Process each URL in the external links
-    externalLinks.forEach(function(url) { // Make sure to pass 'url' here
-        var serviceName = "Some other site"; // Default text if service is not in the map
-
-        // Check the URL against the serviceMap to find a readable name
-        Object.keys(serviceMap).forEach(function(key) {
-            if(url.includes(key)) {
-                serviceName = serviceMap[key];
-            }
+    // Safely parse the JSON string into an array for external links
+    try {
+        var externalLinks = JSON.parse(externalLinksData || "[]"); // Default to an empty array if undefined
+        var linksHtml = '<h5 class="mb-2">Links</h5>';
+        externalLinks.forEach(function(url) {
+            var serviceName = "Some other site"; // Default text if service is not in the map
+            Object.keys(serviceMap).forEach(function(key) {
+                if (url.includes(key)) {
+                    serviceName = serviceMap[key];
+                }
+            });
+            linksHtml += '<a href="' + url + '" class="btn btn-primary btn-sm m-1" target="_blank">' + serviceName + '</a>';
         });
+        $('#sidebar-external-links').html(linksHtml);
+    } catch (e) {
+        console.error('Parsing error for external-links data:', e);
+        $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
+    }
 
-        // Apply Bootstrap button styling to links
-        linksHtml += '<a href="' + url + '" class="btn btn-primary btn-sm m-1" target="_blank">' + serviceName + '</a>';
-    });
-
-    $('#sidebar-external-links').html(linksHtml);
-
-    // Handle genres
-    var genresHtml = '<h5 class="mb-2">Genres</h5>';
-    genres.forEach(function(genre) {
-        genresHtml += '<span class="badge bg-secondary me-1">' + genre + '</span>';
-    });
-    $('#sidebar-genres').html(genresHtml);
-
+    // Safely parse the JSON string into an array for genres
+    try {
+        var genres = JSON.parse(genresData || "[]"); // Default to an empty array if undefined
+        var genresHtml = '<h5 class="mb-2">Genres</h5>';
+        genres.forEach(function(genre) {
+            genresHtml += '<span class="badge bg-secondary me-1">' + genre + '</span>';
+        });
+        $('#sidebar-genres').html(genresHtml);
+    } catch (e) {
+        console.error('Parsing error for genres data:', e);
+        $('#sidebar-genres').html('<h5 class="mb-2">No genres available</h5>');
+    }
 
     $('#sidebar-link').attr('href', anilistUrl);
 
@@ -275,19 +274,36 @@ function showDetails(element) {
     $('#side-menu-right').addClass('active');
 }
 
-
-$('#sidebar-readmore').click(function() {
+// Bind the click event for the Read More button
+$(document).on('click', '#sidebar-readmore', function() {
     var content = $('#sidebar-description');
     content.toggleClass('expanded'); // Toggle the 'expanded' class instead of 'collapse'
-    
+
     if (content.hasClass('expanded')) {
         $(this).text('Read Less');
         content.removeClass('collapse');
     } else {
         $(this).text('Read More');
         content.addClass('collapse');
-    }});
+    }
+});
 
+
+
+
+// Event handler for the Read More button
+$(document).on('click', '#sidebar-readmore', function() {
+    var content = $('#sidebar-description');
+    content.toggleClass('expanded'); // Toggle the 'expanded' class instead of 'collapse'
+
+    if (content.hasClass('expanded')) {
+        $(this).text('Read Less');
+        content.removeClass('collapse');
+    } else {
+        $(this).text('Read More');
+        content.addClass('collapse');
+    }
+});
 
 
 
