@@ -1,3 +1,11 @@
+
+
+// EXAMPLE OF USING DOMCONTENTLOADED
+//document.addEventListener('DOMContentLoaded', (event) => {
+    // Your code to run after the DOM is fully loaded
+//});
+
+
 function toggleMenu() {
     var menu = document.getElementById("side-menu");
     if (menu.style.left === "-250px") {
@@ -106,26 +114,58 @@ if ('scrollRestoration' in history) {
 
 });
 
+// Initialize a variable to keep track of the current status filter
+let currentStatusFilter = '';
 
+// Event listener for status filter options
+document.querySelectorAll('.status-option').forEach(function(option) {
+    option.addEventListener('click', function() {
+        // Remove 'selected' class from all options
+        document.querySelectorAll('.status-option').forEach(function(opt) {
+            opt.classList.remove('selected');
+        });
 
-function updateNavigationStyles(selectedFilter) {
-    // Remove 'active' class from all nav links
-    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-        link.classList.remove('active');
+        // Add 'selected' class to the clicked option
+        this.classList.add('selected');
+
+        // Update the currentStatusFilter variable with the new value
+        currentStatusFilter = this.getAttribute('data-value');
+
+        // Call filterEntries to apply the filters
+        filterEntries();
     });
+});
 
-    // Add 'active' class to the selected nav link
-    const selectedNavLink = document.querySelector(`.navbar-nav .nav-link[onclick*="${selectedFilter}"]`);
-    if (selectedNavLink) {
-        selectedNavLink.classList.add('active');
-    }
-}
+// Initialize a variable to keep track of the current status filter
+let currentReleasingStatusFilter = '';
+
+// Event listener for status filter options
+document.querySelectorAll('.statusReleasing-option').forEach(function(option) {
+    option.addEventListener('click', function() {
+        // Remove 'selected' class from all options
+        document.querySelectorAll('.statusReleasing-option').forEach(function(opt) {
+            opt.classList.remove('selected');
+        });
+
+        // Add 'selected' class to the clicked option
+        this.classList.add('selected');
+
+        // Update the currentStatusFilter variable with the new value
+        currentReleasingStatusFilter = this.getAttribute('data-value');
+
+        // Call filterEntries to apply the filters
+        filterEntries();
+    });
+});
+
+
 function filterEntries() {
     const titleFilter = document.getElementById('titleFilter').value.toLowerCase();
     const countryJapan = document.getElementById('countryJapan').checked;
     const countryKorea = document.getElementById('countryKorea').checked;
-    const mediaTypeFilter = document.getElementById('mediaTypeFilter').value;
-    const statusFilter = document.getElementById('status').value;
+    
+    // Since we are not using select for status, we will use currentStatusFilter
+    // const statusFilter = document.getElementById('status').value;
 
     const filterLogic = {
         'NOVEL': (country, type) => country === 'JP' && type === 'NOVEL',
@@ -142,17 +182,23 @@ function filterEntries() {
         const country = item.getAttribute('data-country') || '';
         const type = item.getAttribute('data-type') || '';
         const itemStatus = item.getAttribute('data-status') || '';
-        
+        const itemReleasingStatus = item.getAttribute('data-release-status') || '';
         // Determine whether item should be visible based on the navbar filter and side menu filters
         const matchesTitle = titleFilter === '' || title.includes(titleFilter);
         const matchesCountry = (!countryJapan && !countryKorea) || 
                                 (countryJapan && country === 'JP') || 
                                 (countryKorea && country === 'KR');
-        const matchesType = mediaTypeFilter === '' || type === mediaTypeFilter;
-        const matchesStatus = statusFilter === '' || itemStatus.toLowerCase() === statusFilter.toLowerCase();
+        
+        //const matchesStatus = statusFilter === '' || itemStatus.toLowerCase() === statusFilter.toLowerCase();
+        // Determine whether item should be visible based on the status filter
+        // Using currentStatusFilter instead of statusFilter
+        const matchesStatus = currentStatusFilter === '' || itemStatus.toLowerCase() === currentStatusFilter.toLowerCase();
         const matchesFilterType = filterLogic[currentFilterType](country, type);
-
-        if (matchesTitle && matchesCountry && matchesType && matchesStatus && matchesFilterType) {
+        const matchesReleasingStatus = currentReleasingStatusFilter === '' || itemReleasingStatus.toLowerCase() === currentReleasingStatusFilter.toLowerCase();
+        // Determine whether item should be visible based on the status filter
+        // Using currentStatusFilter instead of statusFilter
+        
+        if (matchesTitle && matchesCountry  && matchesStatus && matchesFilterType && matchesReleasingStatus) {
             item.style.display = '';
         } else {
             item.style.display = 'none';
@@ -162,13 +208,31 @@ function filterEntries() {
     AOS.refresh();
 }
 
-// This function sets the current filter type and applies the filters
+
+
+
+function updateNavigationStyles(selectedFilter) {
+    // Remove 'active' class from all nav links
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+
+    // Add 'active' class to the selected nav link
+    const selectedNavLink = document.querySelector(`.navbar-nav .nav-link[onclick*="${selectedFilter}"]`);
+    if (selectedNavLink) {
+        selectedNavLink.classList.add('active');
+    }
+}
+
+// Function to filter by type when a navbar item is clicked
 function filterByType(filterType) {
     currentFilterType = filterType;
     updateNavigationStyles(filterType);
     filterEntries();
 }
 
+// Make sure to call filterEntries on page load to apply any default filters
+filterEntries();
 
 
 

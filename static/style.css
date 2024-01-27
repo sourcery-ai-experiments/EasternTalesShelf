@@ -120,7 +120,7 @@ opacity: 1;
     position: relative;
     z-index: 2;
 }
-
+/* LEFT SIDE MENU */
 #side-menu {
     width: 250px; /* Set the width of the sidebar */
     position: fixed; /* Fixed position */
@@ -133,7 +133,91 @@ opacity: 1;
     color: white; /* Text color */
 }
 
+/* Style for the input field */
+#side-menu .form-control {
+    background-color: #2b2b2b; /* Darker background */
+    border: 1px solid #3e3e3e; /* Subtle border */
+    color: white; /* White text */
+}
 
+/* Style for the select dropdown */
+#side-menu .form-select {
+    -webkit-appearance: none; /* Removes default styling */
+    -moz-appearance: none; /* Removes default styling */
+    appearance: none; /* Removes default styling */
+    background-color: #2b2b2b; /* Darker background */
+    border: 1px solid #3e3e3e; /* Subtle border */
+    color: white; /* White text */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white"><polygon points="0,0 20,0 10,10"/></svg>'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+    padding-right: 2.25rem; /* Make room for the custom arrow */
+}
+
+/* Style for the checkboxes */
+#side-menu .form-check-input {
+    background-color: #2b2b2b; /* Darker background */
+    border-color: #3e3e3e; /* Subtle border */
+}
+
+/* Style for the labels */
+#side-menu .form-check-label {
+    color: white; /* White text */
+}
+
+/* Subheadings */
+#side-menu h5 {
+    margin-top: 1rem; /* Spacing before each section heading */
+    border-bottom: 1px solid #3e3e3e; /* Subtle separator */
+    padding-bottom: 0.5rem; /* Spacing from the separator */
+}
+
+.status-filter {
+    background-color: #2b2b2b; /* Dark background */
+    border-radius: 5px; /* Rounded corners */
+    padding: 0.5rem; /* Some padding */
+    margin-bottom: 1rem; /* Space from the next section */
+}
+
+.status-option {
+    padding: 0.5rem 1rem; /* Padding inside each option */
+    margin: 0.2rem 0; /* Margin between options */
+    border-radius: 5px; /* Rounded corners for each option */
+    cursor: pointer; /* Change cursor to indicate clickable */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+.status-option:hover, .status-option.selected {
+    background-color: #3e3e3e; /* Slightly lighter background on hover/select */
+}
+
+
+.statusReleasing-option {
+    padding: 0.5rem 1rem; /* Padding inside each option */
+    margin: 0.2rem 0; /* Margin between options */
+    border-radius: 5px; /* Rounded corners for each option */
+    cursor: pointer; /* Change cursor to indicate clickable */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+.statusReleasing-option:hover, .statusReleasing-option.selected {
+    background-color: #3e3e3e; /* Slightly lighter background on hover/select */
+}
+
+
+.status-count {
+    float: right; /* Align count to the right */
+    background-color: #007bff; /* Blue background for the count */
+    color: white; /* White text color */
+    padding: 0.1rem 0.5rem; /* Padding inside the count */
+    border-radius: 10px; /* Rounded corners for the count */
+    margin-left: 0.5rem; /* Space from the status text */
+    font-size: 0.875rem; /* Smaller font size for the count */
+}
+
+
+/* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
 #side-menu-right {
     width: 250px; /* Set the width of the sidebar */
