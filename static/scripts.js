@@ -274,36 +274,31 @@ function showDetails(element) {
     $('#side-menu-right').addClass('active');
 }
 
-// Bind the click event for the Read More button
+// JavaScript to toggle the description with animation
 $(document).on('click', '#sidebar-readmore', function() {
     var content = $('#sidebar-description');
-    content.toggleClass('expanded'); // Toggle the 'expanded' class instead of 'collapse'
+    var maxHeight = parseInt(content.css('max-height'), 10); // Get the current max-height
+    var fullHeight = content[0].scrollHeight; // Calculate the full height of the content
 
-    if (content.hasClass('expanded')) {
-        $(this).text('Read Less');
-        content.removeClass('collapse');
+    if (content.hasClass('collapse')) {
+        // Expand the content
+        content.animate({
+            'max-height': fullHeight // Animate towards the full height
+        }, 500, function() {
+            content.removeClass('collapse').addClass('expanded');
+            $('#sidebar-readmore').text('Read Less');
+        });
     } else {
-        $(this).text('Read More');
-        content.addClass('collapse');
+        // Collapse the content
+        content.animate({
+            'max-height': '7.5em' // Animate towards the collapsed max-height
+        }, 500, function() {
+            content.removeClass('expanded').addClass('collapse');
+            $('#sidebar-readmore').text('Read More');
+        });
     }
 });
 
-
-
-
-// Event handler for the Read More button
-$(document).on('click', '#sidebar-readmore', function() {
-    var content = $('#sidebar-description');
-    content.toggleClass('expanded'); // Toggle the 'expanded' class instead of 'collapse'
-
-    if (content.hasClass('expanded')) {
-        $(this).text('Read Less');
-        content.removeClass('collapse');
-    } else {
-        $(this).text('Read More');
-        content.addClass('collapse');
-    }
-});
 
 
 

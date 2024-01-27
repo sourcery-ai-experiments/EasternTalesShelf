@@ -414,11 +414,12 @@ body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.5em; /* Adjust to your line-height */
-    transition: max-height 0.5s ease; /* Smooth transition for max-height */
+    /* max-height and transition properties are now removed */
+    max-height: 7.5em; /* Adjust this value based on your line-height and number of lines to show when collapsed */
+    overflow: hidden;
 }
 
-/* This class will be added when you want to show the full description */
 #sidebar-description.expanded {
-    max-height: none; /* Allow it to take as much space as needed */
+    /* max-height is removed */
     white-space: normal; /* Let the text wrap to new lines */
 }
