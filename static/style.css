@@ -166,6 +166,7 @@ opacity: 1;
 }
 
 #side-menu-right .btn-primary {
+    font-family: 'Roboto', sans-serif;
     color: white; /* Text color */
     background-color: #007bff; /* Background color */
     border: none; /* Removes the border */
@@ -180,10 +181,21 @@ opacity: 1;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out; /* Transition for hover effects */
 }
 
+
+
 #side-menu-right .btn-primary:hover {
-    background-color: #0056b3; /* Darker background color on hover */
+    background-color: #005dc0; /* Darker background color on hover */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */ 
 }
 
+#sidebar-readmore.read-less {
+    background-color: #132c47; /* The new color you want when "Read Less" is displayed */
+}
+
+#sidebar-readmore.read-less:hover {
+    background-color: #007bff; /* Slightly darker color on hover for "Read Less" */
+}
 
 
 /* Ensure the sidebar is initially hidden */
@@ -199,6 +211,44 @@ opacity: 1;
     transform: translateX(0);
     background-color: #343a40; /* Background color */
 }
+
+
+#side-menu-right .img-fluid {
+    border-radius: 5px; /* Rounds the corners of the cover image */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Adds subtle shadow for depth */
+    margin-bottom: 1rem; /* Adds space below the image */
+}
+
+#sidebar-title {
+    font-family: 'Roboto', sans-serif; /* Use a modern, clean font */
+    font-size: 1.5rem; /* Adjust the size as needed */
+    font-weight: bold; /* Makes the title stand out */
+    margin-bottom: 0.5rem; /* Adds space below the title */
+}
+
+#sidebar-info {
+    font-family: 'Roboto', sans-serif;
+    background-color: #1c1e22; /* Or any other color that suits your design */
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#sidebar-info p {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+    color: #fff; /* Adjust text color if needed */
+}
+
+#sidebar-info i {
+    color: #007bff; /* Icon color */
+    margin-right: 0.5rem;
+    width: 1.5em; /* Ensures the icons align nicely with the text */
+    text-align: center; /* Aligns the icon's content */
+}
+
+
 
 /* ------------------------------------------------------------------------- */
 
@@ -217,12 +267,28 @@ opacity: 1;
 }
 
 
+
 /* The container wrapping all other elements, if not present, use body instead */
 .main-container {
     min-height: 100%;
     position: relative;
     padding-bottom: 60px; /* Height of the footer */
     
+}
+/* Custom scrollbar styles */
+body::-webkit-scrollbar {
+    width: 12px;               /* width of the entire scrollbar */
+}
+  
+body::-webkit-scrollbar-track {
+    background: #24282d;
+    border-radius: 10px;       /* color of the tracking area */
+}
+
+body::-webkit-scrollbar-thumb {
+background-color: #007bff;    /* color of the scroll thumb */
+border-radius: 20px;       /* roundness of the scroll thumb */
+border: 3px solid #24282d;  /* creates padding around scroll thumb */
 }
 
 
@@ -423,3 +489,10 @@ body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
     /* max-height is removed */
     white-space: normal; /* Let the text wrap to new lines */
 }
+
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#side-menu-right::-webkit-scrollbar {
+    display: none;
+}
+

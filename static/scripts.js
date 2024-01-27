@@ -224,16 +224,23 @@ function showDetails(element) {
     // Populate sidebar elements
     $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
     $('#sidebar-title').text(title);
-    $('#sidebar-info').html('Chapters: ' + chapters + '<br>Progress: ' + progress + '<br>Status: ' + status);
-    $('#sidebar-description').html(description);
+    $('#sidebar-info').html(`
+    <p><i class="fas fa-book chapter-icon"></i> Chapters: ${chapters}</p>
+    <p><i class="fas fa-tasks progress-icon"></i> Progress: ${progress}</p>
+    <p><i class="fas fa-thermometer-full status-icon"></i> Status: ${status}</p>`);
 
-    // Check if the description is longer than 5 lines
-    if ($('#sidebar-description').prop('scrollHeight') > 90) { // 90px is 5 lines here
-        $('#sidebar-readmore').show().text('Read More');
-        $('#sidebar-description').addClass('collapse');
-    } else {
+    // Set the description and always start with it collapsed
+    $('#sidebar-description').html(description).removeClass('expanded').addClass('collapse');
+    $('#sidebar-readmore').text('Read More');
+
+    // Reset max-height to collapsed state
+    $('#sidebar-description').css('max-height', '7.5em'); // The max-height for the collapsed state
+
+    // Hide the Read More button if the content is short enough to not need expansion
+    if ($('#sidebar-description')[0].scrollHeight <= 90) { // 90px is 5 lines here
         $('#sidebar-readmore').hide();
-        $('#sidebar-description').removeClass('collapse');
+    } else {
+        $('#sidebar-readmore').show();
     }
 
     // Safely parse the JSON string into an array for external links
@@ -286,7 +293,7 @@ $(document).on('click', '#sidebar-readmore', function() {
             'max-height': fullHeight // Animate towards the full height
         }, 500, function() {
             content.removeClass('collapse').addClass('expanded');
-            $('#sidebar-readmore').text('Read Less');
+            $('#sidebar-readmore').text('Read Less').addClass('read-less');
         });
     } else {
         // Collapse the content
@@ -294,10 +301,11 @@ $(document).on('click', '#sidebar-readmore', function() {
             'max-height': '7.5em' // Animate towards the collapsed max-height
         }, 500, function() {
             content.removeClass('expanded').addClass('collapse');
-            $('#sidebar-readmore').text('Read More');
+            $('#sidebar-readmore').text('Read More').removeClass('read-less');
         });
     }
 });
+
 
 
 
