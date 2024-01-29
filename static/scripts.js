@@ -274,12 +274,7 @@ function showDetails(element) {
     var coverImage = $(element).data('cover');
     var anilistUrl = $(element).data('anilist-url');
     var description = $(element).data('description');
-    var serviceMap = {
-        'kakao.com': 'KakaoPage KR',
-        'tapas.io': 'Tapas',
-        'webtoon.com': 'Webtoons',
-        // Add more mappings as needed
-    };
+    
     
     // Retrieve the raw data from the data attributes
     var externalLinksData = $(element).attr('data-external-links');
@@ -307,24 +302,64 @@ function showDetails(element) {
         $('#sidebar-readmore').show();
     }
 
+    // ---------------------------OPERATION ON LINK BUTTONS--------------------
+
+    var serviceMap = {
+        'tapas.io': { name: 'Tapas', class: 'tapas' },
+        'tappytoon.com': { name: 'Tappytoon', class: 'tappytoon' },
+        'www.webtoons.com': { name: 'Webtoons', class: 'webtoons' },
+        'yenpress.com': { name: 'Yen Press', class: 'yenpress' },
+        'sevenseasentertainment.com': { name: 'Seven Seas', class: 'sevenseas' },
+        'j-novel.club': { name: 'J-Novel Club', class: 'jnovel' },
+        // Add more mappings as needed
+    };
+
     // Safely parse the JSON string into an array for external links
     try {
-        var externalLinks = JSON.parse(externalLinksData || "[]"); // Default to an empty array if undefined
+        var externalLinks = JSON.parse(externalLinksData || "[]");
+        var serviceLinksHtml = '';
+        var generalLinksHtml = '';
         var linksHtml = '<h5 class="mb-2">Links</h5>';
+    
         externalLinks.forEach(function(url) {
-            var serviceName = "Some other site"; // Default text if service is not in the map
+            var isServiceMapLink = false;
+            var serviceName = '';
+            var linkClass = 'btn-primary'; // Default class for general links
+    
+            // Check against serviceMap and construct HTML
             Object.keys(serviceMap).forEach(function(key) {
                 if (url.includes(key)) {
-                    serviceName = serviceMap[key];
+                    serviceName = serviceMap[key].name;
+                    linkClass = serviceMap[key].class; // Custom class for serviceMap links
+                    isServiceMapLink = true;
                 }
             });
-            linksHtml += '<a href="' + url + '" class="btn btn-primary btn-sm m-1" target="_blank">' + serviceName + '</a>';
+    
+            // If not a serviceMap link, extract the domain name
+            if (!isServiceMapLink) {
+                serviceName = url.match(/\/\/(www\.)?([^\/]+)/)[2];
+                serviceName = serviceName.charAt(0).toUpperCase() + serviceName.slice(1).replace(/-/g, ' ');
+            }
+    
+            var buttonHtml = '<a href="' + url + '" class="btn ' + linkClass + ' btn-sm m-1" target="_blank">' + serviceName + '</a>';
+    
+            // Append to the respective HTML string
+            if (isServiceMapLink) {
+                serviceLinksHtml += buttonHtml;
+            } else {
+                generalLinksHtml += buttonHtml;
+            }
         });
+    
+        // Concatenate service links first, then general links
+        linksHtml += serviceLinksHtml + generalLinksHtml;
         $('#sidebar-external-links').html(linksHtml);
     } catch (e) {
         console.error('Parsing error for external-links data:', e);
         $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
     }
+
+    // ------------------------------- end of link buttons ---------------------
 
     // Safely parse the JSON string into an array for genres
     try {

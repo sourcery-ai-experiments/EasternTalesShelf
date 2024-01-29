@@ -248,30 +248,85 @@ opacity: 1;
     padding-bottom: 80px;
 
 }
-
-#side-menu-right .btn-primary {
+/* -------------------------------BUTTONY------------------------------------------ */
+#side-menu-right .btn {
     font-family: 'Roboto', sans-serif;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+/* Primary styles for buttons */
+#side-menu-right .btn-primary {
     color: white; /* Text color */
     background-color: #007bff; /* Background color */
-    border: none; /* Removes the border */
-    border-radius: 0.25rem; /* Slightly rounded corners */
-    padding: 0.25rem 0.5rem; /* Padding inside the button */
-    font-size: 0.875rem; /* Font size */
-    line-height: 1.5; /* Line height */
-    text-align: center; /* Center the text */
-    white-space: nowrap; /* Prevents the text from wrapping */
-    vertical-align: middle; /* Aligns vertically */
-    cursor: pointer; /* Changes cursor to indicate it's clickable */
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out; /* Transition for hover effects */
+    /* The rest of the primary button styles */
 }
 
-
-
+/* Hover state for primary buttons */
 #side-menu-right .btn-primary:hover {
     background-color: #005dc0; /* Darker background color on hover */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */ 
+    /* Other hover styles if necessary */
 }
+
+/* Special styles for service buttons, only overriding colors */
+#side-menu-right .btn.tapas {
+    background-color: #F7E600; /* Override background color for Kakao */
+    color:black; /* Override text color for Tapas */
+    /* No need to repeat other properties */
+}
+
+#side-menu-right .btn.tappytoon {
+    background-color: #545454; /* Override background color for Tapas */
+    color:white; /* Override text color for Tapas */
+}
+
+#side-menu-right .btn.webtoons {
+    background-color: #00FF00; /* Override background color for Webtoons */
+    color: #000; /* Override text color for Webtoons */
+}
+#side-menu-right .btn.yenpress {
+    background-color: #3b8f3b;
+}
+#side-menu-right .btn.sevenseas {
+    background-color: #b8b8b8;
+    color:#000;
+}
+#side-menu-right .btn.jnovel {
+    background-color: #0400ff;
+    color:#fff;
+}
+/* Hover styles for service buttons, only overriding background color */
+#side-menu-right .btn.tapas:hover {
+    background-color: #7d7507;
+    color: white;
+}
+#side-menu-right .btn.tappytoon:hover {
+    background-color: rgb(63, 94, 49);
+    color:white; /* Override text color for Tapas */
+}
+#side-menu-right .btn.webtoons:hover {
+    background-color: #00cc00;
+}
+#side-menu-right .btn.yenpress:hover {
+    background-color: rgb(25, 105, 25);
+}
+#side-menu-right .btn.sevenseas:hover {
+    background-color: rgb(128, 128, 128);
+    color:#fff;
+}
+#side-menu-right .btn.jnovel:hover {
+    background-color: rgb(1, 1, 83);
+    color:#fff;
+}
+/* -------------------------------BUTTONY------------------------------------------ */
 
 #sidebar-readmore.read-less {
     background-color: #132c47; /* The new color you want when "Read Less" is displayed */
