@@ -152,6 +152,8 @@
             data-aos-duration="1000">
             
             <div class="grid-item-title">{{ entry.title_english }}</div> <!-- Assuming 'english' is the key for the English title -->
+            <!-- AniList Icon -->
+            <div class="anilist-icon" onclick="openAniList(this.parentNode.getAttribute('data-anilist-url'))"></div>
             <div class="stats">
                 Chapters: {{ entry.all_chapters }}<br>
                 Progress: {{ entry.chapters_progress }}<br>

@@ -53,6 +53,25 @@ opacity: 1;
     display: flex;
 }
 
+.grid-item .anilist-icon {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    z-index: 10; /* Ensure it's above the hover overlay */
+    cursor: pointer;
+    width: 35px; /* Adjust size as needed */
+    height: 35px; /* Adjust size as needed */
+    opacity: 85%;
+    border-radius: 30%;
+    background: url('/static/anilist_icon.png') no-repeat center center;
+    background-size: contain; /* This will ensure the icon fits within the circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
 
 /* Style for .stats on hover when .grid-item has .border-completed */
 .grid-item.border-completed:hover .stats {

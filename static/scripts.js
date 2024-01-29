@@ -443,5 +443,8 @@ function addMessage(sender, text) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
+function openAniList(url) {
+    window.open(url, '_blank');
+}
 
 
