@@ -266,119 +266,249 @@ window.addEventListener('resize', () => {
 });
   
 
-function showDetails(element) {
+// Global variables for timeout and animation tracking
+var globalTimeout;
+var isAnimating = false;
+
+// Global variables for animation timeouts
+var timeouts = {
+    cover: null,
+    info: null,
+    link: null,
+    description: null,
+    readmore: null,
+    externalLinks: null,
+    genres: null
+};
+
+function showDetails(element) {  
+    resetAnimationsAndTimers(); // Reset animations and clear timeouts
+    // Check if an animation is ongoing, if so, reset everything immediately
+    
+
+    // Abort any ongoing animations, clear timeouts, and hide elements
+    $('#sidebar-cover, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link').stop(true, true).hide();
+    clearTimeout(window.typewriterTimeout); // Clear any ongoing typewriter timeouts
+
+    // Ensure the sidebar is visible for height calculations
+    $('#side-menu-right').removeClass('sidebar-hidden').addClass('sidebar-visible');
+
+
     var title = $(element).data('title');
-    var status = $(element).data('status');
-    var chapters = $(element).data('chapters');
-    var progress = $(element).data('progress');
     var coverImage = $(element).data('cover');
     var anilistUrl = $(element).data('anilist-url');
     var description = $(element).data('description');
+
+    // SIDEBAR INFORMATIONS ABOUT ENTRIES
+    var chapters_progress = $(element).data('chapters-progress');
+    var chapters_total = $(element).data('all-chapters');
+    var volumes_progress = $(element).data('volumes-progress');
+    var volumes_total = $(element).data('all-volumes');
+    var user_status = $(element).data('user-status');
+    var release_status = $(element).data('release-status');
     
+    if (chapters_total === 0) {
+        chapters_total = '?';
+    }
+    if (volumes_total === 0) {
+        volumes_total = '?';
+    }
     
+    // Convert user_status and release_status to uppercase
+    user_status = user_status.toUpperCase();
+    release_status = release_status.toUpperCase();
+
+    // Convert user_status and release_status to first uppercase, then lowercase
+    user_status = user_status.charAt(0).toUpperCase() + user_status.slice(1).toLowerCase();
+    release_status = release_status.charAt(0).toUpperCase() + release_status.slice(1).toLowerCase();
+
     // Retrieve the raw data from the data attributes
     var externalLinksData = $(element).attr('data-external-links');
     var genresData = $(element).attr('data-genres');
+
+    // Populate sidebar elements ----------------------------------------------------------------------------
     
-    // Populate sidebar elements
-    $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
-    $('#sidebar-title').text(title);
-    $('#sidebar-info').html(`
-    <p><i class="fas fa-book chapter-icon"></i> Chapters: ${chapters}</p>
-    <p><i class="fas fa-tasks progress-icon"></i> Progress: ${progress}</p>
-    <p><i class="fas fa-thermometer-full status-icon"></i> Status: ${status}</p>`);
+    // Hide all elements before updating
+    $('#sidebar-cover, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link').hide();
 
-    // Set the description and always start with it collapsed
-    $('#sidebar-description').html(description).removeClass('expanded').addClass('collapse');
-    $('#sidebar-readmore').text('Read More');
+    // Debounce subsequent calls to prevent rapid execution
+    clearTimeout(globalTimeout);
+    globalTimeout = setTimeout(function() {
+        
 
-    // Reset max-height to collapsed state
-    $('#sidebar-description').css('max-height', '7.5em'); // The max-height for the collapsed state
+        // Update the elements
+        $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
 
-    // Hide the Read More button if the content is short enough to not need expansion
-    if ($('#sidebar-description')[0].scrollHeight <= 90) { // 90px is 5 lines here
-        $('#sidebar-readmore').hide();
-    } else {
-        $('#sidebar-readmore').show();
-    }
+        // Reset and start typewriter effect for title
+        document.getElementById('sidebar-title').innerHTML = '';
+        window.typewriterTimeout = setTimeout(function() {
+            typeWriter(title, 'sidebar-title', 40);
+            $('#sidebar-title').fadeIn(300);
+        }, 500);
 
-    // ---------------------------OPERATION ON LINK BUTTONS--------------------
-
-    var serviceMap = {
-        'tapas.io': { name: 'Tapas', class: 'tapas' },
-        'tappytoon.com': { name: 'Tappytoon', class: 'tappytoon' },
-        'www.webtoons.com': { name: 'Webtoons', class: 'webtoons' },
-        'yenpress.com': { name: 'Yen Press', class: 'yenpress' },
-        'sevenseasentertainment.com': { name: 'Seven Seas', class: 'sevenseas' },
-        'j-novel.club': { name: 'J-Novel Club', class: 'jnovel' },
-        // Add more mappings as needed
-    };
-
-    // Safely parse the JSON string into an array for external links
-    try {
-        var externalLinks = JSON.parse(externalLinksData || "[]");
-        var serviceLinksHtml = '';
-        var generalLinksHtml = '';
-        var linksHtml = '<h5 class="mb-2">Links</h5>';
     
-        externalLinks.forEach(function(url) {
-            var isServiceMapLink = false;
-            var serviceName = '';
-            var linkClass = 'btn-primary'; // Default class for general links
-    
-            // Check against serviceMap and construct HTML
-            Object.keys(serviceMap).forEach(function(key) {
-                if (url.includes(key)) {
-                    serviceName = serviceMap[key].name;
-                    linkClass = serviceMap[key].class; // Custom class for serviceMap links
-                    isServiceMapLink = true;
+        // Initialize the sidebar info HTML with chapters and volumes
+        let sidebarInfoHTML = `
+            <p><i class="fas fa-book-open chapter-icon flip"></i> Chapters: ${chapters_progress} / ${chapters_total}</p>
+            <p><i class="fas fa-layer-group progress-icon bounce"></i> Volumes: ${volumes_progress} / ${volumes_total}</p>`;
+
+        // Apply animation classes based on the status
+        let statusIcon = '';
+        switch (user_status) {
+            case 'Completed':
+                statusIcon = '<i class="fas fa-check-circle status-icon pulse"></i>';
+                break;
+            case 'Planning':
+                statusIcon = '<i class="fas fa-hourglass-start status-icon fade"></i>';
+                break;
+            case 'Current':
+                statusIcon = '<i class="fas fa-book-reader status-icon vertical-move"></i>';
+                break;
+            case 'Paused':
+                statusIcon = '<i class="fas fa-pause-circle status-icon shake"></i>';
+                break;
+            default:
+                statusIcon = '<i class="fas fa-question-circle status-icon"></i>'; // No animation for the default case
+        }
+
+        // Determine the release status icon and apply animation
+        let releaseStatusIcon = '';
+        if (release_status === 'Releasing') {
+            releaseStatusIcon = '<i class="fas fa-sync-alt status-icon rotate"></i>';
+        } else if (release_status === 'Finished') {
+            releaseStatusIcon = '<i class="fas fa-flag-checkered status-icon shake"></i>';
+        } else {
+            releaseStatusIcon = '<i class="fas fa-circle-notch status-icon"></i>'; // Placeholder icon for other statuses
+        }
+
+
+
+        // Append user status and release status to sidebar info
+        sidebarInfoHTML += `<p>${statusIcon} Status: ${user_status}</p>
+            <p>${releaseStatusIcon} Release: ${release_status}</p>`;
+
+        // Set the HTML to the sidebar-info element
+        $('#sidebar-info').html(sidebarInfoHTML);
+
+        
+
+        
+
+        
+
+        // Set the description and always start with it collapsed
+        $('#sidebar-description').html(description).removeClass('expanded').addClass('collapse');
+        $('#sidebar-readmore').text('Read More');
+
+        // Reset max-height to collapsed state
+        $('#sidebar-description').css('max-height', '7.5em'); // The max-height for the collapsed state
+
+        // Hide the Read More button if the content is short enough to not need expansion
+        if ($('#sidebar-description')[0].scrollHeight <= 90) { // 90px is 5 lines here
+            $('#sidebar-readmore').hide();
+        } else {
+            $('#sidebar-readmore').show();
+        }
+
+        // ---------------------------OPERATION ON LINK BUTTONS--------------------
+
+        var serviceMap = {
+            'tapas.io': { name: 'Tapas', class: 'tapas' },
+            'tappytoon.com': { name: 'Tappytoon', class: 'tappytoon' },
+            'www.webtoons.com': { name: 'Webtoons', class: 'webtoons' },
+            'yenpress.com': { name: 'Yen Press', class: 'yenpress' },
+            'sevenseasentertainment.com': { name: 'Seven Seas', class: 'sevenseas' },
+            'j-novel.club': { name: 'J-Novel Club', class: 'jnovel' },
+            // Add more mappings as needed
+        };
+
+        // Safely parse the JSON string into an array for external links
+        try {
+            var externalLinks = JSON.parse(externalLinksData || "[]");
+            var serviceLinksHtml = '';
+            var generalLinksHtml = '';
+            var linksHtml = '<h5 class="mb-2">Links</h5>';
+        
+            externalLinks.forEach(function(url) {
+                var isServiceMapLink = false;
+                var serviceName = '';
+                var linkClass = 'btn-primary'; // Default class for general links
+        
+                // Check against serviceMap and construct HTML
+                Object.keys(serviceMap).forEach(function(key) {
+                    if (url.includes(key)) {
+                        serviceName = serviceMap[key].name;
+                        linkClass = serviceMap[key].class; // Custom class for serviceMap links
+                        isServiceMapLink = true;
+                    }
+                });
+        
+                // If not a serviceMap link, extract the domain name
+                if (!isServiceMapLink) {
+                    serviceName = url.match(/\/\/(www\.)?([^\/]+)/)[2];
+                    serviceName = serviceName.charAt(0).toUpperCase() + serviceName.slice(1).replace(/-/g, ' ');
+                }
+        
+                var buttonHtml = '<a href="' + url + '" class="btn ' + linkClass + ' btn-sm m-1" target="_blank">' + serviceName + '</a>';
+        
+                // Append to the respective HTML string
+                if (isServiceMapLink) {
+                    serviceLinksHtml += buttonHtml;
+                } else {
+                    generalLinksHtml += buttonHtml;
                 }
             });
-    
-            // If not a serviceMap link, extract the domain name
-            if (!isServiceMapLink) {
-                serviceName = url.match(/\/\/(www\.)?([^\/]+)/)[2];
-                serviceName = serviceName.charAt(0).toUpperCase() + serviceName.slice(1).replace(/-/g, ' ');
-            }
-    
-            var buttonHtml = '<a href="' + url + '" class="btn ' + linkClass + ' btn-sm m-1" target="_blank">' + serviceName + '</a>';
-    
-            // Append to the respective HTML string
-            if (isServiceMapLink) {
-                serviceLinksHtml += buttonHtml;
-            } else {
-                generalLinksHtml += buttonHtml;
-            }
-        });
-    
-        // Concatenate service links first, then general links
-        linksHtml += serviceLinksHtml + generalLinksHtml;
-        $('#sidebar-external-links').html(linksHtml);
-    } catch (e) {
-        console.error('Parsing error for external-links data:', e);
-        $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
-    }
+        
+            // Concatenate service links first, then general links
+            linksHtml += serviceLinksHtml + generalLinksHtml;
+            $('#sidebar-external-links').html(linksHtml);
+        } catch (e) {
+            console.error('Parsing error for external-links data:', e);
+            $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
+        }
 
-    // ------------------------------- end of link buttons ---------------------
+        // ------------------------------- end of link buttons ---------------------
 
-    // Safely parse the JSON string into an array for genres
-    try {
-        var genres = JSON.parse(genresData || "[]"); // Default to an empty array if undefined
-        var genresHtml = '<h5 class="mb-2">Genres</h5>';
-        genres.forEach(function(genre) {
-            genresHtml += '<span class="badge bg-secondary me-1">' + genre + '</span>';
-        });
-        $('#sidebar-genres').html(genresHtml);
-    } catch (e) {
-        console.error('Parsing error for genres data:', e);
-        $('#sidebar-genres').html('<h5 class="mb-2">No genres available</h5>');
-    }
+        // Safely parse the JSON string into an array for genres
+        try {
+            var genres = JSON.parse(genresData || "[]"); // Default to an empty array if undefined
+            var genresHtml = '<h5 class="mb-2">Genres</h5>';
+            genres.forEach(function(genre) {
+                genresHtml += '<span class="badge bg-secondary me-1">' + genre + '</span>';
+            });
+            $('#sidebar-genres').html(genresHtml);
+        } catch (e) {
+            console.error('Parsing error for genres data:', e);
+            $('#sidebar-genres').html('<h5 class="mb-2">No genres available</h5>');
+        }
 
-    $('#sidebar-link').attr('href', anilistUrl);
+        
 
-    // Show the sidebar with Bootstrap styling
-    $('#side-menu-right').addClass('active');
+        // Start animations with controlled timeouts
+        timeouts.cover = setTimeout(() => $('#sidebar-cover').fadeIn(400), 100);
+        timeouts.info = setTimeout(() => $('#sidebar-info').fadeIn(400), 600);
+        timeouts.link = setTimeout(() => $('#sidebar-link').fadeIn(300), 850);
+        timeouts.description = setTimeout(() => $('#sidebar-description').fadeIn(400), 1150);
+        timeouts.readmore = setTimeout(() => $('#sidebar-readmore').fadeIn(300), 1550);
+        timeouts.externalLinks = setTimeout(() => $('#sidebar-external-links').fadeIn(550), 1700);
+        timeouts.genres = setTimeout(() => $('#sidebar-genres').fadeIn(300), 2150);
+
+        // Show the sidebar with Bootstrap styling
+        $('#side-menu-right').addClass('active');
+    }, 100);
 }
+
+
+function resetAnimationsAndTimers() {
+    // Stop all ongoing animations immediately and clear queue
+    $('#sidebar-cover, #sidebar-info, #sidebar-link, #sidebar-description, #sidebar-readmore, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
+
+    // Clear all timeouts
+    for (var key in timeouts) {
+        clearTimeout(timeouts[key]);
+    }
+}
+
 
 // JavaScript to toggle the description with animation
 $(document).on('click', '#sidebar-readmore', function() {
@@ -448,3 +578,16 @@ function openAniList(url) {
 }
 
 
+// Modify the typewriter function to use a global timeout
+window.typewriterTimeout = null;
+function typeWriter(text, elementId, speed) {
+    let i = 0;
+    function type() {
+        if (i < text.length) {
+            document.getElementById(elementId).innerHTML += text.charAt(i);
+            i++;
+            window.typewriterTimeout = setTimeout(type, speed);
+        }
+    }
+    type();
+}
