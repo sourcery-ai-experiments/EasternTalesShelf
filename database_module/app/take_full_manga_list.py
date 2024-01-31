@@ -30,18 +30,25 @@ elif id_or_name == "1":
     user_id = input(f"{BLUE}Your id: {RESET}")
     
     if user_id == "":
-        user_id = 444059
-        print(f"{BLUE}Hello Madrus{RESET}")
+        # user_id = ...        <-------------- put your user id here if you want to skip input, an uncomment these line
+        # print(f"{BLUE}Hello ...{RESET}")
+        print(f"{RED}You need to put your user id!{RESET}") # if you want to skip input, comment this line
+        exit() # if you want to skip input, comment this line
     else:
         print(f"{BLUE}your user id is: {user_id}{RESET}")
 elif id_or_name == "2":
     user_name = input(f"{BLUE}Your name: {RESET}")
     if user_name == "":
-        user_name = "Madrus"
-        print(f"{BLUE}Hello Madrus{RESET}")
+        # user_name = "..." # <-------------- put your user name here if you want to skip input, an uncomment these line
+        # print(f"{BLUE}Hello ...{RESET}") # if you want to skip input, comment this line
+        print(f"{RED}You need to put your user name!{RESET}") # if you want to skip input, comment this line
+        exit() # if you want to skip input, comment this line
     else:
         print(f"{BLUE}your user name is: {GREEN}{user_name}{RESET}")
-
+elif id_or_name == "":
+    # plese choose something
+    print(f"{RED}You need to choose something!{RESET}")
+    exit()
 #need to fetch id from anilist API for user name
 if id_or_name == "2":
     variables_in_api = {
@@ -86,25 +93,72 @@ def check_record(media_id):
     record = cursor.fetchone()
     return record
 
-def update_querry_to_db(query):
+def update_querry_to_db(insert_query, insert_record):
     """Update a record in the manga_list table in the database"""
     global conn
     global cleaned_romaji
     cursor = conn.cursor()
-    cursor.execute(query)
+    cursor.execute(insert_query, insert_record)
     print(f"{BLUE}updated record ^^ {cleaned_romaji}{RESET}")
 
-def insert_querry_to_db(query):
+def insert_querry_to_db(insert_query, insert_record, what_type_updated):
     """Insert a record into the manga_list table in the database"""
     global conn   
     cursor = conn.cursor()
-    cursor.execute(query)
-    print(f"{MAGENTA}...added ^^ manga to database.{RESET}")
+    cursor.execute(insert_query, insert_record)
+    if what_type_updated == "MANGA":
+        print(f"{MAGENTA}...added ^^ manga to database.{RESET}")
+    elif what_type_updated == "NOVEL":
+        print(f"{MAGENTA}...added ^^ novel to database.{RESET}")
     
 try: # open connection to database
     connection = conn
         # class cursor : Allows Python code to execute PostgreSQL command in a database session. Cursors are created by the connection.cursor() method
     cursor = connection.cursor()
+
+    check_if_table_exists = "SHOW TABLES LIKE 'manga_list2'"
+    cursor.execute(check_if_table_exists)
+    result = cursor.fetchone()
+    if result:
+        print(f"{GREEN}Table exists{RESET}")
+    else:
+        print(f"{RED}Table does not exist{RESET}")
+        print(f"{RED}Creating table{RESET}")
+        create_table_query = """CREATE TABLE `manga_list2` (
+        `id_default` int(5) NOT NULL AUTO_INCREMENT,
+        `id_anilist` int(11) NOT NULL,
+        `id_mal` int(11) DEFAULT NULL,
+        `title_english` varchar(255) DEFAULT NULL,
+        `title_romaji` varchar(255) DEFAULT NULL,
+        `on_list_status` varchar(255) DEFAULT NULL,
+        `status` varchar(255) DEFAULT NULL,
+        `media_format` varchar(255) DEFAULT NULL,
+        `all_chapters` int(11) DEFAULT 0,
+        `all_volumes` int(11) DEFAULT 0,
+        `chapters_progress` int(11) DEFAULT 0,
+        `volumes_progress` int(11) DEFAULT 0,
+        `score` float DEFAULT 0,
+        `reread_times` int(11) DEFAULT 0,
+        `cover_image` varchar(255) DEFAULT NULL,
+        `is_favourite` INT(11) DEFAULT 0,
+        `anilist_url` varchar(255) DEFAULT NULL,
+        `mal_url` varchar(255) DEFAULT NULL,
+        `last_updated_on_site` timestamp NULL DEFAULT NULL,
+        `entry_createdAt` timestamp NULL DEFAULT NULL,
+        `user_startedAt` text DEFAULT 'not started',
+        `user_completedAt` text DEFAULT 'not completed',
+        `notes` text DEFAULT NULL,
+        `description` text DEFAULT NULL,
+        `country_of_origin` varchar(255) DEFAULT NULL,
+        `media_start_date` text DEFAULT 'media not started',
+        `media_end_date` text DEFAULT 'media not ended',
+        `genres` text DEFAULT 'none genres provided',
+        `external_links` text DEFAULT 'none links associated',
+        PRIMARY KEY (`id_default`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+        """
+        cursor.execute(create_table_query)
+        print(f"{GREEN}Table created successfully in MySQL{RESET}")
         # need to take all records from database to compare entries
     take_all_records = "select id_anilist, last_updated_on_site from manga_list2"
     #cursor.execute(take_all_records)
@@ -216,8 +270,6 @@ try: # open connection to database
                 user_startedAt = parsed_json["data"]["Page"]["mediaList"][j]["startedAt"]
                     # user completedAt
                 user_completedAt = parsed_json["data"]["Page"]["mediaList"][j]["completedAt"]
-
-
                     # media startedAt
                 media_startDate = parsed_json["data"]["Page"]["mediaList"][j]["media"]["startDate"]
                     # media completedAt
@@ -279,6 +331,14 @@ try: # open connection to database
                     url = link["url"]
                     media_externalLinks_parsed.append(url)
 
+                # Assuming external_links is a Python list
+                external_links_json = json.dumps(media_externalLinks_parsed)
+                # Initialize an empty list to store the parsed URLs
+                # Extract genres
+                genres_parsed = genres['genres']
+
+                # Convert genres list to JSON string
+                genres_json = json.dumps(genres_parsed)
 
                     # cleaning strings and formating
                 cleaned_english = str(english_parsed).replace("'" , '"')
@@ -308,10 +368,7 @@ try: # open connection to database
                 #print(f"{RED}entry_createdAt_parsed : {cleanded_user_completedAt}{RESET}")
                 updated_at_for_loop = updatedAt["updatedAt"]
 
-                #cheat sheet numbers of columns from database
-                #(0 id_anilist, 1 id_mal, 2 title_english, 3 title_romaji, 4 on_list_status, 5 status,6 media_format,7 season_year,8 season_period,9 all_episodes,10 episodes_progress,
-                #11 score,12 rewatched_times, 13 cover_image, 14 is_favourite, 15 anilist_url, 16 mal_url, 17 last_updated_on_site, 18 entry_createdAt, 19 user_stardetAt, 20 user_completedAt,
-                #21 notes, 22 description)
+                
     
                 
                 tqdm.write(f"{GREEN}Checking for mediaId: {mediaId_parsed}{RESET}")
@@ -341,15 +398,30 @@ try: # open connection to database
 
                 # Convert the datetime object to a string in the correct format
                 updatedAt_parsed = updatedAt_datetime.strftime('%Y-%m-%d %H:%M:%S')
+
+                # Convert the Unix timestamp to a Python datetime object
+                entry_createdAt_datetime = datetime.fromtimestamp(entry_createdAt_parsed)
+
+                # Convert the datetime object to a string in the correct format
+                entry_createdAt_parsed = entry_createdAt_datetime.strftime('%Y-%m-%d %H:%M:%S')
                 #print("cleanded_user_startedAt : ", cleanded_user_startedAt)
                 #print("cleanded_user_completedAt : ", cleanded_user_completedAt)
-
+                
+                # rekor[18] is last_updated_on_site
                 if record:
-                    #print(f"rekors 16 : {record[16]} for anime {romaji_parsed}")
-                    # # Record exists
-                    print(f"{RED}record : {record}{RESET}")
-                    if record[16] is not None: #
-                        db_timestamp = int(time.mktime(record[16].timetuple()))
+                    if record[18] is not None:
+                        # Check if record[18] is a string and convert it to datetime object
+                        if isinstance(record[18], str):
+                            try:
+                                db_datetime = datetime.strptime(record[18], '%Y-%m-%d %H:%M:%S')
+                                db_timestamp = int(time.mktime(db_datetime.timetuple()))
+                            except ValueError:
+                                # Handle the exception if the date format is incorrect
+                                print("Date format is incorrect")
+                                db_timestamp = None
+                        else:
+                            # If record[18] is already a datetime object
+                            db_timestamp = int(time.mktime(record[18].timetuple()))
                     else:
                         db_timestamp = None
 
@@ -366,70 +438,92 @@ try: # open connection to database
                     if db_timestamp != updatedAt_timestamp:
                         
                     #if record[18] != updatedAt_parsed:
-                        update_querry = """ UPDATE `manga_list2` SET  
-                            id_anilist = {0},
-                            id_mal = {1},
-                            title_english = '{2}',
-                            title_romaji = '{3}',
-                            on_list_status = '{4}',
-                            status = '{5}',
-                            media_format = '{6}',
-                            all_chapters = {7},
-                            all_volumes = {8},
-                            chapters_progress = {9},
-                            volumes_progress = {10},
-                            score = {11},
-                            reread_times = {12},
-                            cover_image = '{13}',
-                            is_favourite = {14},
-                            anilist_url = '{15}',
-                            mal_url = '{16}',
-                            last_updated_on_site = {17},
-                            entry_createdAt = {18},
-                            user_stardetAt = '{19}',
-                            user_completedAt = '{20}',
-                            notes = '{21}',
-                            description = '{22}',
-                            country_of_origin = '{23}',
-                            media_start_date = '{24}',
-                            media_end_date = '{25}',
-                            genres = '{26}',
-                            external_links = '{27}'
-                            WHERE id_anilist = {0};
-                            """
-                                # inserting variables to ^^ {x} 
-                        update_record = (update_querry.format(mediaId_parsed, idMal_parsed, cleaned_english ,cleaned_romaji , on_list_status_parsed, status_parsed, format_parsed, 
-                        chapters_parsed, volumes_parsed , progress_parsed,volumes_progress ,score_parsed , repeat_parsed, large_parsed, isFavourite_parsed, siteUrl_parsed, mal_url_parsed, updatedAt_parsed_for_db,
-                        created_at_for_db, cleanded_user_startedAt, cleanded_user_completedAt, cleaned_notes,cleaned_description, country_parsed, media_startDate_parsed, media_endDate_parsed, genres, media_externalLinks_parsed))
-                            # using function from different file, I can't do this different 
-                        #print("update_record : ", update_record)
-                        update_querry_to_db(update_record)
+                        update_query = """
+                        UPDATE `manga_list2` SET  
+                            id_anilist = %s,
+                            id_mal = %s,
+                            title_english = %s,
+                            title_romaji = %s,
+                            on_list_status = %s,
+                            status = %s,
+                            media_format = %s,
+                            all_chapters = %s,
+                            all_volumes = %s,
+                            chapters_progress = %s,
+                            volumes_progress = %s,
+                            score = %s,
+                            reread_times = %s,
+                            cover_image = %s,
+                            is_favourite = %s,
+                            anilist_url = %s,
+                            mal_url = %s,
+                            last_updated_on_site = %s,
+                            entry_createdAt = %s,
+                            user_startedAt = %s,
+                            user_completedAt = %s,
+                            notes = %s,
+                            description = %s,
+                            country_of_origin = %s,
+                            media_start_date = %s,
+                            media_end_date = %s,
+                            genres = %s,
+                            external_links = %s
+                        WHERE id_anilist = %s;
+                        """
+
+                        update_record = (
+                            mediaId_parsed, idMal_parsed, cleaned_english, cleaned_romaji, on_list_status_parsed, status_parsed, format_parsed, 
+                            chapters_parsed, volumes_parsed, progress_parsed, volumes_progress_parsed, score_parsed, repeat_parsed, large_parsed, 
+                            isFavourite_parsed, siteUrl_parsed, mal_url_parsed, updatedAt_parsed, 
+                            entry_createdAt_parsed, cleanded_user_startedAt, cleanded_user_completedAt, cleaned_notes, cleaned_description, 
+                            country_parsed, media_startDate_parsed, media_endDate_parsed, genres_json, external_links_json, mediaId_parsed  # ID again for WHERE clause
+                        )
+
+                        # Execute the query
+                        update_querry_to_db(update_query, update_record)
+
 
                         total_updated += 1
                         
 
                 else:
-                    print(f"{CYAN}This manga is not in a table: {cleaned_romaji}{RESET}")
+                    if format_parsed == "NOVEL":
+                        print(f"{RED}This novel is not in a table: {cleaned_romaji}{RESET}")
+                    elif format_parsed == "MANGA":
+                        print(f"{CYAN}This manga is not in a table: {cleaned_romaji}{RESET}")
+
+                    
                         # building querry to insert to table
-                    insert_querry = """INSERT INTO `manga_list2`(`id_anilist`, `id_mal`, `title_english`, `title_romaji`, `on_list_status`, `status`, `media_format`, 
-                     `all_chapters`, `all_volumes`, `chapters_progress`, `volumes_progress`, `score`,`reread_times`, `cover_image`, `is_favourite`, `anilist_url`, `mal_url`, `last_updated_on_site`,
-                    `entry_createdAt`, `user_stardetAt`, `user_completedAt`, `notes`, `description`, `country_of_origin`, `media_start_date`, `media_end_date`, `genres`, `external_links`) 
-                    VALUES
-                    ({0}, {1}, '{2}', '{3}', '{4}', '{5}', '{6}', {7}, {8}, {9}, {10}, {11}, {12}, '{13}', {14}, '{15}', '{16}', {17}, {18}, '{19}', '{20}', '{21}', '{22}', '{23}', '{24}', '{25}', '{26}', '{27}');
+                    insert_query = """
+                    INSERT INTO `manga_list2` (
+                        `id_anilist`, `id_mal`, `title_english`, `title_romaji`, `on_list_status`, `status`, `media_format`, 
+                        `all_chapters`, `all_volumes`, `chapters_progress`, `volumes_progress`, `score`, `reread_times`, `cover_image`, 
+                        `is_favourite`, `anilist_url`, `mal_url`, `last_updated_on_site`, `entry_createdAt`, `user_startedAt`, 
+                        `user_completedAt`, `notes`, `description`, `country_of_origin`, `media_start_date`, `media_end_date`, `genres`, `external_links`
+                    ) VALUES (
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    );
                     """
-                        # inserting variables to ^^ {x}
-                    insert_record = (insert_querry.format(mediaId_parsed, idMal_parsed, cleaned_english ,cleaned_romaji , on_list_status_parsed, status_parsed, format_parsed, 
-                    chapters_parsed, volumes_parsed, progress_parsed, volumes_progress, score_parsed , repeat_parsed, large_parsed, isFavourite_parsed, siteUrl_parsed, mal_url_parsed, updatedAt_parsed_for_db,
-                    created_at_for_db, cleanded_user_startedAt, cleanded_user_completedAt, cleaned_notes,cleaned_description, country_parsed, media_startDate_parsed, media_endDate_parsed, genres, media_externalLinks_parsed))             
+
+                    insert_record = (
+                        mediaId_parsed, idMal_parsed, cleaned_english, cleaned_romaji, on_list_status_parsed, status_parsed, format_parsed, 
+                        chapters_parsed, volumes_parsed, progress_parsed, volumes_progress_parsed, score_parsed, repeat_parsed, large_parsed, 
+                        isFavourite_parsed, siteUrl_parsed, mal_url_parsed, updatedAt_parsed, entry_createdAt_parsed, 
+                        cleanded_user_startedAt, cleanded_user_completedAt, cleaned_notes, cleaned_description, 
+                        country_parsed, media_startDate_parsed, media_endDate_parsed, genres_json, external_links_json
+                    )
+   
+
+                    
+                    
+                    
                         # using function from different file, I can't do this different
-                    #print("insert_record: "+insert_record)
-                    print("insert record: ", insert_record)
-                    insert_querry_to_db(insert_record)
-                    print("inserted??")
+                    #print("insert record: ", insert_record) #uncomment to see what is going to be inserted
+                    insert_querry_to_db(insert_query, insert_record, format_parsed)
                     total_added+= 1    
                     
             print(f"{YELLOW}Total added: {total_added}{RESET}")
-            print(f"{YELLOW}Total updated: {total_updated}{RESET}")
+            print(f"{MAGENTA}Total updated: {total_updated}{RESET}")
             
             conn.commit()
             progress_bar.update(1)
