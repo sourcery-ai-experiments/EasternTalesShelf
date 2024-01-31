@@ -17,7 +17,7 @@ app.add_middleware(
 async def run_script():
     print("---Running script---")
     try:
-        subprocess.run(["python", "update_only_manga_stable.py"], check=True)
+        subprocess.run(["python", "update_only_manga.py"], check=True)
         print("---Script executed successfully---")
         return {"status": "success", "message": "Script executed successfully"}
     except subprocess.CalledProcessError as e:
