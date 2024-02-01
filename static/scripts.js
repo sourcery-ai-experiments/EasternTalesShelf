@@ -61,6 +61,8 @@ if (syncButton) {
 } else {
     console.error('syncButton element not found!');
 }
+
+
 });
 var currentFilterType = 'ALL'; // Default to 'ALL' on page load
 
@@ -71,7 +73,7 @@ if ('scrollRestoration' in history) {
 
 
 
-  window.addEventListener('load', function() {
+window.addEventListener('load', function() {
     // Initialize AOS only if cumulative height exceeds the window height
     var items = document.querySelectorAll('.grid-item');
     var cumulativeHeight = 0;
@@ -102,7 +104,7 @@ if ('scrollRestoration' in history) {
 
     // Set border color based on data-status
     items.forEach(function(item) {
-        var status = item.getAttribute('data-status');
+        var status = item.getAttribute('data-user-status');
         if(status) {
             status = status.toUpperCase(); // Convert to uppercase to match the CSS classes
             var statusClass = 'border-' + status.toLowerCase(); // Construct the class name to add
@@ -181,7 +183,7 @@ function filterEntries() {
         const title = (item.getAttribute('data-title') || '').toLowerCase();
         const country = item.getAttribute('data-country') || '';
         const type = item.getAttribute('data-type') || '';
-        const itemStatus = item.getAttribute('data-status') || '';
+        const itemStatus = item.getAttribute('data-user-status') || '';
         const itemReleasingStatus = item.getAttribute('data-release-status') || '';
         // Determine whether item should be visible based on the navbar filter and side menu filters
         const matchesTitle = titleFilter === '' || title.includes(titleFilter);
@@ -278,7 +280,8 @@ var timeouts = {
     description: null,
     readmore: null,
     externalLinks: null,
-    genres: null
+    genres: null,
+    title_placeholder: null
 };
 
 function showDetails(element) {  
@@ -339,12 +342,19 @@ function showDetails(element) {
         // Update the elements
         $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
 
+        // Update the placeholder with the title content
+        $('#sidebar-title-placeholder').text(title);
+
+        // Calculate and set the height for the title container
+        var titleHeight = $('#sidebar-title-placeholder').height();
+        $('#sidebar-title-container').height(titleHeight);
+
         // Reset and start typewriter effect for title
         document.getElementById('sidebar-title').innerHTML = '';
         window.typewriterTimeout = setTimeout(function() {
             typeWriter(title, 'sidebar-title', 40);
             $('#sidebar-title').fadeIn(300);
-        }, 500);
+        }, 650);
 
     
         // Initialize the sidebar info HTML with chapters and volumes
@@ -426,42 +436,26 @@ function showDetails(element) {
         try {
             var externalLinks = JSON.parse(externalLinksData || "[]");
             var serviceLinksHtml = '';
-            var generalLinksHtml = '';
             var linksHtml = '<h5 class="mb-2">Links</h5>';
-        
+
             externalLinks.forEach(function(url) {
-                var isServiceMapLink = false;
-                var serviceName = '';
-                var linkClass = 'btn-primary'; // Default class for general links
-        
-                // Check against serviceMap and construct HTML
                 Object.keys(serviceMap).forEach(function(key) {
                     if (url.includes(key)) {
-                        serviceName = serviceMap[key].name;
-                        linkClass = serviceMap[key].class; // Custom class for serviceMap links
-                        isServiceMapLink = true;
+                        var serviceName = serviceMap[key].name;
+                        var linkClass = serviceMap[key].class; // Custom class for serviceMap links
+                        var buttonHtml = '<a href="' + url + '" class="btn ' + linkClass + ' btn-sm m-1" target="_blank">' + serviceName + '</a>';
+                        serviceLinksHtml += buttonHtml;
                     }
                 });
-        
-                // If not a serviceMap link, extract the domain name
-                if (!isServiceMapLink) {
-                    serviceName = url.match(/\/\/(www\.)?([^\/]+)/)[2];
-                    serviceName = serviceName.charAt(0).toUpperCase() + serviceName.slice(1).replace(/-/g, ' ');
-                }
-        
-                var buttonHtml = '<a href="' + url + '" class="btn ' + linkClass + ' btn-sm m-1" target="_blank">' + serviceName + '</a>';
-        
-                // Append to the respective HTML string
-                if (isServiceMapLink) {
-                    serviceLinksHtml += buttonHtml;
-                } else {
-                    generalLinksHtml += buttonHtml;
-                }
             });
-        
-            // Concatenate service links first, then general links
-            linksHtml += serviceLinksHtml + generalLinksHtml;
-            $('#sidebar-external-links').html(linksHtml);
+
+            // Check if there are any service links to display
+            if (serviceLinksHtml === '') {
+                $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
+            } else {
+                linksHtml += serviceLinksHtml;
+                $('#sidebar-external-links').html(linksHtml);
+            }
         } catch (e) {
             console.error('Parsing error for external-links data:', e);
             $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
@@ -485,13 +479,16 @@ function showDetails(element) {
         
 
         // Start animations with controlled timeouts
-        timeouts.cover = setTimeout(() => $('#sidebar-cover').fadeIn(400), 100);
-        timeouts.info = setTimeout(() => $('#sidebar-info').fadeIn(400), 600);
-        timeouts.link = setTimeout(() => $('#sidebar-link').fadeIn(300), 850);
-        timeouts.description = setTimeout(() => $('#sidebar-description').fadeIn(400), 1150);
-        timeouts.readmore = setTimeout(() => $('#sidebar-readmore').fadeIn(300), 1550);
-        timeouts.externalLinks = setTimeout(() => $('#sidebar-external-links').fadeIn(550), 1700);
-        timeouts.genres = setTimeout(() => $('#sidebar-genres').fadeIn(300), 2150);
+        timeouts.cover = setTimeout(() => $('#sidebar-cover').fadeIn(1500), 100);
+        timeouts.info = setTimeout(() => $('#sidebar-info').fadeIn(700), 600);
+        timeouts.link = setTimeout(() => {
+            $('#sidebar-link').attr('href', anilistUrl).fadeIn(650);
+        }, 750);
+        
+        timeouts.description = setTimeout(() => $('#sidebar-description').fadeIn(800), 900);
+        timeouts.readmore = setTimeout(() => $('#sidebar-readmore').fadeIn(650), 1100);
+        timeouts.externalLinks = setTimeout(() => $('#sidebar-external-links').fadeIn(750), 1300);
+        timeouts.genres = setTimeout(() => $('#sidebar-genres').fadeIn(750), 1550);
 
         // Show the sidebar with Bootstrap styling
         $('#side-menu-right').addClass('active');

@@ -84,14 +84,14 @@ opacity: 1;
 
 .grid-item.border-planning:hover .stats {
     /* Your custom styles for completed items on hover */
-    background: rgba(14, 159, 212, 0.5); /* Example: a lighter shade of green on hover */
+    background: rgba(255, 193, 7, 0.5); /* Example: a lighter shade of green on hover */
     
     
     /* Add other styles as needed */
 }
 .grid-item.border-current:hover .stats {
     /* Your custom styles for completed items on hover */
-    background: rgba(255, 193, 7, 0.5); /* Example: a lighter shade of green on hover */
+    background: rgba(14, 159, 212, 0.5); /* Example: a lighter shade of green on hover */
     
     
     /* Add other styles as needed */
@@ -191,6 +191,15 @@ opacity: 1;
     border-bottom: 1px solid #3e3e3e; /* Subtle separator */
     padding-bottom: 0.5rem; /* Spacing from the separator */
 }
+
+
+#side-menu #menu-image {
+    display: block; /* Display as a block element */
+    max-width: 100%; /* Maximum width is 100% of its container */
+    height: auto; /* Height is set to auto to maintain aspect ratio */
+    margin-bottom: 1rem; /* Optional: add some margin below the image */
+}
+
 
 .status-filter {
     background-color: #2b2b2b; /* Dark background */
@@ -377,12 +386,16 @@ opacity: 1;
     margin-bottom: 1rem; /* Adds space below the image */
 }
 
-#sidebar-title {
-    font-family: 'Roboto', sans-serif; /* Use a modern, clean font */
-    font-size: 1.5rem; /* Adjust the size as needed */
-    font-weight: bold; /* Makes the title stand out */
-    margin-bottom: 0.5rem; /* Adds space below the title */
+
+#sidebar-title, #sidebar-title-placeholder {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    word-break: break-word; /* To handle long titles without overflow */
 }
+
+
 
 #sidebar-info {
     font-family: 'Roboto', sans-serif;
@@ -405,7 +418,6 @@ opacity: 1;
     width: 1.5em; /* Ensures the icons align nicely with the text */
     text-align: center; /* Aligns the icon's content */
 }
-
 
 
 /* ------------------------------------------------------------------------- */
@@ -477,17 +489,21 @@ border: 3px solid #24282d;  /* creates padding around scroll thumb */
     flex-direction: row;
     width: 100%;
     justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none; /* Remove bullets */
 }
 
+
+.container-fluid {
+    width: 100%;
+    /* rest of your styles */
+}
 
 body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
     color: #0fd3e184;
     font-size: 20px;
 }
-
-
-
-
 
 
 /* Chatbot container styling */
@@ -613,7 +629,7 @@ body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
 }
 
 .grid-item.border-current {
-    border-color: rgb(255, 193, 7); 
+    border-color: rgb(14, 159, 212); 
 }
 
 .grid-item.border-paused {
@@ -621,7 +637,7 @@ body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
 }
 
 .grid-item.border-planning {
-    border-color: rgb(14, 159, 212); 
+    border-color: rgb(255, 193, 7); 
 }
 .bg-dark-custom {
     background-color: #343a40 !important; /* Dark background color, use !important to override Bootstrap's styles */
@@ -654,3 +670,47 @@ body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
     display: none;
 }
 
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes vertical-move {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes fade {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+.status-icon.rotate { animation: rotate 2s linear infinite; }
+.status-icon.pulse { animation: pulse 1.5s ease-in-out infinite; }
+.status-icon.vertical-move { animation: vertical-move 2s ease-in-out infinite; }
+.status-icon.fade { animation: fade 2s linear infinite; }
+.status-icon.shake { animation: shake 0.5s ease-in-out infinite; }
+
+@keyframes flip {
+    0%, 100% { transform: rotateY(0); }
+    50% { transform: rotateY(180deg); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.chapter-icon.flip { animation: flip 3s ease-in-out infinite; }
+.progress-icon.bounce { animation: bounce 2s ease-in-out infinite; }

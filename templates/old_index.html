@@ -108,12 +108,7 @@
 <!-- Right Side Menu -->
 <div id="side-menu-right" class="bg-dark text-white p-3 sidebar-hidden">
     <img id="sidebar-cover" src="" class="img-fluid" alt="Cover">
-    <!-- Placeholder for the title -->
-    <!-- Container for the title -->
-    <div id="sidebar-title-container" style="position: relative;">
-        <h5 id="sidebar-title-placeholder" style="opacity: 0; position: absolute; top: 0; left: 0;"></h5>
-        <h5 id="sidebar-title"></h5>
-    </div>
+    <h5 id="sidebar-title"></h5>
     <p id="sidebar-info"></p>
     <a href="#" id="sidebar-link" class="btn btn-primary" target="_blank">Go to AniList</a>
     <!-- Description paragraph with a unique ID for collapse control -->
@@ -144,14 +139,11 @@
         <div class="grid-item"
             onclick="showDetails(this)"
             style="background-image: url('{{ entry.cover_image }}'); background-size: cover; background-position: center;"
-            data-user-status="{{ entry.on_list_status }}"
-            data-release-status="{{ entry.status }}"
+            data-status="{{ entry.on_list_status }}"
             data-type="{{ entry.media_format }}"
             data-title="{{ entry.title_english }}"
-            data-chapters-progress = "{{ entry.chapters_progress }}"
-            data-all-chapters="{{ entry.all_chapters }}"
-            data-volumes-progress="{{ entry.volumes_progress }}"
-            data-all-volumes="{{ entry.all_volumes }}"
+            data-chapters="{{ entry.all_chapters }}"
+            data-progress="{{ entry.chapters_progress }}"
             data-anilist-url="{{ entry.anilist_url }}"
             data-cover="{{ entry.cover_image }}"
             data-country="{{ entry.country_of_origin }}"
