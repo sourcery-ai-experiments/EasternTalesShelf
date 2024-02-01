@@ -159,18 +159,30 @@
             data-external-links="{{ entry.external_links }}"
             data-release-status="{{ entry.status }}"
             data-genres="{{ entry.genres}}"
+            data-score="{{ entry.score }}"
             data-aos="fade-up" 
             data-aos-offset="200"
             data-aos-duration="1000">
+
             
             <div class="grid-item-title">{{ entry.title_english }}</div> <!-- Assuming 'english' is the key for the English title -->
+           
+            <!-- Score Icon -->
+            <div class="score-icon" data-score="{{ entry.score }}" id="score-icon-{{ loop.index }}"></div>
+
+
+
+                    
             <!-- AniList Icon -->
             <div class="anilist-icon" onclick="openAniList(this.parentNode.getAttribute('data-anilist-url'))"></div>
+
             <div class="stats">
-                Chapters: {{ entry.all_chapters }}<br>
-                Progress: {{ entry.chapters_progress }}<br>
+                Chapters: {{ entry.chapters_progress }}/{{ entry.all_chapters or '?' }}<br>
+                Volumes: {{ entry.volumes_progress }}/{{ entry.all_volumes or '?' }}<br>
                 Status: {{ entry.on_list_status }}<br>
-            </div>
+                Release: {{ entry.status }}<br>
+              </div>
+              
         </div>
         {% endfor %}
     </div>

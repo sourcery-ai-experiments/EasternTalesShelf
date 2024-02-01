@@ -73,8 +73,10 @@ if ('scrollRestoration' in history) {
 
 
 
+// Consolidated load event listener
 window.addEventListener('load', function() {
-    // Initialize AOS only if cumulative height exceeds the window height
+
+    // Initialize or refresh AOS based on cumulative height logic
     var items = document.querySelectorAll('.grid-item');
     var cumulativeHeight = 0;
     items.forEach(function(item) {
@@ -82,38 +84,34 @@ window.addEventListener('load', function() {
             cumulativeHeight += item.offsetHeight + 10; // Adjust if necessary
         }
     });
-    
+
     var windowHeight = window.innerHeight;
     if (cumulativeHeight > windowHeight) {
-        // Delayed initialization of AOS
         setTimeout(function(){
             AOS.init({
                 offset: 120,
                 duration: 1000,
             });
         }, 100); // Adjust the timeout as needed
-    } else {
-        // If previously initialized, refresh or disable AOS
-        // AOS.refreshHard(); // Uncomment if necessary
     }
 
-    // Bind AOS refresh to window resize to handle dynamic changes
-    window.addEventListener('resize', function(){
-        AOS.refresh();
-    });
+    // AOS refresh logic
+    AOS.refresh();
 
     // Set border color based on data-status
     items.forEach(function(item) {
         var status = item.getAttribute('data-user-status');
         if(status) {
-            status = status.toUpperCase(); // Convert to uppercase to match the CSS classes
-            var statusClass = 'border-' + status.toLowerCase(); // Construct the class name to add
-            //console.log('status:', status); // Debug line
-            //console.log('statusClass:', statusClass); // Debug line
-            item.classList.add(statusClass); // Just add the class, don't check if it exists
+            status = status.toUpperCase();
+            var statusClass = 'border-' + status.toLowerCase();
+            item.classList.add(statusClass);
         }
     });
+});
 
+// Consolidated resize event listener
+window.addEventListener('resize', () => {
+    AOS.refresh();
 });
 
 // Initialize a variable to keep track of the current status filter
@@ -257,16 +255,7 @@ document.addEventListener('aos:in', ({ detail }) => {
   });
   
 
-// After the window has finished loading
-window.addEventListener('load', () => {
-    AOS.refresh();
-  });
-  
-  // Whenever the window is resized
-window.addEventListener('resize', () => {
-    AOS.refresh();
-});
-  
+
 
 // Global variables for timeout and animation tracking
 var globalTimeout;
@@ -310,12 +299,13 @@ function showDetails(element) {
     var user_status = $(element).data('user-status');
     var release_status = $(element).data('release-status');
     
-    if (chapters_total === 0) {
+    if (chapters_total === 0 || chapters_total == null) {
         chapters_total = '?';
     }
-    if (volumes_total === 0) {
+    if (volumes_total === 0 || volumes_total == null) {
         volumes_total = '?';
     }
+    
     
     // Convert user_status and release_status to uppercase
     user_status = user_status.toUpperCase();
@@ -588,3 +578,66 @@ function typeWriter(text, elementId, speed) {
     }
     type();
 }
+
+function scoreToColor(score) {
+    var displayText = score === 0.0 ? '?' : score.toString();
+    var color;
+
+    if (score === 0.0) {
+        color = '#9E9E9E'; // Default color for score 0.0
+    } else {
+        var roundedScore = Math.floor(score); // Round down to nearest whole number
+        switch (roundedScore) {
+            case 10:
+                color = '#4CAF50'; // Bright green
+                break;
+            case 9:
+                color = '#8BC34A'; // Light green
+                break;
+            case 8:
+                color = '#CDDC39'; // Lime
+                break;
+            case 7:
+                color = '#D4E157'; // Light lime
+                break;
+            case 6:
+                color = '#FFEB3B'; // Yellow
+                break;
+            case 5:
+                color = '#FFC107'; // Amber
+                break;
+            case 4:
+                color = '#FF9800'; // Orange
+                break;
+            case 3:
+                color = '#FF5722'; // Deep orange
+                break;
+            case 2:
+                color = '#F44336'; // Red
+                break;
+            case 1:
+                color = '#B71C1C'; // Deep red
+                break;
+            default:
+                color = '#9E9E9E'; // Default color for invalid scores
+                break;
+        }
+    }
+
+    return { color: color, text: displayText };
+}
+
+    
+
+
+
+
+// Apply colors to score elements
+document.querySelectorAll('.score-icon').forEach(function(element, index) {
+    var score = parseFloat(element.getAttribute('data-score')); // Assuming you store the score in a data attribute
+    var result = scoreToColor(score);
+    element.style.backgroundColor = result.color;
+    element.textContent = result.text;
+});
+
+
