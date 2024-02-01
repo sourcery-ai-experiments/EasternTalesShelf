@@ -5,26 +5,37 @@ app = Flask(__name__)
 
 
 
- # EZXAMPLE HOW TO USE FUNCTION OF PYTHON IN HTML
-# def score_to_color(score):
-#     if score >= 8:
-#         return '#4CAF50'  # Green for high scores
-#     elif score >= 5:
-#         return '#FFC107'  # Yellow for medium scores
-#     else:
-#         return '#F44336'  # Red for low scores
 
-# # Ensure this function is accessible in your templates
-# @app.context_processor
-# def utility_processor():
-#     return dict(score_to_color=score_to_color)
+
+# Ensure this function is accessible in your templates
 
 # THEN IN HTML: 
 #<div class="score-icon" style="background-color: {{ score_to_color(entry.score) }}" title="Score: {{ entry.score }}">
   #      {{ entry.score }}
 #  <div>
 
+# def count_stats(counting_element):
+#     """'counting_element' can be user status, entry detailes lile chapters volumes etc. ."""
+#     user_completed = 0
+#     user_planning = 0 
+#     user_current = 0 
+#     user_paused = 0 
+#     manga_entries = mariadb_functions.get_manga_list()
+#     for entry in manga_entries:
+#         if entry.get('on_list_status') == "COMPLETED":
+#             user_completed += 1
+#         elif entry.get('on_list_status') == "PLANNING":
+#             user_planning += 1
+#         elif entry.get('on_list_status') == "CURRENT":
+#             user_current += 1
+#         elif entry.get('on_list_status') == "PAUSED":
+#             user_paused += 1
+#     return user_completed, user_planning, user_current, user_paused
 
+
+# @app.context_processor
+# def utility_processor():
+#     return dict(count_stats=count_stats)
 
 # Route for your home page
 @app.route('/')
@@ -33,11 +44,6 @@ def home():
     # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
     manga_entries = mariadb_functions.get_manga_list()
 
-
-    
-
-
-    
     for entry in manga_entries:
         links = entry.get('external_links', '[]')  # Default to an empty JSON array as a string
         genres = entry.get('genres', '[]')
@@ -93,3 +99,7 @@ def log_sync():
 
 if __name__ == '__main__':
     app.run(host='10.147.17.21', port=5000, debug=True)
+
+
+
+

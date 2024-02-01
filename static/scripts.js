@@ -627,10 +627,6 @@ function scoreToColor(score) {
     return { color: color, text: displayText };
 }
 
-    
-
-
-
 
 // Apply colors to score elements
 document.querySelectorAll('.score-icon').forEach(function(element, index) {
@@ -641,3 +637,38 @@ document.querySelectorAll('.score-icon').forEach(function(element, index) {
 });
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    const mangaEntries = document.querySelectorAll('.grid-item');
+    const statusCounts = {
+        'COMPLETED': 0,
+        'PLANNING': 0,
+        'CURRENT': 0,
+        'PAUSED': 0,
+        'ALL-STATUS': mangaEntries.length // This is a special case for the 'All' filter
+    };
+    const releaseStatusCounts = {
+        'RELEASING': 0,
+        'FINISHED': 0
+    };
+
+    mangaEntries.forEach(entry => {
+        const status = entry.getAttribute('data-user-status');
+        if (status in statusCounts) {
+            statusCounts[status]++;
+        }
+        const release_status = entry.getAttribute('data-release-status');
+        if (release_status in releaseStatusCounts) {
+            releaseStatusCounts[release_status]++;
+        }
+    });
+
+    // Update the counts in the HTML
+    document.getElementById('count-completed').textContent = statusCounts['COMPLETED'];
+    document.getElementById('count-planning').textContent = statusCounts['PLANNING'];
+    document.getElementById('count-current').textContent = statusCounts['CURRENT'];
+    document.getElementById('count-paused').textContent = statusCounts['PAUSED'];
+    document.getElementById('count-all-user-stats').textContent = statusCounts['ALL-STATUS'];
+    document.getElementById('count-all-release-stats').textContent = statusCounts['ALL-STATUS'];
+    document.getElementById('count-releasing').textContent = releaseStatusCounts['RELEASING'];
+    document.getElementById('count-finished').textContent = releaseStatusCounts['FINISHED'];
+});
