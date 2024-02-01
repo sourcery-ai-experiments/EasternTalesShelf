@@ -2,7 +2,7 @@ import api_keys
 import mysql.connector
 from datetime import datetime
 
-def get_manga_list():
+def get_manga_list(testing=False):
     try:
         # Establish a database connection
         host_name = api_keys.host_name
@@ -18,7 +18,11 @@ def get_manga_list():
         if connection.is_connected():
             cursor = connection.cursor(dictionary=True)
             # Execute the query to retrieve data
-            cursor.execute("SELECT * FROM manga_list")
+            
+            if testing:
+                cursor.execute("SELECT * FROM manga_list2")
+            else:
+                cursor.execute("SELECT * FROM manga_list")
             # Fetch all the rows in a list of dictionaries
             manga_list = cursor.fetchall()
 
