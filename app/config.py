@@ -9,7 +9,7 @@ class Config(object):
     ROLE_ID = os.getenv('VAULT_ROLE_ID_shiro_chan_project')
     SECRET_ID = os.getenv('VAULT_SECRET_ID_shiro_chan_project')
     VAULT_SECRET_PATH = "secret/data/shiro_chan_project"
-
+    
     @classmethod
     def fetch_vault_secrets(cls):
         try:
@@ -19,7 +19,13 @@ class Config(object):
             cls.user_name = secrets['db_user_name']
             cls.db_password = secrets['db_password']
             cls.host_name = secrets['db_host_name_vps_contener']
-            cls.db_name = secrets['anilist_db_name']
+            cls.host_name = secrets['db_host_name']
+
+            if os.getenv('FLASK_ENV') == 'production':
+                cls.db_name = secrets['db_host_name_vps_contener']
+            else:
+                cls.db_name = secrets['anilist_db_name']
+
             print("VARIABLES SET FROM VAULT")
         except Exception as e:
             print("Couldn't set variables from Vault, error:")
@@ -43,4 +49,4 @@ config_dict = {
     'production': ProductionConfig
 }
 
-dev_or_production = config_dict[os.getenv('FLASK_ENV', 'development')]
+is_development_mode = config_dict[os.getenv('FLASK_ENV', 'development')]

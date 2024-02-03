@@ -1,7 +1,7 @@
 from functions import  mariadb_functions
 from flask import Flask, render_template, current_app
 import json
-from config import dev_or_production
+from config import is_development_mode
 import os
 app = Flask(__name__)
 
@@ -10,8 +10,8 @@ def inject_debug():
     # Directly print out the FLASK_ENV variable
     print("FLASK_ENV: ", os.getenv('FLASK_ENV'))
     # printing in what mode the program is runned
-    print("isDevelopment?: ", dev_or_production.DEBUG)
-    return dict(isDevelopment=dev_or_production.DEBUG)
+    print("isDevelopment?: ", is_development_mode.DEBUG)
+    return dict(isDevelopment=is_development_mode.DEBUG)
 
 
 
@@ -80,7 +80,10 @@ def log_sync():
 
 
 if __name__ == '__main__':
-    app.run(host='10.147.17.21', port=5000, debug=True)
+    if(is_development_mode.DEBUG == True):
+        app.run(host='10.147.17.21', port=5000, debug=True)
+    else:
+        app.run(host='10.147.17.21', port=5000, debug=False)
 
 
 
