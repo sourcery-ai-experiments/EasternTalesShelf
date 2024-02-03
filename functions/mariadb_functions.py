@@ -1,15 +1,19 @@
-import api_keys
 import mysql.connector
 from datetime import datetime
+from config import Config
 
-def get_manga_list(testing=False):
+def get_manga_list(config, testing=False):
     try:
         # Establish a database connection
-        host_name = api_keys.host_name
-        db_name = api_keys.db_name
-        user_name = api_keys.user_name
-        db_password = api_keys.db_password
+        host_name = Config.host_name
+        db_name = Config.db_name
+        user_name = Config.user_name
+        db_password = Config.db_password
 
+        # print("host_name: ", host_name)
+        # print("db_name: ", db_name)
+        # print("user_name: ", user_name)
+        # print("db_password: ", db_password)
         # Define the global connection object
         connection = mysql.connector.connect(host = host_name,
                                                 database = db_name,

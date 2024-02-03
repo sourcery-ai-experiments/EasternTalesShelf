@@ -29,38 +29,37 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('chatInput element not found!');
     }
 
-    // Code for syncButton
+// Code for syncButton
 var syncButton = document.getElementById('syncButton');
+
 if (syncButton) {
     syncButton.addEventListener('click', function() {
-        fetch('http://10.147.17.146:8057/sync', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                console.log('Sync successful:', data.message);
+        if (isDevelopment) {
+            // The sync functionality is only available in development mode
+            fetch('http://10.147.17.146:8057/sync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
                 alert('Sync successful!');
-                fetch('http://10.147.17.146:8057/log_sync', { method: 'POST' }) // Send a request to log the sync success
-                .then(() => {
-                    window.location.reload(); // Reload the page after closing the alert
-                });
-            } else {
-                console.error('Sync failed:', data.message);
-                alert('Sync failed: ' + data.message);
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('An error occurred: ' + error);
-        });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error);
+            });
+        } else {
+            // If not in development mode, show an alert
+            alert('This function is not available in the demo.');
+        }
     });
 } else {
     console.error('syncButton element not found!');
 }
+
 
 
 });
