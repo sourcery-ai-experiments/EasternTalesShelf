@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
+    container_name: EasternTalesShelf-fastapi-updater  # Custom container name
     cap_add:
       - NET_ADMIN
     devices:

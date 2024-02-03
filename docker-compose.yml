@@ -4,6 +4,7 @@ services:
   shiro-chan-server:
     build: .
     restart: always
+    container_name: EasternTalesShelf-website  # Custom container name
     environment:
       - FLASK_ENV=production
       - VAULT_ADDR
