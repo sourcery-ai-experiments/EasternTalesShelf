@@ -65,7 +65,7 @@ eslint.config.js
 
 
 
-*api_keys.py
+
 # Flask stuff:
 instance/
 .webassets-cache
