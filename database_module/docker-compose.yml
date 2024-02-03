@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  shiro-chan-server:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - NETWORK_NUMBER
+      - VAULT_ADDR
+      - VAULT_ROLE_ID_shiro_chan_project
+      - VAULT_SECRET_ID_shiro_chan_project
+    networks:
+      - external-containers
+    volumes:
+      - ./app:/app  # Maps the app directory on your host to /app in your container
+      - /home/ubuntu/docker/logs:/app/logs
+
+networks:
+  external-containers:
+    external: true
+
+volumes:
+  logs_volume:

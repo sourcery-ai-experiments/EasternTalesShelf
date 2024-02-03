@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  shiro-chan-server:
+    build: .
+    restart: always
+    environment:
+      - FLASK_ENV=production
+      - VAULT_ADDR
+      - VAULT_ROLE_ID_shiro_chan_project
+      - VAULT_SECRET_ID_shiro_chan_project
+    networks:
+      - external-containers
+    volumes:
+      - ./app:/app  # Maps the app directory on your host to /app in your container
+      - logs_volume:/app/logs
+
+networks:
+  external-containers:
+    external: true
+
+volumes:
+  logs_volume:
