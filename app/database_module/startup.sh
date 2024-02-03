@@ -10,4 +10,4 @@ sleep 3
 zerotier-cli join $NETWORK_NUMBER
 
 # Start Uvicorn with your FastAPI application
-uvicorn fastapi_for_library_website:app --host 10.147.17.146 --port 8057
+uvicorn fastapi_for_library_website:app --host 0.0.0.0 --port 8057
