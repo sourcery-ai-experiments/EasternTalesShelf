@@ -12,12 +12,15 @@ services:
       - VAULT_SECRET_ID_shiro_chan_project
     networks:
       - external-containers
+      - phpmyadmin_gpt_db
     volumes:
       - ./app:/app  # Maps the app directory on your host to /app in your container
       - logs_volume:/app/logs
 
 networks:
   external-containers:
+    external: true
+  phpmyadmin_gpt_db:
     external: true
 
 volumes:
