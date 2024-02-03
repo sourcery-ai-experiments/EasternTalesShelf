@@ -2,7 +2,7 @@ import os
 from vault_approle_functions import vault_login, read_secret
 
 
-
+anilist_id = 444059
 
 
 def refresh_credentials():
