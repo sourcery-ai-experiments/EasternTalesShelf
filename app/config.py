@@ -18,7 +18,6 @@ class Config(object):
             # Set the secrets as class attributes
             cls.user_name = secrets['db_user_name']
             cls.db_password = secrets['db_password']
-            cls.host_name = secrets['db_host_name_vps_contener']
             cls.host_name = secrets['db_host_name']
 
             if os.getenv('FLASK_ENV') == 'production':
