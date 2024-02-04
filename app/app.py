@@ -82,6 +82,14 @@ def log_sync():
 
 @app.route('/sync', methods=['POST'])
 def sync_with_fastapi():
+    # Check if app is in development mode before proceeding
+    if not app.config['DEBUG']:
+        # If not in debug mode, return a custom message
+        return jsonify({
+            "status": "error",
+            "message": "Nice try, but you can't do that"
+        }), 403  # 403 Forbidden status code
+
     try:
         # Replace the URL with your actual FastAPI server address
         url = "http://10.147.17.146:8057/sync"
