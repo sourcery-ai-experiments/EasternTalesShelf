@@ -43,14 +43,16 @@ if (syncButton) {
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    console.log('Success:', data.message);
-                    alert('Sync successful!');
-                } else {
-                    throw new Error(data.message);
+            .then(response => {
+                // Check if the response is okay and content type is JSON
+                if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
+                    return response.json();
                 }
+                throw new Error('Server responded with a non-JSON response.');
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('Sync successful!');
             })
             .catch((error) => {
                 console.error('Error:', error);

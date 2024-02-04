@@ -1,20 +1,25 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
+from datetime import datetime  # Import datetime module
+
 
 app = FastAPI()
 
 
+
 @app.post("/sync")
 async def run_script():
-    print("---Running script---")
+    current_time = datetime.now()  # Get the current date and time
+    print(f"---Running script at {current_time}---")  # Print the date and time
     try:
         subprocess.run(["python", "update_only_manga.py"], check=True)
-        print("---Script executed successfully---")
+        print(f"---Script executed successfully at {current_time}---")
         return {"status": "success", "message": "Script executed successfully"}
     except subprocess.CalledProcessError as e:
-        print("---Script execution failed---")
+        print(f"---Script execution failed at {current_time}---")
         return {"status": "error", "message": str(e)}
+
 # Optional: Add more routes as needed
 
 # If you're using Uvicorn to run the app, don't forget to start it with:
