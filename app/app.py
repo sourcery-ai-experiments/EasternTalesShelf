@@ -82,8 +82,10 @@ def log_sync():
 if __name__ == '__main__':
     if(is_development_mode.DEBUG == True):
         app.run(host='10.147.17.21', port=5000, debug=True)
+        print("Running Flask with debug mode set to True")
     else:
         app.run(host='10.147.17.21', port=5000, debug=False)
+        print("Running Flask with debug mode set to False")
 
 
 
