@@ -5,7 +5,6 @@ from config import Config
 from mysql.connector import Error
 
 def get_manga_list(config, testing=False):
-    connection = None
     try:
         # Establish a database connection
         host_name = Config.host_name
