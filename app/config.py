@@ -18,12 +18,12 @@ class Config(object):
             # Set the secrets as class attributes
             cls.user_name = secrets['db_user_name']
             cls.db_password = secrets['db_password']
-            cls.host_name = secrets['db_host_name']
+            cls.host_name = secrets['anilist_db_name']
 
             if os.getenv('FLASK_ENV') == 'production':
                 cls.db_name = secrets['db_host_name_vps_contener']
             else:
-                cls.db_name = secrets['anilist_db_name']
+                cls.db_name = secrets['db_host_name']
 
             print("VARIABLES SET FROM VAULT")
         except Exception as e:
