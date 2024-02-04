@@ -1,8 +1,9 @@
 from functions import  mariadb_functions
-from flask import Flask, render_template, current_app
+from flask import Flask, render_template, current_app, jsonify, request
 import json
 from config import is_development_mode
 import os
+import requests
 app = Flask(__name__)
 
 @app.context_processor
@@ -65,6 +66,65 @@ def test():
 
     # Pass the entries to the template.
     return render_template('new_vaules_alpha.html', manga_entries=manga_entries)
+
+
+
+@app.route('/sync', methods=['POST'])
+def sync():
+    if app.config['ENV'] == 'development':
+        # Perform the sync operation here
+        # You can call your FastAPI service from here if needed
+        try:
+            # Your sync logic here
+            response = call_to_your_fastapi_sync_service()
+            return jsonify({"message": "Sync successful!", "details": response}), 200
+        except Exception as e:
+            app.logger.error(f"Sync failed: {str(e)}")
+            return jsonify({"message": "Sync failed", "error": str(e)}), 500
+    else:
+        # If not in development mode, return an error
+        return jsonify({"message": "This function is not available in the demo."}), 403
+
+
+
+
+
+def call_to_your_fastapi_sync_service():
+    # Replace with the actual URL of your FastAPI service
+    url = 'http://10.147.17.146:8057/sync'
+    
+    try:
+        # Make the POST request to the FastAPI service without JSON data
+        response = requests.post(url, timeout=10)
+        # If the call was successful, return the response
+        response.raise_for_status()
+        return response.json()  # Or return response.text if the response is not JSON
+    except requests.exceptions.HTTPError as errh:
+        print ("Http Error:", errh)
+        raise
+    except requests.exceptions.ConnectionError as errc:
+        print ("Error Connecting:", errc)
+        raise
+    except requests.exceptions.Timeout as errt:
+        print ("Timeout Error:", errt)
+        raise
+    except requests.exceptions.RequestException as err:
+        print ("OOps: Something Else", err)
+        raise
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.route('/progress')
 def progres():

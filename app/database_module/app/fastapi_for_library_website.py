@@ -4,14 +4,6 @@ import subprocess
 
 app = FastAPI()
 
-# Configure CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://10.147.17.21:5000"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
 
 @app.post("/sync")
 async def run_script():
@@ -23,7 +15,6 @@ async def run_script():
     except subprocess.CalledProcessError as e:
         print("---Script execution failed---")
         return {"status": "error", "message": str(e)}
-
 # Optional: Add more routes as needed
 
 # If you're using Uvicorn to run the app, don't forget to start it with:

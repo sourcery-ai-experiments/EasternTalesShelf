@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.error('chatInput element not found!');
-    }
+    }});
+
 
 // Code for syncButton
 var syncButton = document.getElementById('syncButton');
@@ -35,8 +36,8 @@ var syncButton = document.getElementById('syncButton');
 if (syncButton) {
     syncButton.addEventListener('click', function() {
         if (isDevelopment) {
-            // The sync functionality is only available in development mode
-            fetch('http://10.147.17.146:8057/sync', {
+            // Only run fetch in development mode
+            fetch('/sync', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -44,12 +45,16 @@ if (syncButton) {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
-                alert('Sync successful!');
+                if(data.status === 'success') {
+                    console.log('Success:', data.message);
+                    alert('Sync successful!');
+                } else {
+                    throw new Error(data.message);
+                }
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert('An error occurred: ' + error);
+                alert('An error occurred: ' + error.message);
             });
         } else {
             // If not in development mode, show an alert
@@ -57,12 +62,10 @@ if (syncButton) {
         }
     });
 } else {
-    console.error('syncButton element not found!');
+    console.error('Sync button element not found!');
 }
 
 
-
-});
 var currentFilterType = 'ALL'; // Default to 'ALL' on page load
 
 // this prevents AOS to move down page each reloding.
