@@ -274,7 +274,8 @@ var timeouts = {
     readmore: null,
     externalLinks: null,
     genres: null,
-    title_placeholder: null
+    title_placeholder: null,
+    shownotes: null
 };
 
 function showDetails(element) {  
@@ -310,6 +311,7 @@ function showDetails(element) {
         volumes_total = '?';
     }
     
+    var user_notes = $(element).data('notes');
     
     // Convert user_status and release_status to uppercase
     user_status = user_status.toUpperCase();
@@ -402,18 +404,23 @@ function showDetails(element) {
 
         // Set the description and always start with it collapsed
         $('#sidebar-description').html(description).removeClass('expanded').addClass('collapse');
-        $('#sidebar-readmore').text('Read More');
+        
+        $('#sidebar-notes').text(user_notes);
+        
 
         // Reset max-height to collapsed state
         $('#sidebar-description').css('max-height', '7.5em'); // The max-height for the collapsed state
 
         // Hide the Read More button if the content is short enough to not need expansion
+        
+        // Hide the Read More button if the content is short enough to not need expansion
         if ($('#sidebar-description')[0].scrollHeight <= 90) { // 90px is 5 lines here
-            $('#sidebar-readmore').hide();
+            $('#sidebar-shownotes').hide();
+            $('#sidebar-toggle').hide();
         } else {
-            $('#sidebar-readmore').show();
+            $('#sidebar-shownotes').show();
+            $('#sidebar-toggle').show();
         }
-
         // ---------------------------OPERATION ON LINK BUTTONS--------------------
 
         var serviceMap = {
@@ -480,19 +487,41 @@ function showDetails(element) {
         }, 750);
         
         timeouts.description = setTimeout(() => $('#sidebar-description').fadeIn(800), 900);
-        timeouts.readmore = setTimeout(() => $('#sidebar-readmore').fadeIn(650), 1100);
+        
+        
+        timeouts.readmore = setTimeout(() => $('#sidebar-toggle').fadeIn(650), 1100);
         timeouts.externalLinks = setTimeout(() => $('#sidebar-external-links').fadeIn(750), 1300);
         timeouts.genres = setTimeout(() => $('#sidebar-genres').fadeIn(750), 1550);
 
         // Show the sidebar with Bootstrap styling
         $('#side-menu-right').addClass('active');
+
+        // If you update the notes dynamically, you can also toggle the visibility of the 'Show Notes' link
+        $(document).ready(function() {
+            var notesText = $('#sidebar-notes').text().trim();
+            if (notesText === "None") {
+                $('#sidebar-shownotes').hide();
+            } else {
+                // Clear any previous timeouts to avoid multiple triggers
+                if (timeouts && timeouts.shownotes) {
+                    clearTimeout(timeouts.shownotes);
+                }
+                // Fade in the 'Show Notes' link after a delay
+                timeouts.shownotes = setTimeout(() => {
+                    $('#sidebar-shownotes').fadeIn(650);
+                }, 1100);
+            }
+        });
+        
+
+
     }, 100);
 }
 
 
 function resetAnimationsAndTimers() {
     // Stop all ongoing animations immediately and clear queue
-    $('#sidebar-cover, #sidebar-info, #sidebar-link, #sidebar-description, #sidebar-readmore, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
+    $('#sidebar-cover, #sidebar-info, #sidebar-link, #sidebar-description, #sidebar-shownotes #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
 
     // Clear all timeouts
     for (var key in timeouts) {
@@ -502,29 +531,45 @@ function resetAnimationsAndTimers() {
 
 
 // JavaScript to toggle the description with animation
-$(document).on('click', '#sidebar-readmore', function() {
+$(document).on('click', '#sidebar-toggle', function() {
     var content = $('#sidebar-description');
-    var maxHeight = parseInt(content.css('max-height'), 10); // Get the current max-height
-    var fullHeight = content[0].scrollHeight; // Calculate the full height of the content
-
-    if (content.hasClass('collapse')) {
-        // Expand the content
-        content.animate({
-            'max-height': fullHeight // Animate towards the full height
-        }, 500, function() {
-            content.removeClass('collapse').addClass('expanded');
-            $('#sidebar-readmore').text('Read Less').addClass('read-less');
-        });
-    } else {
+    var isExpanded = content.hasClass('expanded');
+    
+    if (isExpanded) {
         // Collapse the content
         content.animate({
             'max-height': '7.5em' // Animate towards the collapsed max-height
         }, 500, function() {
             content.removeClass('expanded').addClass('collapse');
-            $('#sidebar-readmore').text('Read More').removeClass('read-less');
+            $('#sidebar-toggle').html('Read more &#9660;'); // Update the link text and arrow
+        });
+    } else {
+        // Expand the content
+        var fullHeight = content[0].scrollHeight; // Calculate the full height of the content
+        content.animate({
+            'max-height': fullHeight // Animate towards the full height
+        }, 500, function() {
+            content.removeClass('collapse').addClass('expanded');
+            $('#sidebar-toggle').html('Read less &#9650;'); // Update the link text and arrow
         });
     }
 });
+
+
+$(document).on('click', '#sidebar-shownotes', function() {
+    var notes = $('#sidebar-notes');
+    notes.toggleClass('expanded'); // This toggles the visibility
+    
+    if (notes.hasClass('expanded')) {
+        $(this).text('Hide Notes');
+        notes.css('max-height', ''); // Remove the inline max-height style
+    } else {
+        $(this).text('Show Notes');
+        notes.css('max-height', '0px'); // Apply the inline max-height style
+    }
+});
+
+
 
 
 

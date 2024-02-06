@@ -126,12 +126,29 @@
     <p id="sidebar-info"></p>
     <a href="#" id="sidebar-link" class="btn btn-primary" target="_blank">Go to AniList</a>
     <!-- Description paragraph with a unique ID for collapse control -->
-    <p id="sidebar-description" class="collapse"></p>
-
-    <!-- Button to control the collapse of the paragraph -->
-    <button id="sidebar-readmore" class="btn btn-primary" type="button">
-        Read More
-    </button>
+    <!-- 'Show more' link -->
+    <!-- Button container -->
+    
+    
+    <div id="sidebar-buttons-container">
+        <!-- Full width description -->
+        <p id="sidebar-description" class="text-white">Your content here...</p>
+        
+        <!-- Container for 'Show more' and 'Show Notes' links -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <!-- 'Show more' link aligned to the left -->
+            <a href="javascript:void(0);" id="sidebar-toggle" class="toggle-link">Read more &#9660;</a>
+            <!-- 'Show Notes' text link aligned to the right -->
+            <a href="javascript:void(0);" id="sidebar-shownotes" class="notes-toggle">Show Notes</a>
+        </div>
+        
+        <!-- Notes content initially hidden -->
+        <p id="sidebar-notes" class="collapse"></p>
+    </div>
+    
+    
+    <!-- Notes paragraph initially hidden -->
+    
 
 
     <div id="sidebar-external-links" class="list-group mt-3">
@@ -169,6 +186,7 @@
             data-release-status="{{ entry.status }}"
             data-genres="{{ entry.genres}}"
             data-score="{{ entry.score }}"
+            data-notes="{{ entry.notes }}"
             data-aos="fade-up" 
             data-aos-offset="200"
             data-aos-duration="1000">

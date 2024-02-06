@@ -296,14 +296,6 @@ opacity: 1;
     transform: translateX(100%); /* Start off-screen */
     transition: transform 0.3s ease-in-out;
 }
-/* Update or remove styles related to the sidebar animation if not needed */
-#side-menu-right a {
-    padding: 8px 8px 80px 32px; /* Combine padding-bottom with the shorthand */
-    text-decoration: none;
-    font-size: 25px;
-    color: white;
-    display: block;
-}
 
 
 #side-menu-right.active {
@@ -389,15 +381,105 @@ opacity: 1;
     background-color: rgb(1, 1, 83);
     color:#fff;
 }
+
+
+/* ---------------------custom read more and notes buttons------------------------------------------ */
+
+
+#sidebar-buttons-container {
+    margin-top: 10px;
+}
+
+#sidebar-description {
+    display: block;
+    width: 100%; /* Adjust if necessary */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5em; /* Adjust to your line-height */
+    /* max-height and transition properties are now removed */
+    max-height: 7.5em; /* Adjust this value based on your line-height and number of lines to show when collapsed */
+    overflow: hidden;
+}
+
+#sidebar-description.expanded {
+    /* max-height is removed */
+    white-space: normal; /* Let the text wrap to new lines */
+}
+
+/* Style for the 'Show more' and 'Show Notes' container */
+#sidebar-buttons-container > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* General link styles */
+#side-menu-right a {
+    text-decoration: none;
+    display: block;
+    /* Remove padding here if it's not needed */
+}
+
+/* Specific styles for 'Show more' link */
+.toggle-link {
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: color 0.3s ease;
+    /* Override padding for this link */
+    padding: 0;
+}
+
+/* Specific styles for 'Show Notes' link */
+.notes-toggle {
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: color 0.3s ease;
+    /* Override padding for this link */
+    padding: 0;
+    margin-left: 10px; /* Maintain some space if needed */
+}
+
+/* Hover effects */
+.toggle-link:hover, .notes-toggle:hover {
+    text-decoration: underline;
+    color: #005dc0;
+}
+
+/* Notes content style */
+#sidebar-notes {
+    display: block; /* Override the display property */
+    transition: max-height 0.5s ease, opacity 0.5s ease; 
+    max-height: 0; /* Start with max-height as 0 */
+    opacity: 0; /* Start with opacity as 0 */
+    overflow: hidden; /* Ensure content is hidden when not expanded */
+}
+
+#sidebar-notes.expanded {
+    max-height: 500px; /* Adjust as needed for the content size */
+    opacity: 1; /* Full opacity when expanded */
+    display: block; /* Make sure it's always block when expanded */
+}
+/* hfghfghfg*/ 
+
+
+
+
+
+
+
 /* -------------------------------BUTTONY------------------------------------------ */
 
-#sidebar-readmore.read-less {
-    background-color: #132c47; /* The new color you want when "Read Less" is displayed */
-}
 
-#sidebar-readmore.read-less:hover {
-    background-color: #007bff; /* Slightly darker color on hover for "Read Less" */
-}
+
+
+
+
+
+
+
+
 
 
 /* Ensure the sidebar is initially hidden */
@@ -685,21 +767,7 @@ body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
 }
 
 
-#sidebar-description {
-    display: block;
-    width: 100%; /* Adjust if necessary */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5em; /* Adjust to your line-height */
-    /* max-height and transition properties are now removed */
-    max-height: 7.5em; /* Adjust this value based on your line-height and number of lines to show when collapsed */
-    overflow: hidden;
-}
 
-#sidebar-description.expanded {
-    /* max-height is removed */
-    white-space: normal; /* Let the text wrap to new lines */
-}
 
 
 /* Hide scrollbar for Chrome, Safari and Opera */
