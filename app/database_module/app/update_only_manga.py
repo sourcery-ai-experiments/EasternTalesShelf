@@ -18,6 +18,7 @@ WHITE = "\033[37m"
 
 j = 0
 how_many_anime_in_one_request = 50 #max 50
+
 total_updated = 0
 total_added = 0
 
@@ -58,6 +59,15 @@ def insert_querry_to_db(insert_query, insert_record, what_type_updated):
     elif what_type_updated == "NOVEL":
         print(f"{MAGENTA}...added ^^ novel to database.{RESET}")
 
+def update_favorite_field(media_id):
+    """Update the is_favourite field in the manga_list table in the database"""
+    global conn
+    cursor = conn.cursor()
+    cursor.execute(f"UPDATE manga_list SET is_favourite = 1 WHERE id_anilist = {media_id}")
+    conn.commit()
+
+
+
  
 try: # open connection to database
     connection = conn
@@ -82,6 +92,12 @@ try: # open connection to database
     total_anime = 0
     
     variables_in_api = {
+    'page' : 1,
+    'perPage' : how_many_anime_in_one_request,
+    'userId' : api_keys.anilist_id # your anilist id, set in api_keys.py
+    }
+
+    variables_in_api_favorites = {
     'page' : 1,
     'perPage' : how_many_anime_in_one_request,
     'userId' : api_keys.anilist_id # your anilist id, set in api_keys.py
@@ -414,7 +430,101 @@ Page(page: $page, perPage: $perPage) {
 
             
             total_added+= 1 
-             
+
+
+    # HERE STARTS THE PART FOR UPDATING FAVORITE FIELD
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+    user_id = api_keys.anilist_id
+    page = 0
+    per_page_favorite = 25
+    has_next_page = True
+    connection = conn
+    cursor = connection.cursor()
+
+    # Fetch already favorite manga IDs to optimize updates
+    cursor.execute("SELECT id_anilist FROM manga_list WHERE is_favourite = 0")
+    already_favorites = {row[0] for row in cursor.fetchall()}
+
+    while has_next_page:
+        variables_in_api = {'page': page, 'id': user_id}
+        api_request = '''
+        query ($page: Int, $id: Int) {
+            User(id: $id) {
+                id
+                name
+                favourites {
+                    manga(page: $page) {
+                        pageInfo {
+                            total
+                            perPage
+                            currentPage
+                            lastPage
+                            hasNextPage
+                        }
+                        nodes {
+                            id
+                            title {
+                                english
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        '''
+        url = 'https://graphql.anilist.co'
+        response_from_anilist = requests.post(url, json={'query': api_request, 'variables': variables_in_api})
+        parsed_json = json.loads(response_from_anilist.text)
+
+        ids_to_update = [fav_manga["id"] for fav_manga in parsed_json["data"]["User"]["favourites"]["manga"]["nodes"] if fav_manga["id"] not in already_favorites]
+        print(f"{RED}Updating favorite fields.{RESET}") 
+        print(f"{RED}Page {page}{RESET}")
+        # If there are new favorites to update
+        if ids_to_update:
+            update_query = "UPDATE manga_list SET is_favourite = 0 WHERE id_anilist = %s"
+            try:
+                # Execute updates in a batch
+                for fav_manga_id in ids_to_update:
+                    cursor.execute(update_query, (fav_manga_id,))
+                # Commit all changes at once
+                connection.commit()
+                print(f"{GREEN}Updated {len(ids_to_update)} mangas to favorite{RESET}")
+            except mysql.connector.Error as err:
+                print(f"{RED}Failed to batch update mangas: {err}{RESET}")
+
+        has_next_page = parsed_json["data"]["User"]["favourites"]["manga"]["pageInfo"]["hasNextPage"]
+        page += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # ---------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
     print(f"{YELLOW}Total added: {total_added}{RESET}")
     print(f"{MAGENTA}Total updated: {total_updated}{RESET}")
     conn.commit()
