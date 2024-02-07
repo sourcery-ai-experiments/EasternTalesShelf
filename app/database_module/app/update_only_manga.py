@@ -444,7 +444,7 @@ Page(page: $page, perPage: $perPage) {
     cursor = connection.cursor()
 
     # Fetch already favorite manga IDs to optimize updates
-    cursor.execute("SELECT id_anilist FROM manga_list WHERE is_favourite = 0")
+    cursor.execute("SELECT id_anilist FROM manga_list WHERE is_favourite = 1")
     already_favorites = {row[0] for row in cursor.fetchall()}
 
     while has_next_page:
@@ -483,7 +483,7 @@ Page(page: $page, perPage: $perPage) {
         print(f"{RED}Page {page}{RESET}")
         # If there are new favorites to update
         if ids_to_update:
-            update_query = "UPDATE manga_list SET is_favourite = 0 WHERE id_anilist = %s"
+            update_query = "UPDATE manga_list SET is_favourite = 1 WHERE id_anilist = %s"
             try:
                 # Execute updates in a batch
                 for fav_manga_id in ids_to_update:
