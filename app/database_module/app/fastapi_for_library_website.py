@@ -1,3 +1,5 @@
+from logging import log
+import traceback
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
@@ -6,7 +8,14 @@ from datetime import datetime  # Import datetime module
 
 app = FastAPI()
 
-
+# Configure CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://10.147.17.21:5000"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 @app.post("/sync")
 async def run_script():
@@ -18,7 +27,9 @@ async def run_script():
         return {"status": "success", "message": "Script executed successfully"}
     except subprocess.CalledProcessError as e:
         print(f"---Script execution failed at {current_time}---")
-        return {"status": "error", "message": str(e)}
+        print(str(e))
+        return "An internal error has occurred!"
+        
 
 # Optional: Add more routes as needed
 
