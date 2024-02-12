@@ -284,7 +284,7 @@ function showDetails(element) {
     
 
     // Abort any ongoing animations, clear timeouts, and hide elements
-    $('#sidebar-cover, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link').stop(true, true).hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link, #sidebar-shownotes').stop(true, true).hide();
     clearTimeout(window.typewriterTimeout); // Clear any ongoing typewriter timeouts
 
     // Ensure the sidebar is visible for height calculations
@@ -295,15 +295,23 @@ function showDetails(element) {
     var coverImage = $(element).data('cover');
     var anilistUrl = $(element).data('anilist-url');
     var description = $(element).data('description');
-
+    var is_favorite = $(element).data('is-favourite');
+    
+    var reread_times = $(element).data('reread-times');
+    console.log("redead: ",reread_times);
     // SIDEBAR INFORMATIONS ABOUT ENTRIES
     var chapters_progress = $(element).data('chapters-progress');
     var chapters_total = $(element).data('all-chapters');
     var volumes_progress = $(element).data('volumes-progress');
     var volumes_total = $(element).data('all-volumes');
     var user_status = $(element).data('user-status');
+    var user_startedat = $(element).data('user-startedat');
+    var user_completedat = $(element).data('user-completedat');
     var release_status = $(element).data('release-status');
+    var media_start_date = $(element).data('media-start-date');
+    var media_end_date = $(element).data('media-end-date');
     
+
     if (chapters_total === 0 || chapters_total == null) {
         chapters_total = '?';
     }
@@ -328,7 +336,7 @@ function showDetails(element) {
     // Populate sidebar elements ----------------------------------------------------------------------------
     
     // Hide all elements before updating
-    $('#sidebar-cover, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link').hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-shownotes, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link').hide();
 
     // Debounce subsequent calls to prevent rapid execution
     clearTimeout(globalTimeout);
@@ -337,6 +345,31 @@ function showDetails(element) {
 
         // Update the elements
         $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
+        
+        // Assuming is_favorite is already defined and holds a value of 0 or 1
+        if (is_favorite === 1) {
+            // Check if the heart icon already exists to avoid duplicates
+            if ($('#sidebar-favorite-icon').length === 0) {
+                $('#cover-container').append('<i id="sidebar-favorite-icon" class="fas fa-heart"></i>');
+            }
+            console.log("is favorite");
+        
+            // Wait for next event loop tick to ensure DOM updates are processed
+            setTimeout(function() {
+                animateHeartBurstWithParticles();
+            }, 0);
+        
+            startHeartsFlowingEffect();
+        } else {
+            // If not a favorite, remove the heart icon if it exists
+            $('#sidebar-favorite-icon').remove();
+            console.log("fav variable: ", is_favorite);
+            console.log("is not favorite");
+        }
+        
+
+       
+
 
         // Update the placeholder with the title content
         $('#sidebar-title-placeholder').text(title);
@@ -387,11 +420,16 @@ function showDetails(element) {
             releaseStatusIcon = '<i class="fas fa-circle-notch status-icon"></i>'; // Placeholder icon for other statuses
         }
 
+        // Call the function with your date variables
+        let { userDatesHTML, mediaDatesHTML } = formatDates(user_startedat, user_completedat, media_start_date, media_end_date);
 
-
+       
         // Append user status and release status to sidebar info
         sidebarInfoHTML += `<p>${statusIcon} Status: ${user_status}</p>
-            <p>${releaseStatusIcon} Release: ${release_status}</p>`;
+        ${userDatesHTML}
+            <p>${releaseStatusIcon} OG Release: ${release_status}</p>
+            ${mediaDatesHTML}
+            `;
 
         // Set the HTML to the sidebar-info element
         $('#sidebar-info').html(sidebarInfoHTML);
@@ -436,31 +474,40 @@ function showDetails(element) {
         // Safely parse the JSON string into an array for external links
         try {
             var externalLinks = JSON.parse(externalLinksData || "[]");
-            var serviceLinksHtml = '';
-            var linksHtml = '<h5 class="mb-2">Links</h5>';
-
-            externalLinks.forEach(function(url) {
-                Object.keys(serviceMap).forEach(function(key) {
-                    if (url.includes(key)) {
-                        var serviceName = serviceMap[key].name;
-                        var linkClass = serviceMap[key].class; // Custom class for serviceMap links
-                        var buttonHtml = '<a href="' + url + '" class="btn ' + linkClass + ' btn-sm m-1" target="_blank">' + serviceName + '</a>';
-                        serviceLinksHtml += buttonHtml;
-                    }
-                });
-            });
-
-            // Check if there are any service links to display
-            if (serviceLinksHtml === '') {
-                $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
+            var linksContainer = document.getElementById('sidebar-external-links');
+        
+            if (externalLinks.length === 0) {
+                linksContainer.innerHTML = '<h5 class="mb-2">No links available</h5>';
             } else {
-                linksHtml += serviceLinksHtml;
-                $('#sidebar-external-links').html(linksHtml);
+                var linksHtml = document.createElement('div');
+                linksHtml.innerHTML = '<h5 class="mb-2">Links</h5>';
+        
+                externalLinks.forEach(function(url) {
+                    Object.keys(serviceMap).forEach(function(key) {
+                        if (url.includes(key)) {
+                            var serviceName = serviceMap[key].name;
+                            var linkClass = serviceMap[key].class; // Custom class for serviceMap links
+                            var button = document.createElement('a');
+                            button.href = url;
+                            button.textContent = serviceName;
+                            button.className = 'btn ' + linkClass + ' btn-sm m-1';
+                            button.target = '_blank';
+                            linksHtml.appendChild(button);
+                        }
+                    });
+                });
+        
+                // Replace the container's content with the safe linksHtml
+                while (linksContainer.firstChild) {
+                    linksContainer.removeChild(linksContainer.firstChild);
+                }
+                linksContainer.appendChild(linksHtml);
             }
         } catch (e) {
             console.error('Parsing error for external-links data:', e);
-            $('#sidebar-external-links').html('<h5 class="mb-2">No links available</h5>');
+            document.getElementById('sidebar-external-links').innerHTML = '<h5 class="mb-2">No links available</h5>';
         }
+        
 
         // ------------------------------- end of link buttons ---------------------
 
@@ -489,6 +536,7 @@ function showDetails(element) {
         timeouts.description = setTimeout(() => $('#sidebar-description').fadeIn(800), 900);
         
         
+        
         timeouts.readmore = setTimeout(() => $('#sidebar-toggle').fadeIn(650), 1100);
         timeouts.externalLinks = setTimeout(() => $('#sidebar-external-links').fadeIn(750), 1300);
         timeouts.genres = setTimeout(() => $('#sidebar-genres').fadeIn(750), 1550);
@@ -499,14 +547,17 @@ function showDetails(element) {
         // If you update the notes dynamically, you can also toggle the visibility of the 'Show Notes' link
         $(document).ready(function() {
             var notesText = $('#sidebar-notes').text().trim();
+            
+            // Clear any previous timeouts to avoid multiple triggers
+            if (timeouts && timeouts.shownotes) {
+                clearTimeout(timeouts.shownotes);
+            }
+        
             if (notesText === "None") {
+                // Hide the 'Show Notes' link immediately without delay
                 $('#sidebar-shownotes').hide();
             } else {
-                // Clear any previous timeouts to avoid multiple triggers
-                if (timeouts && timeouts.shownotes) {
-                    clearTimeout(timeouts.shownotes);
-                }
-                // Fade in the 'Show Notes' link after a delay
+                // Fade in the 'Show Notes' link after a delay only if the notes are not "None"
                 timeouts.shownotes = setTimeout(() => {
                     $('#sidebar-shownotes').fadeIn(650);
                 }, 1100);
@@ -521,7 +572,7 @@ function showDetails(element) {
 
 function resetAnimationsAndTimers() {
     // Stop all ongoing animations immediately and clear queue
-    $('#sidebar-cover, #sidebar-info, #sidebar-link, #sidebar-description, #sidebar-shownotes #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-info, #sidebar-link, #sidebar-description, #sidebar-shownotes, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
 
     // Clear all timeouts
     for (var key in timeouts) {
@@ -721,3 +772,107 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('count-releasing').textContent = releaseStatusCounts['RELEASING'];
     document.getElementById('count-finished').textContent = releaseStatusCounts['FINISHED'];
 });
+
+// format dates in sidebar info and media info sections 
+function formatDates(user_startedat, user_completedat, media_start_date, media_end_date) {
+    let userDatesHTML = '';
+    let mediaDatesHTML = '';
+
+    // User dates
+    if (user_startedat !== 'not started') {
+        // If started, check if completed
+        let completedText = user_completedat !== 'not completed' ? user_completedat : '?';
+        userDatesHTML = `<p class="date-info"><span class="icon-placeholder"></span>${user_startedat}  &bull;  ${completedText}</p>`;
+    }
+
+    // Media dates
+    if (!media_start_date.includes('None')) {
+        // If started, check if finished
+        let finishedText = media_end_date.includes('None') ? '?' : media_end_date;
+        mediaDatesHTML = `<p class="date-info"><span class="icon-placeholder"></span>${media_start_date}  &bull;  ${finishedText}</p>`;
+    }
+
+    return { userDatesHTML, mediaDatesHTML };
+}
+
+
+function startHeartsFlowingEffect() {
+    var containerWidth = $('#side-menu-right').width();
+    var containerHeight = $('#side-menu-right').height();
+    var heartsCount = 50; // Number of hearts for the effect
+
+    for (var i = 0; i < heartsCount; i++) {
+        // Create a heart element with initial properties
+        var heart = $('<i class="fas fa-heart heart"></i>').css({
+            position: 'absolute',
+            top: '-50px', // Start above the container to flow downwards
+            left: Math.random() * containerWidth + 'px', // Random horizontal start position
+            opacity: 0, // Start fully transparent
+            fontSize: '25px', // Adjust size as needed
+            color: 'red' // Heart color
+        });
+
+        // Append the heart to the side menu
+        $('#side-menu-right').append(heart);
+
+        // Animate the heart towards the bottom
+        gsap.fromTo(heart, {
+            y: 0,
+            opacity: 1
+        }, {
+            y: containerHeight + 100, // Move beyond the container height to ensure it flows out of view
+            opacity: 0,
+            duration: 2 + Math.random() * 2, // Randomize duration for variation
+            ease: 'power1.inOut',
+            onComplete: function() {
+                $(this.targets()).remove(); // Remove the heart after animation completes
+            }
+        });
+    }
+}
+
+function animateHeartBurstWithParticles() {
+    var heart = $('#sidebar-favorite-icon');
+   
+
+    // Heart animation sequence
+    var tl = gsap.timeline({onComplete: createParticles});
+
+    tl.to(heart, { scale: 1.5, duration: 0.5, ease: "elastic.out(1, 0.3)" })
+      .to(heart, { rotation: 15, yoyo: true, repeat: 3, duration: 0.1, ease: "linear" })
+      .to(heart, { rotation: 0, duration: 0.1 })
+      .to(heart, { scale: 2, duration: 0.1, ease: "power1.in" })
+      .to(heart, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.3)" });
+
+    function createParticles() {
+        var colors = ['red', 'pink', 'white', 'yellow', 'orange']; // Array of colors for particles
+        for (let i = 0; i < 60; i++) { // Increase number of particles
+            var color = colors[Math.floor(Math.random() * colors.length)]; // Random color selection
+            var particle = $('<div class="particle"></div>').css({
+                position: 'absolute',
+                top: heart.position().top + heart.width() / 1, // Center on heart
+                left: heart.position().left + heart.height() / 1, // Center on heart
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: color,
+            });
+
+            $('#side-menu-right').append(particle);
+
+            // Animate particle
+            gsap.to(particle, {
+                x: (Math.random() - 0.5) * 600, // Wider spread
+                y: (Math.random() - 0.5) * 600, // Wider spread
+                opacity: 0,
+                duration: 1 + Math.random(), // Random duration
+                ease: "power1.out",
+                onComplete: function() {
+                    $(this.targets()).remove(); // Remove particle after animation
+                }
+            });
+        }
+    }
+}
+
+

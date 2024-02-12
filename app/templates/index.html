@@ -27,8 +27,9 @@
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Link to gasp, to animate hearts -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.0.0/dist/gsap.min.js"></script>
 
-    
     <title>My Reading List</title>
 </head>
     
@@ -89,7 +90,7 @@
 
 
 
-    <h5>Status of release</h5>
+    <h5>Status of OG release</h5>
     <div id="release-status-filter" class="status-filter">
         <div class="statusReleasing-option" data-value=""><i class="fas fa-stream"></i> All Statuses <span class="status-count" id="count-all-release-stats">0</span></div>
         <div class="statusReleasing-option" data-value="RELEASING"><i class="fas fa-play-circle"></i> Releasing <span class="status-count" id="count-releasing">0</span></div>
@@ -116,8 +117,15 @@
 
 <!-- Right Side Menu -->
 <div id="side-menu-right" class="bg-dark text-white p-3 sidebar-hidden">
-    <img id="sidebar-cover" src="" class="img-fluid" alt="Cover">
-    <!-- Placeholder for the title -->
+    <div id="cover-container" class="position-relative">
+        <img id="sidebar-cover" src="" class="img-fluid" alt="Cover">
+        <!-- The heart icon will be added dynamically with JavaScript if is_favorite is 1 -->
+    </div>
+
+    <div id="hearts-animation-container">
+        <!-- Hearts will be dynamically added here by JavaScript -->
+    </div>
+    
     <!-- Container for the title -->
     <div id="sidebar-title-container" style="position: relative;">
         <h5 id="sidebar-title-placeholder" style="opacity: 0; position: absolute; top: 0; left: 0;"></h5>
@@ -187,6 +195,12 @@
             data-genres="{{ entry.genres}}"
             data-score="{{ entry.score }}"
             data-notes="{{ entry.notes }}"
+            data-user-startedat	= "{{ entry.user_startedAt }}"
+            data-user-completedat = "{{ entry.user_completedAt }}"
+            data-media-start-date = "{{ entry.media_start_date }}"
+            data-media-end-date = "{{ entry.media_end_date }}"
+            data-is-favourite = "{{ entry.is_favourite }}"
+            data-reread-times = "{{ entry.reread_times }}"
             data-aos="fade-up" 
             data-aos-offset="200"
             data-aos-duration="1000">

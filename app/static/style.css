@@ -295,8 +295,17 @@ opacity: 1;
     color: white; /* Text color */
     transform: translateX(100%); /* Start off-screen */
     transition: transform 0.3s ease-in-out;
+    z-index: 10;
 }
 
+
+.heart {
+    position: absolute;
+    bottom: 0;
+    color: red; /* Ensure this is visible on your background */
+    font-size: 40px; /* Adjust if necessary for visibility */
+    z-index: 9999; /* Ensure this is above the side-menu-right's content */
+}
 
 #side-menu-right.active {
     transform: translateX(0); /* Move into view */
@@ -502,8 +511,15 @@ opacity: 1;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Adds subtle shadow for depth */
     margin-bottom: 1rem; /* Adds space below the image */
 }
-
-
+#sidebar-favorite-icon {
+    color: red;
+    position: absolute;
+    bottom: 25px;
+    right: 10px;
+    text-shadow: 0 0 20px pink;
+    font-size: 2.5rem;
+    z-index: 10;
+}
 #sidebar-title, #sidebar-title-placeholder {
     font-family: 'Roboto', sans-serif;
     font-size: 1.5rem;
@@ -536,6 +552,31 @@ opacity: 1;
     text-align: center; /* Aligns the icon's content */
 }
 
+
+/* Style for the placeholder span to mimic the width of the icons */
+.icon-placeholder {
+    display: inline-block;
+    width: calc(24px + 1em); /* Combines 24px with 1.5 times the font-size of the element */
+    visibility: hidden; /* Makes the placeholder invisible */
+}
+
+/* Apply the date-info class to make font size smaller */
+
+
+#sidebar-info p.date-info {
+    font-size: 0.8rem; /* Smaller font size for the text */
+    display: flex; /* Use flexbox to align the icon placeholder and text */
+    align-items: center; /* Center the items vertically */
+    margin-bottom: 0.25rem; /* Reduced bottom margin to fit the additional lines */
+    
+    color: #007bff; /* New color for date-info paragraphs */
+}
+/* Keep the icon size consistent */
+.date-info i {
+    flex-shrink: 0; /* Prevent the icon from shrinking */
+    width: 1.5em; /* Same width as other icons */
+    visibility: visible; /* Ensure icons are visible */
+}
 
 /* ------------------------------------------------------------------------- */
 
@@ -822,3 +863,4 @@ body .navbar.navbar-expand-md.navbar-dark.bg-dark .navbar-nav .nav-link.active {
 
 
 /* ------------------------------------------------------------------------- */
+
