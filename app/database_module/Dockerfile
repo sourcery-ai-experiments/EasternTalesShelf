@@ -3,7 +3,7 @@ FROM alpine:3.17.3
 
 # Update package list and install bash, ZeroTier, Python, and required dependencies
 RUN apk update && \
-    apk add --no-cache bash python3 py3-pip && \
+    apk add --no-cache bash zerotier-one python3 py3-pip && \
     apk add build-base python3-dev libffi-dev
 
 

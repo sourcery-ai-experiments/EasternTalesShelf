@@ -11,6 +11,7 @@ services:
     devices:
       - /dev/net/tun
     environment:
+      - NETWORK_NUMBER
       - VAULT_ADDR
       - VAULT_ROLE_ID_shiro_chan_project
       - VAULT_SECRET_ID_shiro_chan_project
