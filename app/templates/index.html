@@ -99,15 +99,39 @@
 
     <h5>Country</h5>
     <div class="mb-3">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="JP" id="countryJapan" onchange="filterEntries()">
-            <label class="form-check-label" for="countryJapan"><i class="fas fa-flag"></i> Japan</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="KR" id="countryKorea" onchange="filterEntries()">
-            <label class="form-check-label" for="countryKorea"><i class="fas fa-flag"></i> Korea</label>
+        <div class="row">
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="JP" id="countryJapan" onchange="filterEntries()">
+                    <label class="form-check-label" for="countryJapan">
+                        <img src="/static/japanese_flag.png" alt="Japan" class="flag-icon"> Japan
+                    </label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="KR" id="countryKorea" onchange="filterEntries()">
+                    <label class="form-check-label" for="countryKorea">
+                        <img src="/static/Flag-South-Korea.jpg" alt="Korea" class="flag-icon"> Korea
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
+
+    <h5>Other Options</h5>
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="isFavorite_checkbox" onchange="filterEntries()">
+            <!-- Ensure the 'for' attribute matches the input's 'id' -->
+            <label class="form-check-label" for="isFavorite_checkbox">
+                <!-- Add an <i> element for the heart icon -->
+                <i class="fas fa-heart" style="color: red;"></i> Is Favorite
+            </label>
+        </div>
+    </div>
+
+
     
     
     <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6c938ff9-0066-4e24-9417-607684ec1c66/dgf9ar1-bafa7827-7ec9-43be-9a24-ffc7971ab3a8.png/v1/fill/w_1920,h_2560,q_80,strp/guardian_of_the_glimmering_moon_by_madrusss_dgf9ar1-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MjU2MCIsInBhdGgiOiJcL2ZcLzZjOTM4ZmY5LTAwNjYtNGUyNC05NDE3LTYwNzY4NGVjMWM2NlwvZGdmOWFyMS1iYWZhNzgyNy03ZWM5LTQzYmUtOWEyNC1mZmM3OTcxYWIzYTgucG5nIiwid2lkdGgiOiI8PTE5MjAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.0bCKxH14LjemJ7ZFxanS7K0p6CWJ5TjGJZFPSieo09I" alt="Menu Image" id="menu-image" />

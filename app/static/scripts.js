@@ -167,7 +167,7 @@ function filterEntries() {
     const titleFilter = document.getElementById('titleFilter').value.toLowerCase();
     const countryJapan = document.getElementById('countryJapan').checked;
     const countryKorea = document.getElementById('countryKorea').checked;
-    
+    const isFavorite_checkbox = document.getElementById('isFavorite_checkbox').checked;
     // Since we are not using select for status, we will use currentStatusFilter
     // const statusFilter = document.getElementById('status').value;
 
@@ -192,7 +192,7 @@ function filterEntries() {
         const matchesCountry = (!countryJapan && !countryKorea) || 
                                 (countryJapan && country === 'JP') || 
                                 (countryKorea && country === 'KR');
-        
+        const matchesFavorite = !isFavorite_checkbox || item.getAttribute('data-is-favourite') === '1';
         //const matchesStatus = statusFilter === '' || itemStatus.toLowerCase() === statusFilter.toLowerCase();
         // Determine whether item should be visible based on the status filter
         // Using currentStatusFilter instead of statusFilter
@@ -202,7 +202,7 @@ function filterEntries() {
         // Determine whether item should be visible based on the status filter
         // Using currentStatusFilter instead of statusFilter
         
-        if (matchesTitle && matchesCountry  && matchesStatus && matchesFilterType && matchesReleasingStatus) {
+        if (matchesTitle && matchesCountry  && matchesStatus && matchesFilterType && matchesReleasingStatus && matchesFavorite) {
             item.style.display = '';
         } else {
             item.style.display = 'none';
