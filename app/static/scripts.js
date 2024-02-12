@@ -796,16 +796,30 @@ function formatDates(user_startedat, user_completedat, media_start_date, media_e
 }
 
 
+$(document).ready(function() {
+    $('.favorite-icon').each(function() {
+        var isFavourite = $(this).data('is-favourite');
+        if (isFavourite === 1) {
+            // Adds a heart icon inside the div if data-is-favourite is 1
+            $(this).html('<i class="fas fa-heart" id="heart-icon-grid"></i>');
+        }
+    });
+});
+
+
+
 function startHeartsFlowingEffect() {
     var containerWidth = $('#side-menu-right').width();
     var containerHeight = $('#side-menu-right').height();
-    var heartsCount = 50; // Number of hearts for the effect
+    // Calculate the bottom position of the title container relative to the side-menu-right container
+    var titleBottomPosition = $('#sidebar-title-container').position().top + $('#sidebar-title-container').outerHeight();
+    var heartsCount = 20; // Number of hearts for the effect
 
     for (var i = 0; i < heartsCount; i++) {
         // Create a heart element with initial properties
         var heart = $('<i class="fas fa-heart heart"></i>').css({
             position: 'absolute',
-            top: '-50px', // Start above the container to flow downwards
+            top: titleBottomPosition + 250 + 'px', // Start from the bottom of the title container
             left: Math.random() * containerWidth + 'px', // Random horizontal start position
             opacity: 0, // Start fully transparent
             fontSize: '25px', // Adjust size as needed
@@ -820,7 +834,7 @@ function startHeartsFlowingEffect() {
             y: 0,
             opacity: 1
         }, {
-            y: containerHeight + 100, // Move beyond the container height to ensure it flows out of view
+            y: containerHeight - titleBottomPosition, // Adjust the end position based on title position
             opacity: 0,
             duration: 2 + Math.random() * 2, // Randomize duration for variation
             ease: 'power1.inOut',
@@ -831,21 +845,24 @@ function startHeartsFlowingEffect() {
     }
 }
 
+
 function animateHeartBurstWithParticles() {
     var heart = $('#sidebar-favorite-icon');
    
 
     // Heart animation sequence
-    var tl = gsap.timeline({onComplete: createParticles});
+    var tl = gsap.timeline();
 
     tl.to(heart, { scale: 1.5, duration: 0.5, ease: "elastic.out(1, 0.3)" })
       .to(heart, { rotation: 15, yoyo: true, repeat: 3, duration: 0.1, ease: "linear" })
       .to(heart, { rotation: 0, duration: 0.1 })
       .to(heart, { scale: 2, duration: 0.1, ease: "power1.in" })
+      // Only call createParticles here, remove onComplete from the timeline itself
+      .add(createParticles, "-=0.1") // Add particles at the end of scaling up
       .to(heart, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.3)" });
 
     function createParticles() {
-        var colors = ['red', 'pink', 'white', 'yellow', 'orange']; // Array of colors for particles
+        var colors = ['red', 'pink', 'white', 'green', 'orange', 'blue']; // Array of colors for particles
         for (let i = 0; i < 60; i++) { // Increase number of particles
             var color = colors[Math.floor(Math.random() * colors.length)]; // Random color selection
             var particle = $('<div class="particle"></div>').css({

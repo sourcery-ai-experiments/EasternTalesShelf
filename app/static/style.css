@@ -125,6 +125,23 @@ opacity: 1;
 }
 
 
+/* Only apply styling when the heart icon is present */
+#heart-icon-grid {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    z-index: 10;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(235, 19, 94);
+    text-shadow: 0 0 10px rgb(235, 19, 123);
+    font-size: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 50%;
+}
 
 
 
