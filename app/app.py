@@ -137,7 +137,7 @@ def add_bato_link():
     except requests.exceptions.RequestException as e:
         return jsonify({
             "status": "error",
-            "message": "An error occurred while connecting to FastAPI: " + str(e)
+            "message": "An error occurred while adding bato link: " + str(e)
         }), 500
     
 
