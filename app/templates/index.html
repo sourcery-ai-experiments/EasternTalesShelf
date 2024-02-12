@@ -65,9 +65,12 @@
             </li>
             <li class="nav-item">
                 <button id="syncButton" class="btn btn-primary" type="button">Sync List</button>
-
-
             </li>
+            <li class="nav-item" style="margin-left: 10px;"> <!-- Add margin-left here -->
+                <button id="addBatoLinkButton" class="btn btn-primary" type="button">Add Bato Link</button>
+            </li>
+            
+            
         </ul>
     </div>
 </nav>
@@ -156,7 +159,18 @@
         <h5 id="sidebar-title"></h5>
     </div>
     <p id="sidebar-info"></p>
-    <a href="#" id="sidebar-link" class="btn btn-primary" target="_blank">Go to AniList</a>
+    <div id="sidebar-links" class="btn-group" role="group">
+        <a href="#" id="link-anilist" class="btn btn-primary" target="_blank">
+            <img src="/static/anilist_icon.png" alt="AniList" style="width: 20px; height: auto; vertical-align: middle;"> AniList
+        </a>
+        <a href="#" id="link-bato" class="btn btn-primary" target="_blank">
+             Bato
+        </a>
+        <a href="#" id="link-mal" class="btn btn-primary" target="_blank">
+             MAL
+        </a>
+    </div>
+    
     <!-- Description paragraph with a unique ID for collapse control -->
     <!-- 'Show more' link -->
     <!-- Button container -->
@@ -202,6 +216,8 @@
         <div class="grid-item"
             onclick="showDetails(this)"
             style="background-image: url('{{ entry.cover_image }}'); background-size: cover; background-position: center;"
+            data-anilist-id="{{ entry.id_anilist }}"
+            data-id-mal="{{ entry.id_mal }}"
             data-user-status="{{ entry.on_list_status }}"
             data-release-status="{{ entry.status }}"
             data-type="{{ entry.media_format }}"
@@ -225,6 +241,7 @@
             data-media-end-date = "{{ entry.media_end_date }}"
             data-is-favourite = "{{ entry.is_favourite }}"
             data-reread-times = "{{ entry.reread_times }}"
+            data-bato-link = "{{ entry.bato_link }}"
             data-aos="fade-up" 
             data-aos-offset="200"
             data-aos-duration="1000">

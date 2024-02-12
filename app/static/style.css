@@ -346,6 +346,7 @@ opacity: 1;
 #side-menu-right .btn-primary {
     color: white; /* Text color */
     background-color: #007bff; /* Background color */
+    
     /* The rest of the primary button styles */
 }
 
@@ -404,6 +405,18 @@ opacity: 1;
 #side-menu-right .btn.jnovel:hover {
     background-color: rgb(1, 1, 83);
     color:#fff;
+}
+
+
+#sidebar-links {
+    justify-content: center; /* Center the button group */
+    display: flex;
+    gap: 10px; /* Adjust gap as needed */
+}
+
+/* Example styles for different button visibility scenarios */
+.btn-solo, .btn-pair, .btn-trio {
+    flex: 1; /* Makes buttons fill the available space equally */
 }
 
 

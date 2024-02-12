@@ -1,7 +1,9 @@
 from functions import  mariadb_functions
-from flask import Flask, render_template, current_app, jsonify
+from functions import sqlalchemy_fns
+from flask import Flask, render_template, current_app, jsonify, request
 import json
 from config import is_development_mode
+
 import os
 import requests
 
@@ -26,7 +28,7 @@ else:
 def home():
     # Fetch the 10 newest manga entries.
     # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
-    manga_entries = mariadb_functions.get_manga_list(current_app.config)
+    manga_entries = sqlalchemy_fns.get_manga_list_alchemy(current_app.config)
 
     for entry in manga_entries:
         links = entry.get('external_links', '[]')  # Default to an empty JSON array as a string
@@ -69,10 +71,7 @@ def test():
             entry['genres'] = []
     # Pass the entries to the template.
     return render_template('new_vaules_alpha.html', manga_entries=manga_entries)
-@app.route('/progress')
-def progres():
-    # Pass the entries to the template.
-    return render_template('progressbar.html')
+
 # Route for handling the log sync functionality
 @app.route('/log_sync', methods=['POST'])
 def log_sync():
@@ -92,7 +91,7 @@ def sync_with_fastapi():
 
     try:
         # Replace the URL with your actual FastAPI server address
-        url = "http://10.147.17.146:8057/sync"
+        url = "http://10.147.17.133:8057/sync"
         response = requests.post(url)
 
         if response.status_code == 200:
@@ -114,7 +113,33 @@ def sync_with_fastapi():
         }), 500
 
 
+@app.route('/add_bato', methods=['POST'])
+def add_bato_link():
+    # Check if app is in development mode before proceeding
+    if not app.config['DEBUG']:
+        # If not in debug mode, return a custom message
+        return jsonify({
+            "status": "error",
+            "message": "Nice try, but you can't do that"
+        }), 403  # 403 Forbidden status code
 
+    try:
+        data = request.get_json()
+        anilist_id = data.get('anilistId')
+        bato_link = data.get('batoLink')  # Make sure to send this from your JS
+
+        
+
+        # Then, update the manga entry with the provided Bato link
+        sqlalchemy_fns.add_bato_link(anilist_id, bato_link)
+
+        return jsonify({"message": "Bato link updated successfully."}), 200
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "status": "error",
+            "message": "An error occurred while connecting to FastAPI: " + str(e)
+        }), 500
+    
 
 if __name__ == '__main__':
     app.run(host='10.147.17.21', port=5000)

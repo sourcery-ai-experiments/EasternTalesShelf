@@ -67,6 +67,55 @@ if (syncButton) {
     console.error('Sync button element not found!');
 }
 
+let currentAnilistId = null; // This will store the currently focused entry's AniList ID
+
+document.getElementById('addBatoLinkButton').addEventListener('click', function() {
+    if (isDevelopment) {
+
+        if (currentAnilistId) {
+            // Prompt the user to enter the Bato link
+            var batoLink = prompt("Please enter the Bato link for this entry:", "http://");
+            // Check if a link was entered (prompt returns null if the user clicks cancel)
+            if (batoLink !== null && batoLink !== "") {
+                fetch('/add_bato', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        anilistId: currentAnilistId, // Send the AniList ID of the focused entry
+                        batoLink: batoLink // Include the Bato link provided by the user
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('Bato link added successfully!');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('An error occurred: ' + error.message);
+                });
+            } else if (batoLink === "") {
+                // If the user left the prompt empty and clicked OK
+                alert('No link entered. Please enter a valid Bato link.');
+            }
+            // No need for an else block for the case where batoLink is null,
+            // as that means the user clicked cancel and no action is needed.
+        } else {
+            alert('No entry is focused currently.');
+        }}
+        else {
+            // If not in development mode, show an alert
+            alert('This function is not available in the demo.');
+        }
+});
+
+
+
+
+
+
 
 var currentFilterType = 'ALL'; // Default to 'ALL' on page load
 
@@ -281,10 +330,11 @@ var timeouts = {
 function showDetails(element) {  
     resetAnimationsAndTimers(); // Reset animations and clear timeouts
     // Check if an animation is ongoing, if so, reset everything immediately
-    
-
+    currentAnilistId = $(element).data('anilist-id'); // Capture and store the anilist_id for the add bato link button
+    console.log("currentAnilistId: ", currentAnilistId);
+    $('#sidebar-links a').hide();
     // Abort any ongoing animations, clear timeouts, and hide elements
-    $('#sidebar-cover, #sidebar-toggle, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link, #sidebar-shownotes').stop(true, true).hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-links, #sidebar-shownotes').stop(true, true).hide();
     clearTimeout(window.typewriterTimeout); // Clear any ongoing typewriter timeouts
 
     // Ensure the sidebar is visible for height calculations
@@ -294,6 +344,8 @@ function showDetails(element) {
     var title = $(element).data('title');
     var coverImage = $(element).data('cover');
     var anilistUrl = $(element).data('anilist-url');
+    var myanimelistUrl = 'https://myanimelist.net/manga/' + $(element).data('id-mal'); // Assuming this is stored similarly
+    var batoLink = $(element).data('bato-link');
     var description = $(element).data('description');
     var is_favorite = $(element).data('is-favourite');
     
@@ -318,7 +370,43 @@ function showDetails(element) {
     if (volumes_total === 0 || volumes_total == null) {
         volumes_total = '?';
     }
+
+    function updateSidebarLinks(anilistUrl, batoLink, myanimelistUrl) {
+        $('#link-anilist').attr('href', anilistUrl);
+        $('#link-bato').attr('href', batoLink);
+        $('#link-mal').attr('href', myanimelistUrl);
+    }
+    function adjustButtonSpacing() {
+        var visibleButtons = $('#sidebar-links a:visible').length;
+        
+        $('#sidebar-links a').removeClass('btn-solo btn-pair btn-trio'); // Clear previous classes
     
+        // Apply new class based on how many buttons are visible
+        switch(visibleButtons) {
+            case 1:
+                $('#sidebar-links a:visible').addClass('btn-solo'); // For when there's only 1 button visible
+                break;
+            case 2:
+                $('#sidebar-links a:visible').addClass('btn-pair'); // For when there are 2 buttons visible
+                break;
+            case 3:
+                $('#sidebar-links a').addClass('btn-trio'); // For when all 3 buttons are visible
+                break;
+        }
+    }
+    
+    // Update the links
+    updateSidebarLinks(anilistUrl, batoLink, myanimelistUrl);
+
+    // Conditionally show buttons based on data
+    $('#link-anilist').attr('href', anilistUrl).show();; // Always shown, adjust if necessary
+    if($(element).data('id-mal') != 0) $('#link-mal').attr('href', myanimelistUrl).show();
+    if(batoLink !== '') $('#link-bato').attr('href', batoLink).show()
+
+    // Adjust button spacing and centering dynamically
+    adjustButtonSpacing();
+
+
     var user_notes = $(element).data('notes');
     
     // Convert user_status and release_status to uppercase
@@ -336,7 +424,7 @@ function showDetails(element) {
     // Populate sidebar elements ----------------------------------------------------------------------------
     
     // Hide all elements before updating
-    $('#sidebar-cover, #sidebar-toggle, #sidebar-shownotes, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-link').hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-shownotes, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-links').hide();
 
     // Debounce subsequent calls to prevent rapid execution
     clearTimeout(globalTimeout);
@@ -529,8 +617,10 @@ function showDetails(element) {
         // Start animations with controlled timeouts
         timeouts.cover = setTimeout(() => $('#sidebar-cover').fadeIn(1500), 100);
         timeouts.info = setTimeout(() => $('#sidebar-info').fadeIn(700), 600);
+        // Fade in the button group after a delay
+        clearTimeout(timeouts.link); // Clear any existing timeout to prevent multiple triggers
         timeouts.link = setTimeout(() => {
-            $('#sidebar-link').attr('href', anilistUrl).fadeIn(650);
+            $('#sidebar-links').fadeIn(650);
         }, 750);
         
         timeouts.description = setTimeout(() => $('#sidebar-description').fadeIn(800), 900);
@@ -572,7 +662,7 @@ function showDetails(element) {
 
 function resetAnimationsAndTimers() {
     // Stop all ongoing animations immediately and clear queue
-    $('#sidebar-cover, #sidebar-toggle, #sidebar-info, #sidebar-link, #sidebar-description, #sidebar-shownotes, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-info, #sidebar-links, #sidebar-description, #sidebar-shownotes, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
 
     // Clear all timeouts
     for (var key in timeouts) {
