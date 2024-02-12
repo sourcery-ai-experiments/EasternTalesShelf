@@ -324,17 +324,25 @@ var timeouts = {
     externalLinks: null,
     genres: null,
     title_placeholder: null,
-    shownotes: null
+    shownotes: null,
+    notes: null
 };
 
 function showDetails(element) {  
     resetAnimationsAndTimers(); // Reset animations and clear timeouts
+
+
+    // Reset description to initial collapsed state
+    
+    $('#sidebar-toggle').html('Read more &#9660;'); // Reset the toggle button text
+    $('#sidebar-shownotes').html('Show Notes');
+    
     // Check if an animation is ongoing, if so, reset everything immediately
     currentAnilistId = $(element).data('anilist-id'); // Capture and store the anilist_id for the add bato link button
     console.log("currentAnilistId: ", currentAnilistId);
     $('#sidebar-links a').hide();
     // Abort any ongoing animations, clear timeouts, and hide elements
-    $('#sidebar-cover, #sidebar-toggle, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-links, #sidebar-shownotes').stop(true, true).hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-notes, #sidebar-external-links, #sidebar-genres, #sidebar-links, #sidebar-shownotes').stop(true, true).hide();
     clearTimeout(window.typewriterTimeout); // Clear any ongoing typewriter timeouts
 
     // Ensure the sidebar is visible for height calculations
@@ -424,7 +432,7 @@ function showDetails(element) {
     // Populate sidebar elements ----------------------------------------------------------------------------
     
     // Hide all elements before updating
-    $('#sidebar-cover, #sidebar-toggle, #sidebar-shownotes, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-external-links, #sidebar-genres, #sidebar-links').hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-shownotes, #sidebar-title, #sidebar-info, #sidebar-description,#sidebar-notes, #sidebar-external-links, #sidebar-genres, #sidebar-links').hide();
 
     // Debounce subsequent calls to prevent rapid execution
     clearTimeout(globalTimeout);
@@ -481,24 +489,30 @@ function showDetails(element) {
 
         // Apply animation classes based on the status
         let statusIcon = '';
+        let statusColor = ''; // Variable to hold the color based on the status
         switch (user_status) {
             case 'Completed':
                 statusIcon = '<i class="fas fa-check-circle status-icon pulse"></i>';
+                statusColor = 'rgb(40, 167, 69)'; // green for completed
                 break;
             case 'Planning':
                 statusIcon = '<i class="fas fa-hourglass-start status-icon fade"></i>';
+                statusColor = 'rgb(255, 193, 7)'; // yellow for planning
                 break;
             case 'Current':
                 statusIcon = '<i class="fas fa-book-reader status-icon vertical-move"></i>';
+                statusColor = 'rgb(14, 159, 212)'; // blue for current
                 break;
             case 'Paused':
                 statusIcon = '<i class="fas fa-pause-circle status-icon shake"></i>';
+                statusColor = 'rgb(224, 33, 8)'; // red for paused
                 break;
             default:
-                statusIcon = '<i class="fas fa-question-circle status-icon"></i>'; // No animation for the default case
+                statusIcon = '<i class="fas fa-question-circle status-icon"></i>'; // No specific color for the default case
+                statusColor = 'inherit'; // Use the default text color
         }
 
-        // Determine the release status icon and apply animation
+                // Determine the release status icon and apply animation
         let releaseStatusIcon = '';
         if (release_status === 'Releasing') {
             releaseStatusIcon = '<i class="fas fa-sync-alt status-icon rotate"></i>';
@@ -513,11 +527,11 @@ function showDetails(element) {
 
        
         // Append user status and release status to sidebar info
-        sidebarInfoHTML += `<p>${statusIcon} Status: ${user_status}</p>
+        sidebarInfoHTML += `<p>${statusIcon} <span style="color: ${statusColor};">Status: ${user_status}</span></p>
         ${userDatesHTML}
-            <p>${releaseStatusIcon} OG Release: ${release_status}</p>
-            ${mediaDatesHTML}
-            `;
+        <p>${releaseStatusIcon} OG Release: ${release_status}</p>
+        ${mediaDatesHTML}
+        `;
 
         // Set the HTML to the sidebar-info element
         $('#sidebar-info').html(sidebarInfoHTML);
@@ -531,7 +545,7 @@ function showDetails(element) {
         // Set the description and always start with it collapsed
         $('#sidebar-description').html(description).removeClass('expanded').addClass('collapse');
         
-        $('#sidebar-notes').text(user_notes);
+        $('#sidebar-notes').text(user_notes).removeClass('expanded').addClass('collapse');
         
 
         // Reset max-height to collapsed state
@@ -625,7 +639,7 @@ function showDetails(element) {
         
         timeouts.description = setTimeout(() => $('#sidebar-description').fadeIn(800), 900);
         
-        
+        timeouts.notes = setTimeout(() => $('#sidebar-notes').fadeIn(800), 900);
         
         timeouts.readmore = setTimeout(() => $('#sidebar-toggle').fadeIn(650), 1100);
         timeouts.externalLinks = setTimeout(() => $('#sidebar-external-links').fadeIn(750), 1300);
@@ -657,12 +671,13 @@ function showDetails(element) {
 
 
     }, 100);
+    
 }
 
 
 function resetAnimationsAndTimers() {
     // Stop all ongoing animations immediately and clear queue
-    $('#sidebar-cover, #sidebar-toggle, #sidebar-info, #sidebar-links, #sidebar-description, #sidebar-shownotes, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
+    $('#sidebar-cover, #sidebar-toggle, #sidebar-info, #sidebar-links, #sidebar-description, #sidebar-notes, #sidebar-shownotes, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
 
     // Clear all timeouts
     for (var key in timeouts) {
