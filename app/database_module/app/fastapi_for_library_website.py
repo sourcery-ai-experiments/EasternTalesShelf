@@ -28,7 +28,8 @@ async def run_script():
     except subprocess.CalledProcessError as e:
         print(f"---Script execution failed at {current_time}---")
         print(str(e))
-        return "An internal error has occurred!"
+        log(str(e))
+        return {"status": "failed", "message": "Script failed"}
         
 
 # Optional: Add more routes as needed
