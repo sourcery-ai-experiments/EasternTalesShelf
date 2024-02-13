@@ -445,6 +445,8 @@ function showDetails(element) {
         // Construct the cover image path based on the Anilist ID
         // Adjust the file extension and path as necessary
         var coverImage = '/static/covers/' + anilistId + '.avif';
+
+        
         // Update the elements
         $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
         
