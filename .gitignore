@@ -30,6 +30,8 @@ var/
 *.manifest
 *.spec
 
+# for cover images
+/app/static/covers/
 todo.md
 # Installer logs
 pip-log.txt

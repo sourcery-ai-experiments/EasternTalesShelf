@@ -137,7 +137,7 @@
 
     
     
-    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6c938ff9-0066-4e24-9417-607684ec1c66/dgf9ar1-bafa7827-7ec9-43be-9a24-ffc7971ab3a8.png/v1/fill/w_1920,h_2560,q_80,strp/guardian_of_the_glimmering_moon_by_madrusss_dgf9ar1-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MjU2MCIsInBhdGgiOiJcL2ZcLzZjOTM4ZmY5LTAwNjYtNGUyNC05NDE3LTYwNzY4NGVjMWM2NlwvZGdmOWFyMS1iYWZhNzgyNy03ZWM5LTQzYmUtOWEyNC1mZmM3OTcxYWIzYTgucG5nIiwid2lkdGgiOiI8PTE5MjAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.0bCKxH14LjemJ7ZFxanS7K0p6CWJ5TjGJZFPSieo09I" alt="Menu Image" id="menu-image" />
+    <img src="/static/covers/example123.avif" alt="Menu Image" id="menu-image" />
     
     
 </div>
@@ -215,7 +215,7 @@
         {% for entry in manga_entries %}
         <div class="grid-item"
             onclick="showDetails(this)"
-            style="background-image: url('{{ entry.cover_image }}'); background-size: cover; background-position: center;"
+            style="background-image: url('/static/covers/{{ entry.id_anilist }}.avif'); background-size: cover; background-position: center;"
             data-anilist-id="{{ entry.id_anilist }}"
             data-id-mal="{{ entry.id_mal }}"
             data-user-status="{{ entry.on_list_status }}"

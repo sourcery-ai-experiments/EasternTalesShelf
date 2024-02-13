@@ -357,8 +357,8 @@ function showDetails(element) {
     var description = $(element).data('description');
     var is_favorite = $(element).data('is-favourite');
     
-    var reread_times = $(element).data('reread-times');
-    console.log("redead: ",reread_times);
+    
+    
     // SIDEBAR INFORMATIONS ABOUT ENTRIES
     var chapters_progress = $(element).data('chapters-progress');
     var chapters_total = $(element).data('all-chapters');
@@ -370,7 +370,7 @@ function showDetails(element) {
     var release_status = $(element).data('release-status');
     var media_start_date = $(element).data('media-start-date');
     var media_end_date = $(element).data('media-end-date');
-    
+    var reread_times = $(element).data('reread-times'); // Assuming you have this data attribute set
 
     if (chapters_total === 0 || chapters_total == null) {
         chapters_total = '?';
@@ -439,6 +439,12 @@ function showDetails(element) {
     globalTimeout = setTimeout(function() {
         
 
+
+        var anilistId = $(element).data('anilist-id');
+    
+        // Construct the cover image path based on the Anilist ID
+        // Adjust the file extension and path as necessary
+        var coverImage = '/static/covers/' + anilistId + '.avif';
         // Update the elements
         $('#sidebar-cover').attr('src', coverImage).attr('alt', title);
         
@@ -463,7 +469,17 @@ function showDetails(element) {
             console.log("is not favorite");
         }
         
-
+        console.log("redead: ",reread_times);
+        if (reread_times > 0) {
+            if ($('#sidebar-reread-icon').length === 0) {
+                var rereadDisplay = `<div id="sidebar-reread-icon" class="reread-icon">${reread_times}</div>`;
+                $('#cover-container').append(rereadDisplay);
+            } else {
+                // Update the number if the element already exists
+                $('#sidebar-reread-icon').text(reread_times);
+            }
+        }
+        
        
 
 

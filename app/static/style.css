@@ -548,6 +548,27 @@ opacity: 1;
     font-size: 2.5rem;
     z-index: 10;
 }
+
+#sidebar-reread-icon {
+    color: white;
+    background-color: red; /* Background color of the circle */
+    position: absolute;
+    bottom: 10px; /* Adjust as necessary */
+    right: 50px; /* Adjust based on your layout, ensure it doesn't overlap with the favorite icon */
+    width: 30px; /* Diameter of the circle */
+    height: 30px; /* Diameter of the circle */
+    border-radius: 50%; /* Makes the element a circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: none;
+    font-size: 1rem; /* Adjust size as needed */
+    z-index: 10;
+    box-shadow: 0 0 8px #000; /* Optional: Adds a subtle shadow for depth */
+}
+
+
+
 #sidebar-title, #sidebar-title-placeholder {
     font-family: 'Roboto', sans-serif;
     font-size: 1.5rem;
