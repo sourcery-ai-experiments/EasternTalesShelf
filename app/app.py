@@ -1,8 +1,9 @@
-from functions import  mariadb_functions
-from functions import sqlalchemy_fns
+from functions import  sqlalchemy_fns_mariadb
+from functions import sqlalchemy_fns_sqllite
 from flask import Flask, render_template, current_app, jsonify, request
 import json
-from config import is_development_mode
+from config import is_development_mode, database_type 
+from config import database_type # "mariadb" or "sql_lite"
 
 import os
 import requests
@@ -28,8 +29,14 @@ else:
 def home():
     # Fetch the 10 newest manga entries.
     # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
-    manga_entries = sqlalchemy_fns.get_manga_list_alchemy(current_app.config)
-
+    if database_type == "mariadb":
+        manga_entries = sqlalchemy_fns_mariadb.get_manga_list_alchemy(current_app.config)
+        print("Using MariaDB database") 
+    elif database_type == "sql_lite":
+        manga_entries = sqlalchemy_fns_sqllite.get_manga_list_alchemy(current_app.config)
+        print("Using SQLite database")
+    
+    #print(manga_entries)
     for entry in manga_entries:
         links = entry.get('external_links', '[]')  # Default to an empty JSON array as a string
         genres = entry.get('genres', '[]')
@@ -51,13 +58,12 @@ def home():
     # Pass the entries to the template.
     return render_template('index.html', manga_entries=manga_entries)
 
-
 @app.route('/testing')
 def test():
 
     # Fetch the 10 newest manga entries.
     # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
-    manga_entries = mariadb_functions.get_manga_list(current_app.config,testing=True)
+    manga_entries = sqlalchemy_fns_mariadb.get_manga_list_alchemy(current_app.config,testing=True)
 
     for entry in manga_entries:
         links = entry.get('external_links', '[]')  # Default to an empty JSON array as a string
@@ -131,7 +137,7 @@ def add_bato_link():
         
 
         # Then, update the manga entry with the provided Bato link
-        sqlalchemy_fns.add_bato_link(anilist_id, bato_link)
+        sqlalchemy_fns_mariadb.add_bato_link(anilist_id, bato_link)
 
         return jsonify({"message": "Bato link updated successfully."}), 200
     except requests.exceptions.RequestException as e:
@@ -139,6 +145,8 @@ def add_bato_link():
             "status": "error",
             "message": "An error occurred while adding bato link: " + str(e)
         }), 500
+
+
     
 
 if __name__ == '__main__':

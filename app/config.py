@@ -49,3 +49,4 @@ config_dict = {
 }
 
 is_development_mode = config_dict[os.getenv('FLASK_ENV', 'development')]
+database_type = "sql_lite"  #  "mariadb" or "sql_lite"
