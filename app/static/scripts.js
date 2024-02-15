@@ -341,6 +341,7 @@ function showDetails(element) {
     currentAnilistId = $(element).data('anilist-id'); // Capture and store the anilist_id for the add bato link button
     console.log("currentAnilistId: ", currentAnilistId);
     $('#sidebar-links a').hide();
+    $('#sidebar-reread-icon').remove();
     // Abort any ongoing animations, clear timeouts, and hide elements
     $('#sidebar-cover, #sidebar-toggle, #sidebar-title, #sidebar-info, #sidebar-description, #sidebar-notes, #sidebar-external-links, #sidebar-genres, #sidebar-links, #sidebar-shownotes').stop(true, true).hide();
     clearTimeout(window.typewriterTimeout); // Clear any ongoing typewriter timeouts
@@ -472,17 +473,20 @@ function showDetails(element) {
         }
         
         console.log("redead: ",reread_times);
+        // Only if reread_times is greater than 0, append a new reread icon
         if (reread_times > 0) {
-            if ($('#sidebar-reread-icon').length === 0) {
-                var rereadDisplay = `<div id="sidebar-reread-icon" class="reread-icon">${reread_times}</div>`;
-                $('#cover-container').append(rereadDisplay);
-            } else {
-                // Update the number if the element already exists
-                $('#sidebar-reread-icon').text(reread_times);
-            }
+            var rereadDisplay = `
+                <div id="sidebar-reread-icon" class="reread-icon">
+                    <i class="fas fa-sync-alt rotate"></i>
+                    <span class="reread-count">${reread_times}</span>
+                </div>`;
+            $('#cover-container').append(rereadDisplay);
+            animateRereadIcon(); // Trigger the animation
         }
         
-       
+        
+                
+            
 
 
         // Update the placeholder with the title content
@@ -1016,3 +1020,12 @@ function animateHeartBurstWithParticles() {
 }
 
 
+function animateRereadIcon() {
+    // Add class to scale up
+    $('#sidebar-reread-icon').addClass('scale-up');
+    
+    // Set a timeout to remove the class after the animation completes
+    setTimeout(function() {
+        $('#sidebar-reread-icon').removeClass('scale-up');
+    }, 500); // Match the duration of the CSS transition
+}
