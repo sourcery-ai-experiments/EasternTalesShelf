@@ -1,6 +1,7 @@
 from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, TIMESTAMP, Text, exc
-from sqlalchemy.ext.declarative import declarative_base
+from app import config
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, TIMESTAMP, Text, exc,  Boolean
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 # from config import Config  # This import might not be needed for SQLite configuration
@@ -24,6 +25,7 @@ class MangaList(Base):
     score = Column(Float, default=0)
     reread_times = Column(Integer, default=0)
     cover_image = Column(String(255))
+    is_cover_downloaded = Column(Boolean, default=False)
     is_favourite = Column(Integer, default=0)
     anilist_url = Column(String(255))
     mal_url = Column(String(255))
@@ -41,28 +43,28 @@ class MangaList(Base):
     bato_link = Column(Text, default='')  # Adjust types and column names as necessary
 
 
-def initialize_database():
-    engine = get_engine()
-    Base.metadata.create_all(engine)
+
+
+  
 def get_engine():
-    # For SQLite, the connection string is simply 'sqlite:///path_to_your_database.db'
-    return create_engine('sqlite:///anilist_db.db')
+    return create_engine(config.DATABASE_URI)
 
 def get_session():
     engine = get_engine()
     Session = sessionmaker(bind=engine)
     return Session()
 
+def initialize_database():
+    engine = get_engine()
+    Base.metadata.create_all(engine)
+
 def get_manga_list_alchemy(testing=False):
     session = get_session()
     
     try:
-        
         manga_list_query = session.query(MangaList).order_by(MangaList.last_updated_on_site.desc())
-
         manga_list = manga_list_query.all()
 
-        # Convert to a list of dictionaries (if needed) and handle None values in dates
         def parse_timestamp(manga):
             manga_dict = {column.name: getattr(manga, column.name) for column in manga.__table__.columns}
             manga_dict['last_updated_on_site'] = manga_dict.get('last_updated_on_site', datetime(1900, 1, 1))
@@ -77,6 +79,23 @@ def get_manga_list_alchemy(testing=False):
         return []
     finally:
         session.close()
+
+# Inside sqlalchemy_fns.py or a similar module
+
+
+def update_cover_download_status_bulk(ids_to_download, status):
+    session = get_session()
+    try:
+        # Update all entries in a single query
+        session.query(MangaList).filter(MangaList.id_anilist.in_(ids_to_download)).update({"is_cover_downloaded": status}, synchronize_session='fetch')
+        session.commit()
+        print(f"Updated cover download status for {len(ids_to_download)} entries.")
+    except Exception as e:
+        print(f"Error updating cover download statuses: {e}")
+    finally:
+        session.close()
+
+
 
 def add_bato_link(id_anilist, bato_link):
     session = get_session()

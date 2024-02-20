@@ -1,14 +1,32 @@
-from functions import  sqlalchemy_fns_mariadb
-from functions import sqlalchemy_fns_sqllite
-from flask import Flask, render_template, current_app, jsonify, request
+
+import app.download_covers as download_covers
+from app.functions import sqlalchemy_fns as sqlalchemy_fns
+from flask import Flask, render_template, current_app, jsonify, request, url_for
 import json
-from config import is_development_mode, database_type 
-from config import database_type # "mariadb" or "sql_lite"
+from app.config import is_development_mode, database_type 
+from app.config import database_type # "mariadb" or "sql_lite"
 
 import os
 import requests
 
 app = Flask(__name__)
+
+
+# @app.template_filter('versioned')
+# def versioned_static(filename):
+#     # Manually specify the path to the 'app/static' directory
+#     static_dir = 'app/static'  # Adjust this path based on your project structure
+#     file_path = os.path.join(app.root_path, static_dir, filename)
+#     print("file_path: ", file_path)
+#     try:
+#         last_modified_time = int(os.path.getmtime(file_path))
+#         return url_for('static', filename=filename) + f'?v={last_modified_time}'
+#     except OSError:
+#         return url_for('static', filename=filename)
+
+
+
+
 
 @app.context_processor
 def inject_debug():
@@ -24,18 +42,32 @@ if is_development_mode.DEBUG:
 else:
     app.config['DEBUG'] = False
 
+
+
 # Route for your home page
 @app.route('/')
 def home():
     # Fetch the 10 newest manga entries.
-    # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
-    if database_type == "mariadb":
-        manga_entries = sqlalchemy_fns_mariadb.get_manga_list_alchemy(current_app.config)
-        print("Using MariaDB database") 
-    elif database_type == "sql_lite":
-        manga_entries = sqlalchemy_fns_sqllite.get_manga_list_alchemy(current_app.config)
-        print("Using SQLite database")
+    # Example usage
+# manga_entries = ...
+# ids_to_download = ...
+# download_covers_concurrently(ids_to_download, manga_entries)
     
+    manga_entries = sqlalchemy_fns.get_manga_list_alchemy()
+      
+    # Identify entries with missing covers and download them
+    ids_to_download = [entry['id_anilist'] for entry in manga_entries if not entry['is_cover_downloaded']]
+    
+    if ids_to_download:
+        try:
+            successful_ids = download_covers.download_covers_concurrently(ids_to_download, manga_entries)
+            # Bulk update the database to mark the covers as downloaded only for successful ones
+            if successful_ids:
+                sqlalchemy_fns.update_cover_download_status_bulk(successful_ids, True)
+        except Exception as e:
+            print(f"Error during download or database update: {e}")
+
+
     #print(manga_entries)
     for entry in manga_entries:
         links = entry.get('external_links', '[]')  # Default to an empty JSON array as a string
@@ -58,25 +90,19 @@ def home():
     # Pass the entries to the template.
     return render_template('index.html', manga_entries=manga_entries)
 
-@app.route('/testing')
-def test():
 
+
+
+
+@app.route('/homepage')
+def homepage():
     # Fetch the 10 newest manga entries.
     # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
-    manga_entries = sqlalchemy_fns_mariadb.get_manga_list_alchemy(current_app.config,testing=True)
-
-    for entry in manga_entries:
-        links = entry.get('external_links', '[]')  # Default to an empty JSON array as a string
-        genres = entry.get('genres', '[]')
-        # Check if links is a valid JSON array
-        try:
-            json.loads(links)
-            json.loads(genres)
-        except json.JSONDecodeError:
-            entry['external_links'] = []  # Replace with an empty list or another suitable default
-            entry['genres'] = []
+    
     # Pass the entries to the template.
-    return render_template('new_vaules_alpha.html', manga_entries=manga_entries)
+    #return render_template('portfoli_testing_something.html')
+
+
 
 # Route for handling the log sync functionality
 @app.route('/log_sync', methods=['POST'])
@@ -137,7 +163,7 @@ def add_bato_link():
         
 
         # Then, update the manga entry with the provided Bato link
-        sqlalchemy_fns_mariadb.add_bato_link(anilist_id, bato_link)
+        sqlalchemy_fns.add_bato_link(anilist_id, bato_link)
 
         return jsonify({"message": "Bato link updated successfully."}), 200
     except requests.exceptions.RequestException as e:

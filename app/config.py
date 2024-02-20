@@ -1,5 +1,5 @@
 import os
-from vault_approle_functions import vault_login, read_secret
+from app.vault_approle_functions import vault_login, read_secret
 
 class Config(object):
     # ... [other parts of your class] ...
@@ -49,4 +49,10 @@ config_dict = {
 }
 
 is_development_mode = config_dict[os.getenv('FLASK_ENV', 'development')]
-database_type = "sql_lite"  #  "mariadb" or "sql_lite"
+
+database_type = "mariadb"  #  "mariadb" or "sql_lite"
+
+if database_type == "mariadb":
+    DATABASE_URI = f"mysql+pymysql://{Config.user_name}:{Config.db_password}@{Config.host_name}/{Config.db_name}"    
+elif database_type == "sql_lite":
+    DATABASE_URI = 'sqlite:///anilist_db.db'
