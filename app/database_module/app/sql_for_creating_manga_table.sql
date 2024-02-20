@@ -14,6 +14,7 @@ CREATE TABLE `manga_list` (
   `score` float DEFAULT 0,
   `reread_times` int(11) DEFAULT 0,
   `cover_image` varchar(255) DEFAULT NULL,
+  `is_cover_downloaded` TINYINT(1) NOT NULL DEFAULT 0,
   `is_favourite` INT(11) DEFAULT 0,
   `anilist_url` varchar(255) DEFAULT NULL,
   `mal_url` varchar(255) DEFAULT NULL,
