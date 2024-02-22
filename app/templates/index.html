@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript">
-        var isDevelopment = {{ isDevelopment | tojson }};
+        isDevelopment = {{ isDevelopment | tojson }};
     </script>
     
 
@@ -254,6 +254,10 @@
 
 
             <div class="favorite-icon" data-is-favourite="{{ entry.is_favourite }}"></div>
+            <div id="reread-cover" class="reread-icon new-location" data-reread-times="{{ entry.reread_times }}">
+                <!-- The new icon will be appended here by JavaScript -->
+            </div>
+            
                     
             <!-- AniList Icon -->
             <div class="anilist-icon" onclick="openAniList(this.parentNode.getAttribute('data-anilist-url'))"></div>

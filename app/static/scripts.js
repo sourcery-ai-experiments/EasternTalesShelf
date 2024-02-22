@@ -475,14 +475,19 @@ function showDetails(element) {
         console.log("redead: ",reread_times);
         // Only if reread_times is greater than 0, append a new reread icon
         if (reread_times > 0) {
-            var rereadDisplay = `
+            // Existing icon append logic (keep it if you still need the original icon)
+            var rereadDisplayOriginal = `
                 <div id="sidebar-reread-icon" class="reread-icon">
                     <i class="fas fa-sync-alt rotate"></i>
                     <span class="reread-count">${reread_times}</span>
                 </div>`;
-            $('#cover-container').append(rereadDisplay);
-            animateRereadIcon(); // Trigger the animation
+            $('#cover-container').append(rereadDisplayOriginal);
+                    
+            // Trigger the animation for both icons
+            animateRereadIcon('#sidebar-reread-icon'); // For the original icon
+            
         }
+        
         
         
                 
@@ -708,6 +713,15 @@ function resetAnimationsAndTimers() {
 }
 
 
+function animateRereadIcon(selector) {
+    $(selector).addClass('scale-up');
+    setTimeout(function() {
+        $(selector).removeClass('scale-up');
+    }, 500); // Adjust timing if needed
+}
+
+
+
 // JavaScript to toggle the description with animation
 $(document).on('click', '#sidebar-toggle', function() {
     var content = $('#sidebar-description');
@@ -931,7 +945,18 @@ $(document).ready(function() {
             $(this).html('<i class="fas fa-heart" id="heart-icon-grid"></i>');
         }
     });
+
+    $('.reread-icon.new-location').each(function() {
+        // Assuming you have a way to set rereadTimes appropriately
+        var rereadTimes = $(this).data('reread-times'); // Ensure this data attribute is set or retrieved correctly
+        if (rereadTimes > 0) {
+            // Correctly use template literals for dynamic values
+            $(this).html(`<i class="fas fa-sync-alt rotate"></i><span class="reread-count">${rereadTimes}</span>`);
+        }
+        animateRereadIcon('.new-location'); // Assuming this function is correctly defined elsewhere
+    });
 });
+
 
 
 
@@ -1019,13 +1044,3 @@ function animateHeartBurstWithParticles() {
     }
 }
 
-
-function animateRereadIcon() {
-    // Add class to scale up
-    $('#sidebar-reread-icon').addClass('scale-up');
-    
-    // Set a timeout to remove the class after the animation completes
-    setTimeout(function() {
-        $('#sidebar-reread-icon').removeClass('scale-up');
-    }, 500); // Match the duration of the CSS transition
-}

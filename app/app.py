@@ -36,17 +36,14 @@ def inject_debug():
     print("isDevelopment?: ", is_development_mode.DEBUG)
     return dict(isDevelopment=is_development_mode.DEBUG)
 
-
-if is_development_mode.DEBUG:
-    app.config['DEBUG'] = True  # Ensure this is only set for development
-else:
-    app.config['DEBUG'] = False
+# Ensure this is only set for development
+app.config['DEBUG'] = bool(is_development_mode.DEBUG)
 
 
 
 # Route for your home page
 @app.route('/')
-def home():
+def home():  # sourcery skip: use-named-expression
     # Fetch the 10 newest manga entries.
     # Example usage
 # manga_entries = ...
@@ -56,6 +53,7 @@ def home():
     manga_entries = sqlalchemy_fns.get_manga_list_alchemy()
       
     # Identify entries with missing covers and download them
+    
     ids_to_download = [entry['id_anilist'] for entry in manga_entries if not entry['is_cover_downloaded']]
     
     if ids_to_download:
@@ -94,8 +92,8 @@ def home():
 
 
 
-@app.route('/homepage')
-def homepage():
+# @app.route('/homepage')
+# def homepage():
     # Fetch the 10 newest manga entries.
     # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
     
@@ -139,10 +137,15 @@ def sync_with_fastapi():
                 "message": "Failed to sync with FastAPI"
             }), 500
     except requests.exceptions.RequestException as e:
-        return jsonify({
-            "status": "error",
-            "message": "An error occurred while connecting to FastAPI: " + str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"An error occurred while connecting to FastAPI: {str(e)}",
+                }
+            ),
+            500,
+        )
 
 
 @app.route('/add_bato', methods=['POST'])
@@ -160,17 +163,22 @@ def add_bato_link():
         anilist_id = data.get('anilistId')
         bato_link = data.get('batoLink')  # Make sure to send this from your JS
 
-        
+
 
         # Then, update the manga entry with the provided Bato link
         sqlalchemy_fns.add_bato_link(anilist_id, bato_link)
 
         return jsonify({"message": "Bato link updated successfully."}), 200
     except requests.exceptions.RequestException as e:
-        return jsonify({
-            "status": "error",
-            "message": "An error occurred while adding bato link: " + str(e)
-        }), 500
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"An error occurred while adding bato link: {str(e)}",
+                }
+            ),
+            500,
+        )
 
 
     
