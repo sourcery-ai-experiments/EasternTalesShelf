@@ -142,8 +142,26 @@ opacity: 1;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 50%;
 }
-
-
+#reread-icon-grid {
+    position: absolute;
+    top: 10px; /* Adjusted for better alignment */
+    right: 10px; /* Adjusted for better alignment */
+    z-index: 10;
+    width: auto; /* Changed to auto for content size */
+    height: auto; /* Changed to auto for content size */
+    padding: 5px; /* Add padding for the background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white; /* Example color, adjust as needed */
+    background-color: rgba(255, 192, 203, 0.9); /* Soft pink background with transparency */
+    text-shadow: none; /* Remove text shadow for better legibility */
+    font-size: 16px; /* Adjust based on the size of your icon and text */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 50%;
+    border: 2px solid white; /* White border to define the icon */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
 
 
 
@@ -548,7 +566,6 @@ opacity: 1;
     font-size: 2.5rem;
     z-index: 10;
 }
-
 #sidebar-reread-icon {
     position: absolute;
     top: 0px;
@@ -597,7 +614,6 @@ opacity: 1;
 #sidebar-reread-icon.scale-up {
     transform: scale(2); /* Scale up effect */
 }
-
 
 
 #sidebar-title, #sidebar-title-placeholder {

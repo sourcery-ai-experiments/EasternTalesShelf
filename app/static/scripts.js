@@ -7,7 +7,7 @@
 
 
 function toggleMenu() {
-    var menu = document.getElementById("side-menu");
+    let menu = document.getElementById("side-menu");
     if (menu.style.left === "-250px") {
         menu.style.left = "0px";
     } else {
@@ -17,7 +17,7 @@ function toggleMenu() {
 
 document.addEventListener('DOMContentLoaded', function() {
     // Code for chatInput
-    var chatInput = document.getElementById('chatInput');
+    let chatInput = document.getElementById('chatInput');
     if (chatInput) {
         chatInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Code for syncButton
-var syncButton = document.getElementById('syncButton');
+let syncButton = document.getElementById('syncButton');
 
 if (syncButton) {
     syncButton.addEventListener('click', function() {
@@ -74,7 +74,7 @@ document.getElementById('addBatoLinkButton').addEventListener('click', function(
 
         if (currentAnilistId) {
             // Prompt the user to enter the Bato link
-            var batoLink = prompt("Please enter the Bato link for this entry:", "http://");
+            let batoLink = prompt("Please enter the Bato link for this entry:", "http://");
             // Check if a link was entered (prompt returns null if the user clicks cancel)
             if (batoLink !== null && batoLink !== "") {
                 fetch('/add_bato', {
@@ -117,7 +117,7 @@ document.getElementById('addBatoLinkButton').addEventListener('click', function(
 
 
 
-var currentFilterType = 'ALL'; // Default to 'ALL' on page load
+let currentFilterType = 'ALL'; // Default to 'ALL' on page load
 
 // this prevents AOS to move down page each reloding.
 if ('scrollRestoration' in history) {
@@ -130,15 +130,15 @@ if ('scrollRestoration' in history) {
 window.addEventListener('load', function() {
 
     // Initialize or refresh AOS based on cumulative height logic
-    var items = document.querySelectorAll('.grid-item');
-    var cumulativeHeight = 0;
+    let items = document.querySelectorAll('.grid-item');
+    let cumulativeHeight = 0;
     items.forEach(function(item) {
         if (item.style.display !== 'none') {
             cumulativeHeight += item.offsetHeight + 10; // Adjust if necessary
         }
     });
 
-    var windowHeight = window.innerHeight;
+    let windowHeight = window.innerHeight;
     if (cumulativeHeight > windowHeight) {
         setTimeout(function(){
             AOS.init({
@@ -153,10 +153,10 @@ window.addEventListener('load', function() {
 
     // Set border color based on data-status
     items.forEach(function(item) {
-        var status = item.getAttribute('data-user-status');
+        let status = item.getAttribute('data-user-status');
         if(status) {
             status = status.toUpperCase();
-            var statusClass = 'border-' + status.toLowerCase();
+            let statusClass = 'border-' + status.toLowerCase();
             item.classList.add(statusClass);
         }
     });
@@ -311,11 +311,11 @@ document.addEventListener('aos:in', ({ detail }) => {
 
 
 // Global variables for timeout and animation tracking
-var globalTimeout;
-var isAnimating = false;
+let globalTimeout;
+let isAnimating = false;
 
 // Global variables for animation timeouts
-var timeouts = {
+let timeouts = {
     cover: null,
     info: null,
     link: null,
@@ -350,28 +350,26 @@ function showDetails(element) {
     $('#side-menu-right').removeClass('sidebar-hidden').addClass('sidebar-visible');
 
 
-    var title = $(element).data('title');
-    var coverImage = $(element).data('cover');
-    var anilistUrl = $(element).data('anilist-url');
-    var myanimelistUrl = 'https://myanimelist.net/manga/' + $(element).data('id-mal'); // Assuming this is stored similarly
-    var batoLink = $(element).data('bato-link');
-    var description = $(element).data('description');
-    var is_favorite = $(element).data('is-favourite');
-    
-    
-    
+    let title = $(element).data('title');
+    let coverImage = $(element).data('cover');
+    let anilistUrl = $(element).data('anilist-url');
+    let myanimelistUrl = 'https://myanimelist.net/manga/' + $(element).data('id-mal'); // Assuming this is stored similarly
+    let batoLink = $(element).data('bato-link');
+    let description = $(element).data('description');
+    let is_favorite = $(element).data('is-favourite');
+
     // SIDEBAR INFORMATIONS ABOUT ENTRIES
-    var chapters_progress = $(element).data('chapters-progress');
-    var chapters_total = $(element).data('all-chapters');
-    var volumes_progress = $(element).data('volumes-progress');
-    var volumes_total = $(element).data('all-volumes');
-    var user_status = $(element).data('user-status');
-    var user_startedat = $(element).data('user-startedat');
-    var user_completedat = $(element).data('user-completedat');
-    var release_status = $(element).data('release-status');
-    var media_start_date = $(element).data('media-start-date');
-    var media_end_date = $(element).data('media-end-date');
-    var reread_times = $(element).data('reread-times'); // Assuming you have this data attribute set
+    let chapters_progress = $(element).data('chapters-progress');
+    let chapters_total = $(element).data('all-chapters');
+    let volumes_progress = $(element).data('volumes-progress');
+    let volumes_total = $(element).data('all-volumes');
+    let user_status = $(element).data('user-status');
+    let user_startedat = $(element).data('user-startedat');
+    let user_completedat = $(element).data('user-completedat');
+    let release_status = $(element).data('release-status');
+    let media_start_date = $(element).data('media-start-date');
+    let media_end_date = $(element).data('media-end-date');
+    let reread_times = $(element).data('reread-times'); // Assuming you have this data attribute set
 
     if (chapters_total === 0 || chapters_total == null) {
         chapters_total = '?';
@@ -386,7 +384,7 @@ function showDetails(element) {
         $('#link-mal').attr('href', myanimelistUrl);
     }
     function adjustButtonSpacing() {
-        var visibleButtons = $('#sidebar-links a:visible').length;
+        let visibleButtons = $('#sidebar-links a:visible').length;
         
         $('#sidebar-links a').removeClass('btn-solo btn-pair btn-trio'); // Clear previous classes
     
@@ -409,14 +407,20 @@ function showDetails(element) {
 
     // Conditionally show buttons based on data
     $('#link-anilist').attr('href', anilistUrl).show();; // Always shown, adjust if necessary
-    if($(element).data('id-mal') != 0) $('#link-mal').attr('href', myanimelistUrl).show();
-    if(batoLink !== '') $('#link-bato').attr('href', batoLink).show()
+
+    if ($(element).data('id-mal') != 0) {
+      $('#link-mal').attr('href', myanimelistUrl).show();
+    }
+
+    if (batoLink !== '') {
+      $('#link-bato').attr('href', batoLink).show()
+    }
 
     // Adjust button spacing and centering dynamically
     adjustButtonSpacing();
 
 
-    var user_notes = $(element).data('notes');
+    let user_notes = $(element).data('notes');
     
     // Convert user_status and release_status to uppercase
     user_status = user_status.toUpperCase();
@@ -427,8 +431,8 @@ function showDetails(element) {
     release_status = release_status.charAt(0).toUpperCase() + release_status.slice(1).toLowerCase();
 
     // Retrieve the raw data from the data attributes
-    var externalLinksData = $(element).attr('data-external-links');
-    var genresData = $(element).attr('data-genres');
+    let externalLinksData = $(element).attr('data-external-links');
+    let genresData = $(element).attr('data-genres');
 
     // Populate sidebar elements ----------------------------------------------------------------------------
     
@@ -441,11 +445,11 @@ function showDetails(element) {
         
 
 
-        var anilistId = $(element).data('anilist-id');
+        let anilistId = $(element).data('anilist-id');
     
         // Construct the cover image path based on the Anilist ID
         // Adjust the file extension and path as necessary
-        var coverImage = '/static/covers/' + anilistId + '.avif';
+        let coverImage = '/static/covers/' + anilistId + '.avif';
 
         
         // Update the elements
@@ -476,7 +480,7 @@ function showDetails(element) {
         // Only if reread_times is greater than 0, append a new reread icon
         if (reread_times > 0) {
             // Existing icon append logic (keep it if you still need the original icon)
-            var rereadDisplayOriginal = `
+            let rereadDisplayOriginal = `
                 <div id="sidebar-reread-icon" class="reread-icon">
                     <i class="fas fa-sync-alt rotate"></i>
                     <span class="reread-count">${reread_times}</span>
@@ -498,7 +502,7 @@ function showDetails(element) {
         $('#sidebar-title-placeholder').text(title);
 
         // Calculate and set the height for the title container
-        var titleHeight = $('#sidebar-title-placeholder').height();
+        let titleHeight = $('#sidebar-title-placeholder').height();
         $('#sidebar-title-container').height(titleHeight);
 
         // Reset and start typewriter effect for title
@@ -590,7 +594,7 @@ function showDetails(element) {
         }
         // ---------------------------OPERATION ON LINK BUTTONS--------------------
 
-        var serviceMap = {
+        let serviceMap = {
             'tapas.io': { name: 'Tapas', class: 'tapas' },
             'tappytoon.com': { name: 'Tappytoon', class: 'tappytoon' },
             'www.webtoons.com': { name: 'Webtoons', class: 'webtoons' },
@@ -602,21 +606,21 @@ function showDetails(element) {
 
         // Safely parse the JSON string into an array for external links
         try {
-            var externalLinks = JSON.parse(externalLinksData || "[]");
-            var linksContainer = document.getElementById('sidebar-external-links');
+            let externalLinks = JSON.parse(externalLinksData || "[]");
+            let linksContainer = document.getElementById('sidebar-external-links');
         
             if (externalLinks.length === 0) {
                 linksContainer.innerHTML = '<h5 class="mb-2">No links available</h5>';
             } else {
-                var linksHtml = document.createElement('div');
+                let linksHtml = document.createElement('div');
                 linksHtml.innerHTML = '<h5 class="mb-2">Links</h5>';
         
                 externalLinks.forEach(function(url) {
                     Object.keys(serviceMap).forEach(function(key) {
                         if (url.includes(key)) {
-                            var serviceName = serviceMap[key].name;
-                            var linkClass = serviceMap[key].class; // Custom class for serviceMap links
-                            var button = document.createElement('a');
+                            let serviceName = serviceMap[key].name;
+                            let linkClass = serviceMap[key].class; // Custom class for serviceMap links
+                            let button = document.createElement('a');
                             button.href = url;
                             button.textContent = serviceName;
                             button.className = 'btn ' + linkClass + ' btn-sm m-1';
@@ -642,8 +646,8 @@ function showDetails(element) {
 
         // Safely parse the JSON string into an array for genres
         try {
-            var genres = JSON.parse(genresData || "[]"); // Default to an empty array if undefined
-            var genresHtml = '<h5 class="mb-2">Genres</h5>';
+            let genres = JSON.parse(genresData || "[]"); // Default to an empty array if undefined
+            let genresHtml = '<h5 class="mb-2">Genres</h5>';
             genres.forEach(function(genre) {
                 genresHtml += '<span class="badge bg-secondary me-1">' + genre + '</span>';
             });
@@ -677,7 +681,7 @@ function showDetails(element) {
 
         // If you update the notes dynamically, you can also toggle the visibility of the 'Show Notes' link
         $(document).ready(function() {
-            var notesText = $('#sidebar-notes').text().trim();
+            let notesText = $('#sidebar-notes').text().trim();
             
             // Clear any previous timeouts to avoid multiple triggers
             if (timeouts && timeouts.shownotes) {
@@ -707,7 +711,7 @@ function resetAnimationsAndTimers() {
     $('#sidebar-cover, #sidebar-toggle, #sidebar-info, #sidebar-links, #sidebar-description, #sidebar-notes, #sidebar-shownotes, #sidebar-external-links, #sidebar-genres').stop(true, true).hide();
 
     // Clear all timeouts
-    for (var key in timeouts) {
+    for (let key in timeouts) {
         clearTimeout(timeouts[key]);
     }
 }
@@ -724,8 +728,8 @@ function animateRereadIcon(selector) {
 
 // JavaScript to toggle the description with animation
 $(document).on('click', '#sidebar-toggle', function() {
-    var content = $('#sidebar-description');
-    var isExpanded = content.hasClass('expanded');
+    let content = $('#sidebar-description');
+    let isExpanded = content.hasClass('expanded');
     
     if (isExpanded) {
         // Collapse the content
@@ -737,7 +741,7 @@ $(document).on('click', '#sidebar-toggle', function() {
         });
     } else {
         // Expand the content
-        var fullHeight = content[0].scrollHeight; // Calculate the full height of the content
+        let fullHeight = content[0].scrollHeight; // Calculate the full height of the content
         content.animate({
             'max-height': fullHeight // Animate towards the full height
         }, 500, function() {
@@ -749,7 +753,7 @@ $(document).on('click', '#sidebar-toggle', function() {
 
 
 $(document).on('click', '#sidebar-shownotes', function() {
-    var notes = $('#sidebar-notes');
+    let notes = $('#sidebar-notes');
     notes.toggleClass('expanded'); // This toggles the visibility
     
     if (notes.hasClass('expanded')) {
@@ -769,15 +773,15 @@ $(document).on('click', '#sidebar-shownotes', function() {
 
 // Insert this code into chat-script.js
 function toggleChatbot() {
-    var chatbot = document.getElementById('chatbot');
+    let chatbot = document.getElementById('chatbot');
     // Toggle the visibility without affecting the chat history
     chatbot.style.display = chatbot.style.display === 'none' ? 'flex' : 'none';
 }
 
 function sendMessage() {
     console.log('Enter was pressed and sendMessage called');
-    var input = document.getElementById('chatInput');
-    var messageText = input.value.trim();
+    let input = document.getElementById('chatInput');
+    let messageText = input.value.trim();
     if (messageText) {
         // Add user message
         addMessage('user', messageText);
@@ -790,10 +794,10 @@ function sendMessage() {
 }
 
 function addMessage(sender, text) {
-    var messagesContainer = document.getElementById('chatMessages');
-    var messageBubble = document.createElement('div');
+    let messagesContainer = document.getElementById('chatMessages');
+    let messageBubble = document.createElement('div');
     messageBubble.classList.add('chat-bubble', sender);
-    var avatar = document.createElement('span');
+    let avatar = document.createElement('span');
     avatar.classList.add('avatar');
     messageBubble.appendChild(avatar);
     messageBubble.appendChild(document.createTextNode(text));
@@ -821,13 +825,13 @@ function typeWriter(text, elementId, speed) {
 }
 
 function scoreToColor(score) {
-    var displayText = score === 0.0 ? '?' : score.toString();
-    var color;
+    let displayText = score === 0.0 ? '?' : score.toString();
+    let color;
 
     if (score === 0.0) {
         color = '#9E9E9E'; // Default color for score 0.0
     } else {
-        var roundedScore = Math.floor(score); // Round down to nearest whole number
+        let roundedScore = Math.floor(score); // Round down to nearest whole number
         switch (roundedScore) {
             case 10:
                 color = '#4CAF50'; // Bright green
@@ -871,8 +875,8 @@ function scoreToColor(score) {
 
 // Apply colors to score elements
 document.querySelectorAll('.score-icon').forEach(function(element, index) {
-    var score = parseFloat(element.getAttribute('data-score')); // Assuming you store the score in a data attribute
-    var result = scoreToColor(score);
+    let score = parseFloat(element.getAttribute('data-score')); // Assuming you store the score in a data attribute
+    let result = scoreToColor(score);
     element.style.backgroundColor = result.color;
     element.textContent = result.text;
 });
@@ -939,37 +943,38 @@ function formatDates(user_startedat, user_completedat, media_start_date, media_e
 
 $(document).ready(function() {
     $('.favorite-icon').each(function() {
-        var isFavourite = $(this).data('is-favourite');
+        let isFavourite = $(this).data('is-favourite');
         if (isFavourite === 1) {
             // Adds a heart icon inside the div if data-is-favourite is 1
             $(this).html('<i class="fas fa-heart" id="heart-icon-grid"></i>');
         }
     });
 
-    $('.reread-icon.new-location').each(function() {
-        // Assuming you have a way to set rereadTimes appropriately
-        var rereadTimes = $(this).data('reread-times'); // Ensure this data attribute is set or retrieved correctly
+    $('.reread-cover-icon').each(function() {
+        // Handle favorite icon    
+        // Handle reread icon
+        let rereadTimes = $(this).data('reread-times');
         if (rereadTimes > 0) {
-            // Correctly use template literals for dynamic values
-            $(this).html(`<i class="fas fa-sync-alt rotate"></i><span class="reread-count">${rereadTimes}</span>`);
+            $(this).append('<i class="fas fa-book" id="reread-icon-grid">' + rereadTimes + '</i>'); // Append reread icon with times
         }
-        animateRereadIcon('.new-location'); // Assuming this function is correctly defined elsewhere
     });
+    
+    
 });
 
 
 
 
 function startHeartsFlowingEffect() {
-    var containerWidth = $('#side-menu-right').width();
-    var containerHeight = $('#side-menu-right').height();
+    let containerWidth = $('#side-menu-right').width();
+    let containerHeight = $('#side-menu-right').height();
     // Calculate the bottom position of the title container relative to the side-menu-right container
-    var titleBottomPosition = $('#sidebar-title-container').position().top + $('#sidebar-title-container').outerHeight();
-    var heartsCount = 20; // Number of hearts for the effect
+    let titleBottomPosition = $('#sidebar-title-container').position().top + $('#sidebar-title-container').outerHeight();
+    let heartsCount = 20; // Number of hearts for the effect
 
-    for (var i = 0; i < heartsCount; i++) {
+    for (let i = 0; i < heartsCount; i++) {
         // Create a heart element with initial properties
-        var heart = $('<i class="fas fa-heart heart"></i>').css({
+        let heart = $('<i class="fas fa-heart heart"></i>').css({
             position: 'absolute',
             top: titleBottomPosition + 250 + 'px', // Start from the bottom of the title container
             left: Math.random() * containerWidth + 'px', // Random horizontal start position
@@ -999,11 +1004,11 @@ function startHeartsFlowingEffect() {
 
 
 function animateHeartBurstWithParticles() {
-    var heart = $('#sidebar-favorite-icon');
+    let heart = $('#sidebar-favorite-icon');
    
 
     // Heart animation sequence
-    var tl = gsap.timeline();
+    let tl = gsap.timeline();
 
     tl.to(heart, { scale: 1.5, duration: 0.5, ease: "elastic.out(1, 0.3)" })
       .to(heart, { rotation: 15, yoyo: true, repeat: 3, duration: 0.1, ease: "linear" })
@@ -1014,10 +1019,10 @@ function animateHeartBurstWithParticles() {
       .to(heart, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.3)" });
 
     function createParticles() {
-        var colors = ['red', 'pink', 'white', 'green', 'orange', 'blue']; // Array of colors for particles
+        let colors = ['red', 'pink', 'white', 'green', 'orange', 'blue']; // Array of colors for particles
         for (let i = 0; i < 60; i++) { // Increase number of particles
-            var color = colors[Math.floor(Math.random() * colors.length)]; // Random color selection
-            var particle = $('<div class="particle"></div>').css({
+            let color = colors[Math.floor(Math.random() * colors.length)]; // Random color selection
+            let particle = $('<div class="particle"></div>').css({
                 position: 'absolute',
                 top: heart.position().top + heart.width() / 1, // Center on heart
                 left: heart.position().left + heart.height() / 1, // Center on heart
@@ -1044,3 +1049,12 @@ function animateHeartBurstWithParticles() {
     }
 }
 
+function animateRereadIcon() {
+    // Add class to scale up
+    $('#sidebar-reread-icon').addClass('scale-up');
+    
+    // Set a timeout to remove the class after the animation completes
+    setTimeout(function() {
+        $('#sidebar-reread-icon').removeClass('scale-up');
+    }, 500); // Match the duration of the CSS transition
+}
