@@ -217,6 +217,7 @@ function filterEntries() {
     const countryJapan = document.getElementById('countryJapan').checked;
     const countryKorea = document.getElementById('countryKorea').checked;
     const isFavorite_checkbox = document.getElementById('isFavorite_checkbox').checked;
+    const isRereaded_checkbox = document.getElementById('isRereaded_checkbox').checked;
     // Since we are not using select for status, we will use currentStatusFilter
     // const statusFilter = document.getElementById('status').value;
 
@@ -242,6 +243,7 @@ function filterEntries() {
                                 (countryJapan && country === 'JP') || 
                                 (countryKorea && country === 'KR');
         const matchesFavorite = !isFavorite_checkbox || item.getAttribute('data-is-favourite') === '1';
+        const matchesRereaded = !isRereaded_checkbox || item.getAttribute('data-reread-times') > '0';
         //const matchesStatus = statusFilter === '' || itemStatus.toLowerCase() === statusFilter.toLowerCase();
         // Determine whether item should be visible based on the status filter
         // Using currentStatusFilter instead of statusFilter
@@ -251,7 +253,7 @@ function filterEntries() {
         // Determine whether item should be visible based on the status filter
         // Using currentStatusFilter instead of statusFilter
         
-        if (matchesTitle && matchesCountry  && matchesStatus && matchesFilterType && matchesReleasingStatus && matchesFavorite) {
+        if (matchesTitle && matchesCountry  && matchesStatus && matchesFilterType && matchesReleasingStatus && matchesFavorite && matchesRereaded) {
             item.style.display = '';
         } else {
             item.style.display = 'none';
@@ -955,7 +957,7 @@ $(document).ready(function() {
         // Handle reread icon
         let rereadTimes = $(this).data('reread-times');
         if (rereadTimes > 0) {
-            $(this).append('<i class="fas fa-book" id="reread-icon-grid">' + rereadTimes + '</i>'); // Append reread icon with times
+            $(this).append('<i class="fas fa-book-reader" id="reread-icon-grid">' + rereadTimes + '</i>'); // Append reread icon with times
         }
     });
     

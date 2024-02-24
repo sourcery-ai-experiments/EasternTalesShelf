@@ -124,13 +124,27 @@
 
     <h5>Other Options</h5>
     <div class="mb-3">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="isFavorite_checkbox" onchange="filterEntries()">
-            <!-- Ensure the 'for' attribute matches the input's 'id' -->
-            <label class="form-check-label" for="isFavorite_checkbox">
-                <!-- Add an <i> element for the heart icon -->
-                <i class="fas fa-heart" style="color: red;"></i> Is Favorite
-            </label>
+        <div class="row" style="--bs-gutter-x: 1.0rem;">
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="isFavorite_checkbox" onchange="filterEntries()">
+                    <!-- Ensure the 'for' attribute matches the input's 'id' -->
+                    <label class="form-check-label" for="isFavorite_checkbox">
+                        <!-- Add an <i> element for the heart icon -->
+                        <i class="fas fa-heart" style="color: red;"></i>Favorite
+                    </label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="isRereaded_checkbox" onchange="filterEntries()">
+                    <!-- Ensure the 'for' attribute matches the input's 'id' -->
+                    <label class="form-check-label" for="isRereaded_checkbox">
+                        <!-- Add an <i> element for the heart icon -->
+                        <i class="fas fa-book-reader" style="color: #007bff;"></i>Reread
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -254,7 +268,7 @@
 
 
             <div class="favorite-icon" data-is-favourite="{{ entry.is_favourite }}"></div>
-            <div class="reread-cover-icon"  data-reread-times="{{ entry.reread_times }}"></div>
+            <div class="reread-cover-icon"  data-reread-times="  {{ entry.reread_times }}"></div>
             
                     
             <!-- AniList Icon -->
