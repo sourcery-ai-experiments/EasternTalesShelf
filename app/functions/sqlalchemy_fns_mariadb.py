@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, TIMESTAMP, Text, exc
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, TIMESTAMP, Text, exc, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
@@ -25,6 +25,7 @@ class MangaList(Base):
     score = Column(Float, default=0)
     reread_times = Column(Integer, default=0)
     cover_image = Column(String(255))
+    is_cover_downloaded = Column(Boolean, default=False)
     is_favourite = Column(Integer, default=0)
     anilist_url = Column(String(255))
     mal_url = Column(String(255))
@@ -86,8 +87,8 @@ def add_bato_link(id_anilist, bato_link):
     try:
         # First, check if the column exists and add it if not (this may need to be handled manually or via Alembic migrations)
         
-        manga_entry = session.query(MangaList).filter_by(id_anilist=id_anilist).first()
-        if manga_entry:
+        
+        if manga_entry:=session.query(MangaList).filter_by(id_anilist=id_anilist).first():
             manga_entry.bato_link = bato_link
             session.commit()
         else:
