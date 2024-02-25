@@ -22,6 +22,7 @@ j = 0
 how_many_anime_in_one_request = 50 #max 50
 total_updated = 0
 total_added = 0
+url = 'https://graphql.anilist.co'
 
 id_or_name = input(f"Do you want to use, {GREEN}user id{RESET} or {GREEN}name?{RESET} (exit for exit :o)\n 1: id \n 2: name \n {CYAN}choice: {RESET}")
 if id_or_name == "exit":
@@ -64,7 +65,7 @@ if id_or_name == "2":
                 }
             }
         '''
-    url = 'https://graphql.anilist.co'
+    
         # sending api request
     response_frop_anilist = requests.post(url, json={'query': api_request, 'variables': variables_in_api})
         # take api response to python dictionary to parse json
@@ -494,7 +495,7 @@ try: # open connection to database
                         print(f"{CYAN}This manga is not in a table: {cleaned_romaji}{RESET}")
 
                     
-                        # building querry to insert to table
+                        # building querry to insert to table                    
                     insert_query = """
                     INSERT INTO `manga_list` (
                         `id_anilist`, `id_mal`, `title_english`, `title_romaji`, `on_list_status`, `status`, `media_format`, 
@@ -561,7 +562,7 @@ try: # open connection to database
                     }
                 }
                 '''
-                url = 'https://graphql.anilist.co'
+            
                 response_from_anilist = requests.post(url, json={'query': api_request, 'variables': variables_in_api})
                 parsed_json = json.loads(response_from_anilist.text)
 
