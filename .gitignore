@@ -120,3 +120,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+app/static/homepage_script.js
+app/static/homepage_style.css
+app/templates/portfoli_testing_something.html
+app/templates/portfoli_testing_something.html
+app/static/covers.zip
+testing_model.py
+app/tkinter_manga_backup.db
