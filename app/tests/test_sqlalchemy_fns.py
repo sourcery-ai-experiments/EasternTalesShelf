@@ -1,11 +1,9 @@
 from unittest import mock
 from app.functions.sqlalchemy_fns import get_manga_list_alchemy
 from sqlalchemy import Column, Integer, String, Float, TIMESTAMP, Text, Boolean
-# Assuming MockMangafrom datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, TIMESTAMP, Text, exc
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import sessionmaker
+
 
 
 Base = declarative_base()
