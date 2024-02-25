@@ -9,80 +9,7 @@
     <!-- AOS Animation CSS -->
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <style>
-        body {
-            background-color: #121212; /* Dark background for dark theme */
-            color: #ffffff; /* White text color */
-        }
-        .full-page {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 50px;
-            box-sizing: border-box;
-        }
-        .text-container {
-            position: absolute;
-        }
-        #part1 .text-container {
-            top: 20%;
-            left: 10%;
-        }
-        #part2 .text-container {
-            top: 30%;
-            right: 10%;
-        }
-        #part3 .text-container {
-            bottom: 50%;
-            left: 60%;
-        }
-        #part4 .text-container {
-            bottom: 30%;
-            right: 10%;
-        }
-        @keyframes circle-text {
-        0% {
-            top: 50%; 
-            left: 50%;
-            height: 0;
-            border-radius: 0;
-            transform: translate(-50%, -50%);
-        }
-        25% {
-            height: 100px;
-            border-radius: 50%;
-        }
-        50% {
-            left: calc(50% - 100px);
-            border-radius: 50%;
-        }
-        75% {
-            top: calc(50% - 100px);
-            left: 50%;
-            height: 200px;
-            border-radius: 50%;
-        }
-        100% {
-            left: 100%;
-            border-radius: 0;
-        }
-        }
-
-        #dynamic-line {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 2px;
-            background-color: blue;
-            z-index: 10;
-            transform: translateX(-50%);
-            animation: circle-text 2s forwards; /* Animation will wait to be triggered by JS */
-           
-        }
-    </style>
+    <link href="{{ url_for('static', filename='homepage_style.css')}}" rel="stylesheet">
 </head>
 <body>
 
@@ -92,10 +19,19 @@
     </div>
 
     <div id="part2" class="full-page">
-        <h1 data-aos="zoom-in-up">Welcome to Part 2</h1>
-        <p data-aos="zoom-in-down">This is the second full page section.</p>
-        <div id="dynamic-line"></div>
+        <div id="shiroai-section" class="content-div" data-aos="fade-up">
+            <h1 class="title">Looking Good with ShiroAi-chan</h1>
+            <h2 class="subtitle">Visuals</h2>
+            <p class="info-text">Make your chat with ShiroAi-chan more fun with animations from Vtube Studio.</p>
+            <div class="dynamic-line"></div>
+            <h2 class="subtitle">Analyses</h2>
+            <p class="info-text">Use sentiment analysis and keyword combinations to play appropriate animations — coming soon!</p>
+            <div class="dynamic-line"></div>
+        </div>
+        <div id="dynamic-line"></div> <!-- Keep the animated line outside the content-div -->
     </div>
+    
+    
     
     <div id="part3" class="full-page">
         <div class="text-container" data-aos="fade-down-right">
@@ -120,47 +56,7 @@
           duration: 1000,
         });
     </script>
-<script>
-    // Select the elements
-    const line = document.getElementById('dynamic-line');
-    const part2 = document.getElementById('part2');
-    const part3 = document.getElementById('part3');
-    const circleText = document.getElementById('circle-text');
 
-    // Calculate the initial top offset for the line to start at the center of part2
-    const lineTopOffset = part2.clientHeight / 2;
-
-    // Initialize the line height
-    line.style.height = '0px';
-    // Set the top position of the line to the calculated offset
-    line.style.top = lineTopOffset + 'px';
-
-    // Add an event listener to the window's scroll event
-    window.addEventListener('scroll', () => {
-        // Calculate the drawing points
-        const startDrawingFrom = part2.offsetTop + lineTopOffset;
-        const startCircleAt = part3.offsetTop - window.innerHeight / 2;
-        const stopDrawingAt = startCircleAt + circleText.clientHeight;
-
-        // Get the current scroll position
-        const currentScroll = window.pageYOffset + window.innerHeight / 2;
-
-        if (currentScroll >= startDrawingFrom && currentScroll <= startCircleAt) {
-            // Draw the line down
-            line.style.display = 'block';
-            line.style.height = (currentScroll - startDrawingFrom) + 'px';
-        } else if (currentScroll > startCircleAt && currentScroll <= stopDrawingAt) {
-            // Start circling the text
-            line.style.top = '50%';
-            line.style.left = '50%';
-            line.style.transform = 'translate(-50%, -50%)';
-            line.style.animationPlayState = 'running';
-        } else if (currentScroll > stopDrawingAt) {
-            // Hide the line after animation
-            line.style.display = 'none';
-        }
-    });
-</script>
-
+<script src="{{ url_for('static', filename='homepage_script.js')}}"></script>
 </body>
 </html>
