@@ -809,7 +809,13 @@ function addMessage(sender, text) {
 function openAniList(url) {
     window.open(url, '_blank');
 }
-
+function openBatoFromCover(url){
+    // Get the data from the clicked element
+    
+    if (url !== '') {
+        window.open(url, '_blank');
+    }
+}
 
 // Modify the typewriter function to use a global timeout
 window.typewriterTimeout = null;
@@ -959,8 +965,22 @@ $(document).ready(function() {
             $(this).append('<i class="fas fa-book-reader" id="reread-icon-grid">' + rereadTimes + '</i>'); // Append reread icon with times
         }
     });
-    
-    
+
+    $('.bato-icon').each(function() {
+        // Get the URL from the data-bato-link attribute
+        let url = $(this).parent().attr('data-bato-link');
+
+        // Check if the URL exists
+        if (url !== '') {
+            // If the URL exists, ensure the icon is visible
+            // You could also add a specific class to manage visibility if preferred
+            $(this).show(); // This line assumes you're using display:none to hide by default
+        } else {
+            // If the URL does not exist, hide the icon
+            $(this).hide(); // Ensure the icon is not visible
+        }
+    });
+    console.log($('#link-bato').text().trim());
 });
 
 
