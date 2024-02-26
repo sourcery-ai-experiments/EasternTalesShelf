@@ -20,7 +20,6 @@ opacity: 1;
     padding: 20px;
     border: 2px solid transparent; /* Default border, can be overridden by specific classes */
     border-radius: .25rem;
-    transition: transform .2s;
     position: relative;
     color: #0742f4; /* This makes the text color white for contrast */
     display: flex;
@@ -464,7 +463,6 @@ opacity: 1;
     line-height: 1.5em; /* Adjust to your line-height */
     /* max-height and transition properties are now removed */
     max-height: 7.5em; /* Adjust this value based on your line-height and number of lines to show when collapsed */
-    overflow: hidden;
 }
 
 #sidebar-description.expanded {
@@ -585,6 +583,11 @@ opacity: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: transform 0.5s ease-in-out; /* Smooth transition for scaling */
+}
+
+#sidebar-reread-icon.scale-up {
+    transform: scale(2); /* Scale up effect */
 }
 
 #sidebar-reread-icon .fas {
@@ -618,15 +621,6 @@ opacity: 1;
     }
 }
 
-#sidebar-reread-icon {
-    transition: transform 0.5s ease-in-out; /* Smooth transition for scaling */
-}
-
-#sidebar-reread-icon.scale-up {
-    transform: scale(2); /* Scale up effect */
-}
-
-
 #sidebar-title, #sidebar-title-placeholder {
     font-family: 'Roboto', sans-serif;
     font-size: 1.5rem;
@@ -634,8 +628,6 @@ opacity: 1;
     margin-bottom: 0.5rem;
     word-break: break-word; /* To handle long titles without overflow */
 }
-
-
 
 #sidebar-info {
     font-family: 'Roboto', sans-serif;

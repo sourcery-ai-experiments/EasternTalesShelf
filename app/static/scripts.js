@@ -353,7 +353,6 @@ function showDetails(element) {
 
 
     let title = $(element).data('title');
-    let coverImage = $(element).data('cover');
     let anilistUrl = $(element).data('anilist-url');
     let myanimelistUrl = 'https://myanimelist.net/manga/' + $(element).data('id-mal'); // Assuming this is stored similarly
     let batoLink = $(element).data('bato-link');
@@ -686,7 +685,7 @@ function showDetails(element) {
             let notesText = $('#sidebar-notes').text().trim();
             
             // Clear any previous timeouts to avoid multiple triggers
-            if (timeouts && timeouts.shownotes) {
+            if (timeouts?.shownotes) {
                 clearTimeout(timeouts.shownotes);
             }
         
@@ -1049,14 +1048,4 @@ function animateHeartBurstWithParticles() {
             });
         }
     }
-}
-
-function animateRereadIcon() {
-    // Add class to scale up
-    $('#sidebar-reread-icon').addClass('scale-up');
-    
-    // Set a timeout to remove the class after the animation completes
-    setTimeout(function() {
-        $('#sidebar-reread-icon').removeClass('scale-up');
-    }, 500); // Match the duration of the CSS transition
 }

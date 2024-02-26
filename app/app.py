@@ -3,8 +3,7 @@ import app.download_covers as download_covers
 from app.functions import sqlalchemy_fns as sqlalchemy_fns
 from flask import Flask, render_template, current_app, jsonify, request, url_for
 import json
-from app.config import is_development_mode, database_type 
-from app.config import database_type # "mariadb" or "sql_lite"
+from app.config import is_development_mode
 
 import os
 import requests
@@ -122,7 +121,7 @@ def sync_with_fastapi():
     try:
         # Replace the URL with your actual FastAPI server address
         url = "http://10.147.17.133:8057/sync"
-        response = requests.post(url)
+        response = requests.post(url, timeout=10)
 
         if response.status_code == 200:
             # Assuming the FastAPI response is JSON and includes a status

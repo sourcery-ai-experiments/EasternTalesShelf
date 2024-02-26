@@ -3,8 +3,8 @@ import time
 import requests
 import sqlite3
 from db_config_sqllite import conn
-from tqdm import tqdm
 from datetime import datetime
+import mysql.connector
 # ANSI escape sequences for colors
 RESET = "\033[0m"
 RED = "\033[31m"
@@ -317,15 +317,10 @@ Page(page: $page, perPage: $perPage) {
         chapters_parsed = '0' if chapters_parsed is None else chapters_parsed
         volumes_parsed = '0' if volumes_parsed is None else volumes_parsed
 
-        #print(f"{RED}entry_createdAt_parsed : {cleanded_user_completedAt}{RESET}")
+       
         updated_at_for_loop = updatedAt["updatedAt"]
-
-        
-
-        
-        
         record = check_record(mediaId_parsed)
-        #print(f"{RED}record : {record}{RESET}")
+
         
         if entry_createdAt_parsed == 'NULL':
             created_at_for_db = 'NULL'
