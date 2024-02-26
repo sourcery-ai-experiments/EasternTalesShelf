@@ -2,13 +2,9 @@ import requests
 from PIL import Image
 from io import BytesIO
 import os
-import mysql.connector
-from datetime import datetime
-from app.config import Config
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import subprocess
 # For MySQL/MariaDB
-from mysql.connector import Error
 
 
 def download_and_convert_image(image_url, image_id, save_dir='app/static/covers'):
@@ -76,36 +72,3 @@ def download_covers_concurrently(ids_to_download, manga_entries):
                 print(f"Error downloading cover for ID {image_id}: {e}")
 
         return successful_ids
-
-# def get_covers(testing=False):
-#     session = get_session()
-
-#     try:
-#         # Choose the table based on the testing flag
-#         if testing:
-#             manga_list_query = session.query(MangaList.id_anilist, MangaList.cover_image).filter(MangaList.table_name == 'manga_list2')
-#         else:
-#             manga_list_query = session.query(MangaList.id_anilist, MangaList.cover_image)
-
-#         manga_list = manga_list_query.all()
-        
-#         # Loop through each manga entry
-#         for manga in manga_list:
-#             image_id = manga.id_anilist
-#             image_url = manga.cover_image
-            
-#             # Ensure image_url is not None or empty
-#             if image_url:
-#                 # Call the function to download, convert, and save images
-#                 webp_path, avif_path = download_convert_and_save_image(image_url, str(image_id))
-#                 print(f"Processed {image_id}: WebP at {webp_path}, AVIF at {avif_path}")
-
-#                 # Update the cover download status in the database
-#                 update_cover_download_status(image_id, True)
-
-#     except Exception as e:
-#         print("Error while processing covers", e)
-#     finally:
-#         session.close()
-
-

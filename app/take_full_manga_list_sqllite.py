@@ -2,7 +2,6 @@ import json
 import time
 import requests
 import sqlite3
-
 from db_config_sqllite import conn
 from tqdm import tqdm
 from datetime import datetime
@@ -23,6 +22,7 @@ how_many_anime_in_one_request = 50 #max 50
 total_updated = 0
 total_added = 0
 url = 'https://graphql.anilist.co'
+date_format ='%Y-%m-%d %H:%M:?'
 
 id_or_name = input(f"Do you want to use, {GREEN}user id{RESET} or {GREEN}name?{RESET} (exit for exit :o)\n 1: id \n 2: name \n {CYAN}choice: {RESET}")
 if id_or_name == "exit":
@@ -163,7 +163,6 @@ try: # open connection to database
         print(f"{GREEN}Table created successfully in MySQL{RESET}")
         # need to take all records from database to compare entries
     take_all_records = "select id_anilist, last_updated_on_site from manga_list"
-    #cursor.execute(take_all_records)
     all_records = how_many_rows(take_all_records)
         # get all records
     
@@ -366,16 +365,9 @@ try: # open connection to database
                 cleanded_user_completedAt = user_completedAt_parsed.replace('None-None-None' , 'not completed')
                 chapters_parsed = '0' if chapters_parsed is None else chapters_parsed
                 volumes_parsed = '0' if volumes_parsed is None else volumes_parsed
-
-                #print(f"{RED}entry_createdAt_parsed : {cleanded_user_completedAt}{RESET}")
                 updated_at_for_loop = updatedAt["updatedAt"]
-
-                
-    
-                
                 tqdm.write(f"{GREEN}Checking for mediaId: {mediaId_parsed}{RESET}")
                 record = check_record(mediaId_parsed)
-                #print(f"{RED}record : {record}{RESET}")
                 
                 if entry_createdAt_parsed == 'NULL':
                     created_at_for_db = 'NULL'
@@ -391,23 +383,20 @@ try: # open connection to database
                 else:
                     updatedAt_parsed_for_db = f"FROM_UNIXTIME({updatedAt_parsed})"
 
-                #print("idMal_parsed : ", idMal_parsed)
                 if idMal_parsed is None:
                     idMal_parsed = 0
-                #print("changed idMal_parsed : ", idMal_parsed)
+               
                 # Convert the Unix timestamp to a Python datetime object
                 updatedAt_datetime = datetime.fromtimestamp(updatedAt_parsed)
 
                 # Convert the datetime object to a string in the correct format
-                updatedAt_parsed = updatedAt_datetime.strftime('%Y-%m-%d %H:%M:?')
+                updatedAt_parsed = updatedAt_datetime.strftime(date_format)
 
                 # Convert the Unix timestamp to a Python datetime object
                 entry_createdAt_datetime = datetime.fromtimestamp(entry_createdAt_parsed)
 
                 # Convert the datetime object to a string in the correct format
-                entry_createdAt_parsed = entry_createdAt_datetime.strftime('%Y-%m-%d %H:%M:?')
-                #print("cleanded_user_startedAt : ", cleanded_user_startedAt)
-                #print("cleanded_user_completedAt : ", cleanded_user_completedAt)
+                entry_createdAt_parsed = entry_createdAt_datetime.strftime(date_format)
                 
                 # rekor[18] is last_updated_on_site
                 if record:
@@ -415,7 +404,7 @@ try: # open connection to database
                         # Check if record[18] is a string and convert it to datetime object
                         if isinstance(record[18], str):
                             try:
-                                db_datetime = datetime.strptime(record[18], '%Y-%m-%d %H:%M:?')
+                                db_datetime = datetime.strptime(record[18], date_format)
                                 db_timestamp = int(time.mktime(db_datetime.timetuple()))
                             except ValueError:
                                 # Handle the exception if the date format is incorrect
@@ -428,17 +417,10 @@ try: # open connection to database
                         db_timestamp = None
 
                     if db_timestamp is not None and updatedAt_parsed is not None:
-                        updatedAt_timestamp = int(time.mktime(time.strptime(updatedAt_parsed, '%Y-%m-%d %H:%M:?')))
+                        updatedAt_timestamp = int(time.mktime(time.strptime(updatedAt_parsed, date_format)))
                     else:
                         updatedAt_timestamp = None
 
-                    # print(f"updatedAt_parsed: {updatedAt_parsed}")
-                    # print("db_timestamp: " + str(db_timestamp))
-                    # print("updatedAt_timestamp: " + str(updatedAt_timestamp))
-                    # print(f"rekors 18 : {record[18]} for anime {romaji_parsed}")
-                    #       
-                    if db_timestamp != updatedAt_timestamp:
-                        
                     #if record[18] != updatedAt_parsed:
                         update_query = """
                         UPDATE `manga_list` SET  
