@@ -76,7 +76,22 @@ opacity: 1;
     background: rgba(224, 33, 8, 0.8);
 }
 
-
+.grid-item .bato-icon {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 45px; /* Adjust as needed */
+    z-index: 10; /* Ensure it's above the hover overlay */
+    cursor: pointer;
+    width: 30px; /* Adjust size as needed */
+    height: 30px; /* Adjust size as needed */
+    opacity: 85%;
+    border-radius: 30%;
+    background: url('/static/bato_icon.png') no-repeat center center;
+    background-size: contain; /* This will ensure the icon fits within the circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 
 .grid-item .anilist-icon {
@@ -85,8 +100,8 @@ opacity: 1;
     right: 10px; /* Adjust as needed */
     z-index: 10; /* Ensure it's above the hover overlay */
     cursor: pointer;
-    width: 35px; /* Adjust size as needed */
-    height: 35px; /* Adjust size as needed */
+    width: 30px; /* Adjust size as needed */
+    height: 30px; /* Adjust size as needed */
     opacity: 85%;
     border-radius: 30%;
     background: url('/static/anilist_icon.png') no-repeat center center;
@@ -94,6 +109,9 @@ opacity: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+#sidebar-links .btn img {
+    border-radius: 6px; /* Adjust the border-radius value as needed */
 }
 
 .grid-item .score-icon {
