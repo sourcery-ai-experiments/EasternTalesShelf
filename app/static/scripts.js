@@ -812,8 +812,6 @@ function openAniList(url) {
 function openBatoFromCover(url){
     // Get the data from the clicked element
     
-    console.log("url: ", url);
-
     if (url !== '') {
         window.open(url, '_blank');
     }
