@@ -32,8 +32,8 @@ def update_favorites_fn(user_id = None):
     """
     has_next_page = True
     url = 'https://graphql.anilist.co'
-
-    user_id = api_keys.anilist_id
+    if user_id is None:
+        user_id = api_keys.anilist_id
 
     try:
         fav_page = 0
