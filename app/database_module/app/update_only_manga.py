@@ -325,11 +325,11 @@ Page(page: $page, perPage: $perPage) {
         print(f"{GREEN}Checking for mediaId: {mediaId_parsed}{RESET}")
 
         if record:
-            if record[18] is not None:
+            if record[19] is not None:
                 # Check if record[16] is a string and convert it to datetime object
-                if isinstance(record[18], str):
+                if isinstance(record[19], str):
                     try:
-                        db_datetime = datetime.strptime(record[18], '%Y-%m-%d %H:%M:%S')
+                        db_datetime = datetime.strptime(record[19], '%Y-%m-%d %H:%M:%S')
                         db_timestamp = int(time.mktime(db_datetime.timetuple()))
                     except ValueError:
                         # Handle the exception if the date format is incorrect
@@ -337,7 +337,7 @@ Page(page: $page, perPage: $perPage) {
                         db_timestamp = None
                 else:
                     # If record[16] is already a datetime object
-                    db_timestamp = int(time.mktime(record[18].timetuple()))
+                    db_timestamp = int(time.mktime(record[19].timetuple()))
             else:
                 db_timestamp = None
 
