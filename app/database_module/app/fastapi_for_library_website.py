@@ -1,6 +1,6 @@
 import logging
 import traceback
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 from datetime import datetime
@@ -28,7 +28,11 @@ async def run_script():
     logger.info(f"---Running script at {current_time}---")  # Log the date and time
     try:
         subprocess.run(["python", "update_only_manga.py"], check=True)
-        logger.info(f"---Script executed successfully at {current_time}---")
+        logger.info(f"---Update Script executed successfully at {current_time}---")
+
+        subprocess.run(["python", "update_favorites.py"], check=True)
+        logger.info(f"---Favorites update Script executed successfully at {current_time}---")
+
         return {"status": "success", "message": "Script executed successfully"}
     except subprocess.CalledProcessError as e:
         logger.error(f"---Script execution failed at {current_time}---")

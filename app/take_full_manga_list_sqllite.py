@@ -421,7 +421,6 @@ try: # open connection to database
                     else:
                         updatedAt_timestamp = None
 
-                    #if record[18] != updatedAt_parsed:
                         update_query = """
                         UPDATE `manga_list` SET  
                             id_anilist = ?,

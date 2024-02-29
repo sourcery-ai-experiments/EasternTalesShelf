@@ -5,7 +5,8 @@ import mysql.connector
 from db_config import conn
 from tqdm import tqdm
 from datetime import datetime
-
+import api_keys
+from update_favorites import update_favorites_fn as update_favorites_fn
 # ANSI escape sequences for colors
 RESET = "\033[0m"
 RED = "\033[31m"
@@ -21,6 +22,8 @@ j = 0
 how_many_anime_in_one_request = 50 #max 50
 total_updated = 0
 total_added = 0
+url = 'https://graphql.anilist.co'
+date_format ='%Y-%m-%d %H:%M:%S'
 
 id_or_name = input(f"Do you want to use, {GREEN}user id{RESET} or {GREEN}name?{RESET} (exit for exit :o)\n 1: id \n 2: name \n {CYAN}choice: {RESET}")
 if id_or_name == "exit":
@@ -63,7 +66,7 @@ if id_or_name == "2":
                 }
             }
         '''
-    url = 'https://graphql.anilist.co'
+    
         # sending api request
     response_frop_anilist = requests.post(url, json={'query': api_request, 'variables': variables_in_api})
         # take api response to python dictionary to parse json
@@ -88,7 +91,7 @@ def how_many_rows(query):
 def check_record(media_id):
     """Check if a record with the given media_id exists in the manga_list table in the database"""
     global conn
-    check_record_query = "SELECT * FROM manga_list2 WHERE id_anilist = %s"
+    check_record_query = f"SELECT * FROM {api_keys.table_name} WHERE id_anilist = %s"
     cursor.execute(check_record_query, (media_id,))
     return cursor.fetchone()
 
@@ -115,7 +118,7 @@ try: # open connection to database
         # class cursor : Allows Python code to execute PostgreSQL command in a database session. Cursors are created by the connection.cursor() method
     cursor = connection.cursor()
 
-    check_if_table_exists = "SHOW TABLES LIKE 'manga_list2'"
+    check_if_table_exists = f"SHOW TABLES LIKE '{api_keys.table_name}'"
     cursor.execute(check_if_table_exists)
     result = cursor.fetchone()
     if result:
@@ -123,7 +126,7 @@ try: # open connection to database
     else:
         print(f"{RED}Table does not exist{RESET}")
         print(f"{RED}Creating table{RESET}")
-        create_table_query = """CREATE TABLE `manga_list2` (
+        create_table_query = f"""CREATE TABLE `{api_keys.table_name}` (
         `id_default` int(5) NOT NULL AUTO_INCREMENT,
         `id_anilist` int(11) NOT NULL,
         `id_mal` int(11) DEFAULT NULL,
@@ -139,6 +142,7 @@ try: # open connection to database
         `score` float DEFAULT 0,
         `reread_times` int(11) DEFAULT 0,
         `cover_image` varchar(255) DEFAULT NULL,
+        `is_cover_downloaded` TINYINT(1) NOT NULL DEFAULT 0,
         `is_favourite` INT(11) DEFAULT 0,
         `anilist_url` varchar(255) DEFAULT NULL,
         `mal_url` varchar(255) DEFAULT NULL,
@@ -159,7 +163,7 @@ try: # open connection to database
         cursor.execute(create_table_query)
         print(f"{GREEN}Table created successfully in MySQL{RESET}")
         # need to take all records from database to compare entries
-    take_all_records = "select id_anilist, last_updated_on_site from manga_list2"
+    take_all_records = f"select id_anilist, last_updated_on_site from {api_keys.table_name}"
     #cursor.execute(take_all_records)
     all_records = how_many_rows(take_all_records)
         # get all records
@@ -363,16 +367,9 @@ try: # open connection to database
                 cleanded_user_completedAt = user_completedAt_parsed.replace('None-None-None' , 'not completed')
                 chapters_parsed = '0' if chapters_parsed is None else chapters_parsed
                 volumes_parsed = '0' if volumes_parsed is None else volumes_parsed
-
-                #print(f"{RED}entry_createdAt_parsed : {cleanded_user_completedAt}{RESET}")
                 updated_at_for_loop = updatedAt["updatedAt"]
-
-                
-    
-                
                 tqdm.write(f"{GREEN}Checking for mediaId: {mediaId_parsed}{RESET}")
                 record = check_record(mediaId_parsed)
-                #print(f"{RED}record : {record}{RESET}")
                 
                 if entry_createdAt_parsed == 'NULL':
                     created_at_for_db = 'NULL'
@@ -388,31 +385,27 @@ try: # open connection to database
                 else:
                     updatedAt_parsed_for_db = f"FROM_UNIXTIME({updatedAt_parsed})"
 
-                #print("idMal_parsed : ", idMal_parsed)
                 if idMal_parsed is None:
                     idMal_parsed = 0
-                #print("changed idMal_parsed : ", idMal_parsed)
                 # Convert the Unix timestamp to a Python datetime object
                 updatedAt_datetime = datetime.fromtimestamp(updatedAt_parsed)
 
                 # Convert the datetime object to a string in the correct format
-                updatedAt_parsed = updatedAt_datetime.strftime('%Y-%m-%d %H:%M:%S')
+                updatedAt_parsed = updatedAt_datetime.strftime(date_format)
 
                 # Convert the Unix timestamp to a Python datetime object
                 entry_createdAt_datetime = datetime.fromtimestamp(entry_createdAt_parsed)
 
                 # Convert the datetime object to a string in the correct format
-                entry_createdAt_parsed = entry_createdAt_datetime.strftime('%Y-%m-%d %H:%M:%S')
-                #print("cleanded_user_startedAt : ", cleanded_user_startedAt)
-                #print("cleanded_user_completedAt : ", cleanded_user_completedAt)
+                entry_createdAt_parsed = entry_createdAt_datetime.strftime(date_format)
                 
                 # rekor[18] is last_updated_on_site
                 if record:
-                    if record[18] is not None:
+                    if record[19] is not None:
                         # Check if record[18] is a string and convert it to datetime object
-                        if isinstance(record[18], str):
+                        if isinstance(record[19], str):
                             try:
-                                db_datetime = datetime.strptime(record[18], '%Y-%m-%d %H:%M:%S')
+                                db_datetime = datetime.strptime(record[19], date_format)
                                 db_timestamp = int(time.mktime(db_datetime.timetuple()))
                             except ValueError:
                                 # Handle the exception if the date format is incorrect
@@ -420,25 +413,17 @@ try: # open connection to database
                                 db_timestamp = None
                         else:
                             # If record[18] is already a datetime object
-                            db_timestamp = int(time.mktime(record[18].timetuple()))
+                            db_timestamp = int(time.mktime(record[19].timetuple()))
                     else:
                         db_timestamp = None
 
                     if db_timestamp is not None and updatedAt_parsed is not None:
-                        updatedAt_timestamp = int(time.mktime(time.strptime(updatedAt_parsed, '%Y-%m-%d %H:%M:%S')))
+                        updatedAt_timestamp = int(time.mktime(time.strptime(updatedAt_parsed, date_format)))
                     else:
                         updatedAt_timestamp = None
 
-                    # print(f"updatedAt_parsed: {updatedAt_parsed}")
-                    # print("db_timestamp: " + str(db_timestamp))
-                    # print("updatedAt_timestamp: " + str(updatedAt_timestamp))
-                    # print(f"rekors 18 : {record[18]} for anime {romaji_parsed}")
-                    #       
-                    if db_timestamp != updatedAt_timestamp:
-                        
-                    #if record[18] != updatedAt_parsed:
-                        update_query = """
-                        UPDATE `manga_list2` SET  
+                        update_query = f"""
+                        UPDATE `{api_keys.table_name}` SET  
                             id_anilist = %s,
                             id_mal = %s,
                             title_english = %s,
@@ -487,14 +472,14 @@ try: # open connection to database
 
                 else:
                     if format_parsed == "NOVEL":
-                        print(f"{RED}This novel is not in a table: {cleaned_romaji}{RESET}")
+                        print(f"{GREEN}This novel is not in a table: {RESET}{cleaned_romaji}")
                     elif format_parsed == "MANGA":
-                        print(f"{CYAN}This manga is not in a table: {cleaned_romaji}{RESET}")
+                        print(f"{CYAN}This manga is not in a table: {RESET}{cleaned_romaji}")
 
                     
                         # building querry to insert to table
-                    insert_query = """
-                    INSERT INTO `manga_list2` (
+                    insert_query = f"""
+                    INSERT INTO `{api_keys.table_name}` (
                         `id_anilist`, `id_mal`, `title_english`, `title_romaji`, `on_list_status`, `status`, `media_format`, 
                         `all_chapters`, `all_volumes`, `chapters_progress`, `volumes_progress`, `score`, `reread_times`, `cover_image`, 
                         `is_favourite`, `anilist_url`, `mal_url`, `last_updated_on_site`, `entry_createdAt`, `user_startedAt`, 
@@ -520,7 +505,7 @@ try: # open connection to database
                     #print("insert record: ", insert_record) #uncomment to see what is going to be inserted
                     insert_querry_to_db(insert_query, insert_record, format_parsed)
                     total_added+= 1    
-                    
+
             print(f"{YELLOW}Total added: {total_added}{RESET}")
             print(f"{MAGENTA}Total updated: {total_updated}{RESET}")
             
@@ -528,6 +513,8 @@ try: # open connection to database
             progress_bar.update(1)
             
             i += 1
+    
+    update_favorites_fn(user_id)
 
 except mysql.connector.Error as e: #if cannot connect to database
     print("Error reading data from MySQL table", e)
