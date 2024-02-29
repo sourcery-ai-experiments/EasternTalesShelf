@@ -21,6 +21,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Now, copy the entire app folder into /app/app, maintaining the structure
 COPY app /app/app
+ENV PYTHONPATH=/app
+RUN pip install -r requirements.txt
 
 # Adjust the CMD to reflect the new structure and execute the app
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "4", "app.app:app"]
