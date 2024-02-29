@@ -3,7 +3,11 @@ from vault_approle_functions import vault_login, read_secret
 
 
 anilist_id = 444059
+is_development = os.environ.get('FLASK_ENV') # 'development' or 'production'
+table_name = 'manga_list_development' if is_development == 'development' else 'manga_list'
+host_name_secret = 'db_host_name_vps_contener' if is_development == 'production' else 'db_host_name'
 
+print(f"Setting enviroment to: {is_development}, table name: {table_name}, host_name_secret: {host_name_secret}")
 
 def refresh_credentials():
     VAULT_ADDR = os.environ.get('VAULT_ADDR')  # Default to localhost if not set
@@ -19,7 +23,7 @@ def refresh_credentials():
         
         user_name = secret['db_user_name']
         db_password = secret['db_password']
-        host_name = secret['db_host_name_vps_contener']
+        host_name = secret[host_name_secret]
         db_name = secret['anilist_db_name']
 
         print("VARIABLES SET FROM VAULT")

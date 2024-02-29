@@ -5,6 +5,7 @@ import mysql.connector
 from db_config import conn
 from datetime import datetime
 import api_keys
+from update_favorites import update_favorites_fn as update_favorites_fn
 # ANSI escape sequences for colors
 RESET = "\033[0m"
 RED = "\033[31m"
@@ -15,6 +16,7 @@ MAGENTA = "\033[35m"
 CYAN = "\033[36m"
 WHITE = "\033[37m"
 
+table_name = api_keys.table_name
 
 j = 0
 how_many_anime_in_one_request = 50 #max 50
@@ -36,7 +38,7 @@ def how_many_rows(query):
 def check_record(media_id):
     """Check if a record with the given media_id exists in the manga_list table in the database"""
     global conn
-    check_record_query = "SELECT * FROM manga_list WHERE id_anilist = %s"
+    check_record_query = f"SELECT * FROM {table_name} WHERE id_anilist = %s"
     cursor.execute(check_record_query, (media_id,))
     return cursor.fetchone()
 
@@ -62,7 +64,7 @@ def update_favorite_field(media_id):
     """Update the is_favourite field in the manga_list table in the database"""
     global conn
     cursor = conn.cursor()
-    cursor.execute(f"UPDATE manga_list SET is_favourite = 1 WHERE id_anilist = {media_id}")
+    cursor.execute(f"UPDATE {table_name} SET is_favourite = 1 WHERE id_anilist = {media_id}")
     conn.commit()
 
 
@@ -70,11 +72,12 @@ def update_favorite_field(media_id):
  
 try: # open connection to database
     connection = conn
+    user_id = api_keys.anilist_id
         # class cursor : Allows Python code to execute PostgreSQL command in a database session. Cursors are created by the connection.cursor() method
     cursor = connection.cursor()
         # need to take all records from database to compare entries
     # cheking if table even exists
-    check_if_table_exists = "SHOW TABLES LIKE 'manga_list'"
+    check_if_table_exists = f"SHOW TABLES LIKE '{table_name}'"
     cursor.execute(check_if_table_exists)
     result = cursor.fetchone()
     if result:
@@ -83,24 +86,19 @@ try: # open connection to database
         print(f"{RED}Table does not exist{RESET}")
         print(f"{RED}If there is no table, you need to first run 'take_full_manga_list.py'. This update program takes only most recent 50 entries. If you have updated more or didn't created table yet, please run the full list program.{RESET}")
 
-    take_all_records = "select id_anilist, last_updated_on_site from manga_list"
+    take_all_records = f"select id_anilist, last_updated_on_site from {table_name}"
     
     all_records = how_many_rows(take_all_records)
         # get all records
    
     total_anime = 0
-    
     variables_in_api = {
     'page' : 1,
     'perPage' : how_many_anime_in_one_request,
-    'userId' : api_keys.anilist_id # your anilist id, set in api_keys.py
+    'userId' : user_id # your anilist id, set in api_keys.py
     }
 
-    variables_in_api_favorites = {
-    'page' : 1,
-    'perPage' : how_many_anime_in_one_request,
-    'userId' : api_keys.anilist_id # your anilist id, set in api_keys.py
-    }
+    
 
     api_request  = '''
         query ($page: Int, $perPage: Int, $userId: Int) {
@@ -347,8 +345,8 @@ Page(page: $page, perPage: $perPage) {
                 updatedAt_timestamp = None
 
             if db_timestamp != updatedAt_timestamp:         
-                update_query = """
-                UPDATE `manga_list` SET  
+                update_query = f"""
+                UPDATE `{table_name}` SET  
                     id_anilist = %s,
                     id_mal = %s,
                     title_english = %s,
@@ -397,7 +395,7 @@ Page(page: $page, perPage: $perPage) {
                 
 
             else: # INSTEAD OF BREAKING, JUST SKIP TO NEXT ANIME BECAUSE NEXT ONE COULD BE NEW, NEED TO CHECK MORE ANIME
-                print(f"{RED}No new updates for {RESET}{CYAN}{cleaned_romaji}{RESET}{RED}, going to next...{RESET}")
+                print(f"{RED}No new updates for {RESET}{CYAN}{cleaned_romaji},{RESET} going to next...")
                 
                     
         else:
@@ -406,8 +404,8 @@ Page(page: $page, perPage: $perPage) {
                 print(f"{RED}This novel is not in a table: {cleaned_romaji}{RESET}")
             elif format_parsed == "MANGA":
                 print(f"{CYAN}This manga is not in a table: {cleaned_romaji}{RESET}")
-            add_querry = """
-                    INSERT INTO `manga_list` (
+            add_querry = f"""
+                    INSERT INTO `{table_name}` (
                         `id_anilist`, `id_mal`, `title_english`, `title_romaji`, `on_list_status`, `status`, `media_format`, 
                         `all_chapters`, `all_volumes`, `chapters_progress`, `volumes_progress`, `score`, `reread_times`, `cover_image`, 
                         `is_favourite`, `anilist_url`, `mal_url`, `last_updated_on_site`, `entry_createdAt`, `user_startedAt`, 
@@ -430,104 +428,14 @@ Page(page: $page, perPage: $perPage) {
             
             total_added+= 1 
 
-
-    # HERE STARTS THE PART FOR UPDATING FAVORITE FIELD
-
-
-# ---------------------------------------------------------------------------------------------------------------------------------------
-    user_id = api_keys.anilist_id
-    page = 0
-    per_page_favorite = 25
-    has_next_page = True
-    connection = conn
-    cursor = connection.cursor()
-
-    # Fetch already favorite manga IDs to optimize updates
-    cursor.execute("SELECT id_anilist FROM manga_list WHERE is_favourite = 1")
-    already_favorites = {row[0] for row in cursor.fetchall()}
-
-    while has_next_page:
-        variables_in_api = {'page': page, 'id': user_id}
-        api_request = '''
-        query ($page: Int, $id: Int) {
-            User(id: $id) {
-                id
-                name
-                favourites {
-                    manga(page: $page) {
-                        pageInfo {
-                            total
-                            perPage
-                            currentPage
-                            lastPage
-                            hasNextPage
-                        }
-                        nodes {
-                            id
-                            title {
-                                english
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        '''
-        url = 'https://graphql.anilist.co'
-        response_from_anilist = requests.post(url, json={'query': api_request, 'variables': variables_in_api})
-        parsed_json = json.loads(response_from_anilist.text)
-
-        ids_to_update = [fav_manga["id"] for fav_manga in parsed_json["data"]["User"]["favourites"]["manga"]["nodes"] if fav_manga["id"] not in already_favorites]
-        print(f"{RED}Updating favorite fields.{RESET}") 
-        print(f"{RED}Page {page}{RESET}")
-        # If there are new favorites to update
-        if ids_to_update:
-            update_query = "UPDATE manga_list SET is_favourite = 1 WHERE id_anilist = %s"
-            try:
-                # Execute updates in a batch
-                for fav_manga_id in ids_to_update:
-                    cursor.execute(update_query, (fav_manga_id,))
-                # Commit all changes at once
-                connection.commit()
-                print(f"{GREEN}Updated {len(ids_to_update)} mangas to favorite{RESET}")
-            except mysql.connector.Error as err:
-                print(f"{RED}Failed to batch update mangas: {err}{RESET}")
-
-        has_next_page = parsed_json["data"]["User"]["favourites"]["manga"]["pageInfo"]["hasNextPage"]
-        page += 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # ---------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
     print(f"{YELLOW}Total added: {total_added}{RESET}")
     print(f"{MAGENTA}Total updated: {total_updated}{RESET}")
+    # HERE  THE FN FOR UPDATING FAVORITE FIELD
     conn.commit()
-        
+
+    update_favorites_fn(user_id)
+
+
 except mysql.connector.Error as e: #if cannot connect to database
     print("Error reading data from MySQL table", e)
 finally: # close connection after completing program
