@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# Start ZeroTier in the background
-zerotier-one &
+# Start the Tailscale daemon in the background
+tailscaled &
 
-# Sleep for a few seconds to allow ZeroTier to start
+# Wait for a few seconds to ensure tailscaled is up
 sleep 3
 
-# Join the ZeroTier network using the environment variable
-zerotier-cli join $NETWORK_NUMBER
+# Connect to Tailscale as an ephemeral node
+tailscale up --authkey ${OAUTH_CLIENT_SECRET}
 
-# Start Uvicorn with your FastAPI application
+# Start your application
 uvicorn fastapi_for_library_website:app --host 0.0.0.0 --port 8057

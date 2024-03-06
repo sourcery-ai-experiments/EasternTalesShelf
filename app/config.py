@@ -49,10 +49,11 @@ config_dict = {
 }
 
 is_development_mode = config_dict[os.getenv('FLASK_ENV', 'development')]
-
+fastapi_updater_server_IP = "eastern-updater-fastapi"
 database_type = "mariadb"  #  "mariadb" or "sql_lite"
 
 if database_type == "mariadb":
     DATABASE_URI = f"mysql+pymysql://{Config.user_name}:{Config.db_password}@{Config.host_name}/{Config.db_name}"    
 elif database_type == "sql_lite":
     DATABASE_URI = 'sqlite:///anilist_db.db'
+

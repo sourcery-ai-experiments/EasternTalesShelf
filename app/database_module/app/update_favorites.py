@@ -1,10 +1,7 @@
 import json
-import time
 import requests
 import mysql.connector
 from db_config import conn
-from tqdm import tqdm
-from datetime import datetime
 import api_keys
 # ANSI escape sequences for colors
 RESET = "\033[0m"

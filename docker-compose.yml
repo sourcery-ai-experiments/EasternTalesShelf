@@ -14,7 +14,7 @@ services:
       - external-containers
       - phpmyadmin_gpt_db
     volumes:
-      - ./app:/app  # Maps the app directory on your host to /app in your container
+      - .:/app  # Maps the app directory on your host to /app in your container
       - logs_volume:/app/logs
 
 networks:

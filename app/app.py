@@ -1,9 +1,9 @@
 
-import app.download_covers as download_covers
-from app.functions import sqlalchemy_fns as sqlalchemy_fns
+import download_covers as download_covers
+from functions import sqlalchemy_fns as sqlalchemy_fns
 from flask import Flask, render_template, current_app, jsonify, request, url_for
 import json
-from app.config import is_development_mode
+from app.config import is_development_mode, fastapi_updater_server_IP
 
 import os
 import requests
@@ -120,7 +120,7 @@ def sync_with_fastapi():
 
     try:
         # Replace the URL with your actual FastAPI server address
-        url = "http://10.147.17.133:8057/sync"
+        url = f"http://{fastapi_updater_server_IP}:8057/sync"
         response = requests.post(url, timeout=10)
 
         if response.status_code == 200:
@@ -183,7 +183,7 @@ def add_bato_link():
     
 
 if __name__ == '__main__':
-    app.run(host='10.147.17.21', port=5000)
+    app.run(host='0.0.0.0', port=5000)
 
 
 
