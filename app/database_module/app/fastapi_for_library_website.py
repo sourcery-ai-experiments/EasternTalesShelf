@@ -16,7 +16,7 @@ app = FastAPI()
 # Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://10.147.17.21"],  # Update this to the specific origins you want to allow or "*" for all origins
+    allow_origins=["http://shiropc.bun-ladon.ts.net"],  # Update this to the specific origins you want to allow or "*" for all origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers

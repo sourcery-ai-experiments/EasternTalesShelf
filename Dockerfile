@@ -13,16 +13,21 @@ RUN apt-get update && \
 # Set the working directory to /app. This is the root of your project inside the container.
 WORKDIR /app
 
-# Copy only the requirements.txt at first to leverage Docker cache
-COPY requirements.txt /app/requirements.txt
+# Set environment variable to ensure Python recognizes the correct root for imports
+ENV PYTHONPATH=/app
+
+
+# Copy the requirements.txt first to leverage Docker cache
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Now, copy the entire app folder into /app/app, maintaining the structure
-COPY app /app/app
+# Copy your entire app folder into /app, maintaining the structure
+COPY . .
+
+# Adjust PYTHONPATH if necessary
 ENV PYTHONPATH=/app
-RUN pip install -r requirements.txt
 
 # Adjust the CMD to reflect the new structure and execute the app
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "4", "app.app:app"]
