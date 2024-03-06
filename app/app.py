@@ -1,6 +1,6 @@
 
-import download_covers as download_covers
-from functions import sqlalchemy_fns as sqlalchemy_fns
+import app.download_covers as download_covers
+from app.functions import sqlalchemy_fns as sqlalchemy_fns
 from flask import Flask, render_template, current_app, jsonify, request, url_for
 import json
 from app.config import is_development_mode, fastapi_updater_server_IP

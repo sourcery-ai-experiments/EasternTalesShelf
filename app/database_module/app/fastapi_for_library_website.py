@@ -30,9 +30,6 @@ async def run_script():
         subprocess.run(["python", "update_only_manga.py"], check=True)
         logger.info(f"---Update Script executed successfully at {current_time}---")
 
-        subprocess.run(["python", "update_favorites.py"], check=True)
-        logger.info(f"---Favorites update Script executed successfully at {current_time}---")
-
         return {"status": "success", "message": "Script executed successfully"}
     except subprocess.CalledProcessError as e:
         logger.error(f"---Script execution failed at {current_time}---")

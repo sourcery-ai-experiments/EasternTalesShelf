@@ -6,7 +6,7 @@ services:
     restart: always
     container_name: EasternTalesShelf-website  # Custom container name
     environment:
-      - FLASK_ENV=production
+      - FLASK_ENV
       - VAULT_ADDR
       - VAULT_ROLE_ID_shiro_chan_project
       - VAULT_SECRET_ID_shiro_chan_project
