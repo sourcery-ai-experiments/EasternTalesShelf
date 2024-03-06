@@ -14,8 +14,8 @@ CREATE TABLE `manga_list` (
   `score` float DEFAULT 0,
   `reread_times` int(11) DEFAULT 0,
   `cover_image` varchar(255) DEFAULT NULL,
-  `is_cover_downloaded` TINYINT(1) NOT NULL DEFAULT 0,
-  `is_favourite` INT(11) DEFAULT 0,
+  `is_cover_downloaded` tinyint(1) NOT NULL DEFAULT 0,
+  `is_favourite` int(11) DEFAULT 0,
   `anilist_url` varchar(255) DEFAULT NULL,
   `mal_url` varchar(255) DEFAULT NULL,
   `last_updated_on_site` timestamp NULL DEFAULT NULL,
@@ -29,5 +29,7 @@ CREATE TABLE `manga_list` (
   `media_end_date` text DEFAULT 'media not ended',
   `genres` text DEFAULT 'none genres provided',
   `external_links` text DEFAULT 'none links associated',
-  PRIMARY KEY (`id_default`)
+  `bato_link` text DEFAULT '',
+  PRIMARY KEY (`id_default`),
+  KEY `idx_id_anilist` (`id_anilist`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

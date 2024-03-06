@@ -15,6 +15,7 @@ services:
       - VAULT_ADDR
       - VAULT_ROLE_ID_shiro_chan_project
       - VAULT_SECRET_ID_shiro_chan_project
+      - FLASK_ENV
     networks:
       - phpmyadmin_gpt_db
     volumes:

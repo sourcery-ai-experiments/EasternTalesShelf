@@ -1,10 +1,12 @@
+import os
 from sqlalchemy import  Column, Integer, String, Float, TIMESTAMP, Text, Boolean
 from sqlalchemy.orm import declarative_base
-Base = declarative_base()
 
+Base = declarative_base()
+is_development = os.getenv('FLASK_ENV')
 
 class MangaList(Base):
-    __tablename__ = 'manga_list'
+    __tablename__ = 'manga_list_development' if is_development == 'development' else 'manga_list'
     id_default = Column(Integer, primary_key=True, autoincrement=True)
     id_anilist = Column(Integer, nullable=False)
     id_mal = Column(Integer)
