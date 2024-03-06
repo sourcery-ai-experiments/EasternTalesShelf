@@ -7,8 +7,9 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libc6-dev && \
+    apt-get install -y --no-install-recommends gcc libc6-dev ffmpeg && \
     rm -rf /var/lib/apt/lists/*
+
 
 # Set the working directory to /app. This is the root of your project inside the container.
 WORKDIR /app
