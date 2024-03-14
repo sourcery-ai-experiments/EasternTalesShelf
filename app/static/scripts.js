@@ -35,33 +35,27 @@ let syncButton = document.getElementById('syncButton');
 
 if (syncButton) {
     syncButton.addEventListener('click', function() {
-        if (isDevelopment) {
-            // Only run fetch in development mode
-            fetch('/sync', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                // Check if the response is okay and content type is JSON
-                if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
-                    return response.json();
-                }
-                throw new Error('Server responded with a non-JSON response.');
-            })
-            .then(data => {
-                console.log('Success:', data);
-                alert('Sync successful!');
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('An error occurred: ' + error.message);
-            });
-        } else {
-            // If not in development mode, show an alert
-            alert('This function is not available in the demo.');
-        }
+        fetch('/sync', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
+                return response.json();
+            }
+            throw new Error('Server responded with a non-JSON response.');
+        })
+        .then(data => {
+            console.log('Success:', data);
+            alert('Sync successful!');
+            window.location.reload(); // Reload the page
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred: ' + error.message);
+        });
     });
 } else {
     console.error('Sync button element not found!');
@@ -70,46 +64,37 @@ if (syncButton) {
 let currentAnilistId = null; // This will store the currently focused entry's AniList ID
 
 document.getElementById('addBatoLinkButton').addEventListener('click', function() {
-    if (isDevelopment) {
-
-        if (currentAnilistId) {
-            // Prompt the user to enter the Bato link
-            let batoLink = prompt("Please enter the Bato link for this entry:", "http://");
-            // Check if a link was entered (prompt returns null if the user clicks cancel)
-            if (batoLink !== null && batoLink !== "") {
-                fetch('/add_bato', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        anilistId: currentAnilistId, // Send the AniList ID of the focused entry
-                        batoLink: batoLink // Include the Bato link provided by the user
-                    })
+    if (currentAnilistId) {
+        let batoLink = prompt("Please enter the Bato link for this entry:", "http://");
+        if (batoLink !== null && batoLink !== "") {
+            fetch('/add_bato', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    anilistId: currentAnilistId,
+                    batoLink: batoLink
                 })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    alert('Bato link added successfully!');
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    alert('An error occurred: ' + error.message);
-                });
-            } else if (batoLink === "") {
-                // If the user left the prompt empty and clicked OK
-                alert('No link entered. Please enter a valid Bato link.');
-            }
-            // No need for an else block for the case where batoLink is null,
-            // as that means the user clicked cancel and no action is needed.
-        } else {
-            alert('No entry is focused currently.');
-        }}
-        else {
-            // If not in development mode, show an alert
-            alert('This function is not available in the demo.');
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Bato link added successfully!');
+                window.location.reload(); // Reload the page
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            });
+        } else if (batoLink === "") {
+            alert('No link entered. Please enter a valid Bato link.');
         }
+    } else {
+        alert('No entry is focused currently.');
+    }
 });
+
 
 
 
