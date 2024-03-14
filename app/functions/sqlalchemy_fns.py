@@ -1,21 +1,27 @@
 from datetime import datetime
 from sqlalchemy import exc
-from app.functions.class_mangalist import engine, Base, MangaList, db_session
+from app.functions.class_mangalist import engine, Base, MangaList, db_session, session_maker
+from app.config import is_development_mode # development or production
 
 def initialize_database():
     """Initialize the database by creating all tables."""
     Base.metadata.create_all(bind=engine)
 
 def get_manga_list_alchemy():
-    """Fetch the list of manga entries from the database."""
-    try:
-        manga_list = db_session.query(MangaList).order_by(MangaList.last_updated_on_site.desc()).all()
-        return [parse_timestamp(manga) for manga in manga_list]
-    except Exception as e:
-        print("Error while fetching from the database:", e)
-        return []
-    finally:
-        db_session.remove()  # Properly close/clean-up the session
+    with session_maker() as session:
+        try:
+            manga_list = session.query(MangaList).order_by(MangaList.last_updated_on_site.desc()).all()
+
+            if is_development_mode == 'production': # this fixes errors on VPS but causes infinite loop when I connect from pc with mariadb on VPS
+                session.commit()  # Explicit commit; safe even if no changes were made
+
+            return [parse_timestamp(manga) for manga in manga_list]
+        except Exception as e:
+            print("Error while fetching from the database:", e)
+            session.rollback()  # Explicit rollback in case of error
+            return []
+        finally:
+            session.close()  # Ensure session is closed properly
 
 def parse_timestamp(manga):
     """Parse timestamps for manga entries."""
@@ -37,15 +43,19 @@ def update_cover_download_status_bulk(ids_to_download, status):
 
 def add_bato_link(id_anilist, bato_link):
     """Add a 'bato' link to a manga entry."""
-    try:
-        manga_entry = db_session.query(MangaList).filter_by(id_anilist=id_anilist).first()
-        if manga_entry:
-            manga_entry.bato_link = bato_link
-            db_session.commit()
-        else:
-            print("Manga entry not found for AniList ID:", id_anilist)
-    except exc.SQLAlchemyError as e:
-        db_session.rollback()
-        print("Error updating 'bato_link':", e)
-    finally:
-        db_session.remove()
+    with session_maker() as session:
+        try:
+            manga_entry = session.query(MangaList).filter_by(id_anilist=id_anilist).first()
+            if manga_entry:
+                manga_entry.bato_link = bato_link
+                session.commit()
+            else:
+                print("Manga entry not found for AniList ID:", id_anilist)
+        except exc.SQLAlchemyError as e:
+            session.rollback()
+            print("Error updating 'bato_link':", e)
+        finally:
+            session.remove()
+
+        
+initialize_database()

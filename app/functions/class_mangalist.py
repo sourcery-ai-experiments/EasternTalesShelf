@@ -3,10 +3,11 @@ from sqlalchemy import Column, Integer, String, Float, TIMESTAMP, Text, Boolean,
 from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 from werkzeug.security import check_password_hash
 from app.config import DATABASE_URI
+from sqlalchemy.orm import sessionmaker
 
 
-
-engine = create_engine(DATABASE_URI, pool_recycle=3600, pool_pre_ping=True)  # Recycles connections after one hour
+engine = create_engine(DATABASE_URI, pool_recycle=3600, pool_pre_ping=True, echo=True)  # Recycles connections after one hour
+session_maker = sessionmaker(bind=engine)
 
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 

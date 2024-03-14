@@ -10,14 +10,14 @@ from app.config import Config
 from app.functions import class_mangalist
 from datetime import timedelta
 from app.functions.sqlalchemy_fns import initialize_database
+from app.functions.class_mangalist import  db_session
 
-initialize_database()
 
 app = Flask(__name__)
 app.secret_key = Config.flask_secret_key
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Or 'Lax'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Or 'Lax'
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
@@ -37,16 +37,23 @@ def unauthorized_callback():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = Users.query.filter_by(username=username).first()
-        
-        if user and user.check_password(password):
-            login_user(user, remember=True)
-            return jsonify({'success': True}), 200
-        else:
-            return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
+    try:
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+            user = Users.query.filter_by(username=username).first()
+            
+            if user and user.check_password(password):
+                login_user(user, remember=True)
+                db_session.commit()
+                return jsonify({'success': True}), 200
+            else:
+                return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
+    except Exception as e:
+        db_session.rollback()
+        raise e
+
+
 
 @app.route('/logout')
 def logout():
@@ -77,18 +84,19 @@ def set_security_headers(response):
 def home():  
    
     manga_entries = sqlalchemy_fns.get_manga_list_alchemy()
-      
-    # Identify entries with missing covers and download them
-    ids_to_download = [entry['id_anilist'] for entry in manga_entries if not entry['is_cover_downloaded']]
     
-    if ids_to_download:
-        try:
-            successful_ids = download_covers.download_covers_concurrently(ids_to_download, manga_entries)
-            # Bulk update the database to mark the covers as downloaded only for successful ones
-            if successful_ids:
-                sqlalchemy_fns.update_cover_download_status_bulk(successful_ids, True)
-        except Exception as e:
-            print(f"Error during download or database update: {e}")
+    if is_development_mode == 'production': # on my win pc in wsl2, so in develpoement mode, it cant download and convert to avif
+        # Identify entries with missing covers and download them
+        ids_to_download = [entry['id_anilist'] for entry in manga_entries if not entry['is_cover_downloaded']]
+        
+        if ids_to_download:
+            try:
+                successful_ids = download_covers.download_covers_concurrently(ids_to_download, manga_entries)
+                # Bulk update the database to mark the covers as downloaded only for successful ones
+                if successful_ids:
+                    sqlalchemy_fns.update_cover_download_status_bulk(successful_ids, True)
+            except Exception as e:
+                print(f"Error during download or database update: {e}")
 
 
     #print(manga_entries)
@@ -169,6 +177,12 @@ def add_bato_link():
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
     
+
+@app.teardown_appcontext
+def cleanup(resp_or_exc):
+    db_session.remove()
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
