@@ -341,7 +341,6 @@ function showDetails(element) {
     
     // Check if an animation is ongoing, if so, reset everything immediately
     currentAnilistId = $(element).data('anilist-id'); // Capture and store the anilist_id for the add bato link button
-    console.log("currentAnilistId: ", currentAnilistId);
     $('#sidebar-links a').hide();
     $('#sidebar-reread-icon').remove();
     // Abort any ongoing animations, clear timeouts, and hide elements
@@ -473,11 +472,9 @@ function showDetails(element) {
         } else {
             // If not a favorite, remove the heart icon if it exists
             $('#sidebar-favorite-icon').remove();
-            console.log("fav variable: ", is_favorite);
-            console.log("is not favorite");
         }
         
-        console.log("redead: ",reread_times);
+        
         // Only if reread_times is greater than 0, append a new reread icon
         if (reread_times > 0) {
             // Existing icon append logic (keep it if you still need the original icon)
@@ -980,7 +977,7 @@ $(document).ready(function() {
             $(this).hide(); // Ensure the icon is not visible
         }
     });
-    console.log($('#link-bato').text().trim());
+    
 });
 
 
@@ -1069,3 +1066,41 @@ function animateHeartBurstWithParticles() {
         }
     }
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    let loginForm = document.getElementById('loginForm');
+    let loginError = document.getElementById('loginError');
+
+    loginForm.onsubmit = function(event) {
+        event.preventDefault();
+        let formData = new FormData(loginForm);
+        
+        fetch(loginUrl, {  // Use the global variable here
+            method: 'POST',
+            body: formData
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                $('#loginModal').modal('hide');
+                loginError.style.display = 'none';
+                window.location.reload(true); // Or redirect to another page
+            } else {
+                loginError.textContent = data.message;
+                loginError.style.display = 'block';
+            }
+        }).catch(error => {
+            loginError.textContent = 'An error occurred. Please try again.';
+            loginError.style.display = 'block';
+        });
+    };
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    let popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    let popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl);
+    });
+  });
+  
+

@@ -13,7 +13,54 @@ body, html {
 [data-aos="fade-up"].aos-animate {
 opacity: 1;
 }
+.custom-popover {
+    --bs-popover-max-width: 500px;
+    --bs-popover-border-color: #673ab7; /* Example color for border */
+    --bs-popover-header-bg: #007bff; /* Blue background for header */
+    --bs-popover-header-color: #ffffff; /* White text for header */
+    --bs-popover-body-bg: #343a40; /* Dark background for body */
+    --bs-popover-body-color: #343a40; /* White text for body */
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .5rem;
+}
+
   
+/* Custom dark theme for modal */
+.modal-content-dark {
+    background-color: #343a40; /* Dark grey */
+    color: #ffffff; /* White text color */
+}
+
+.modal-header-dark {
+    border-bottom: 1px solid #474f55; /* Slightly lighter dark grey for some contrast */
+}
+
+.modal-body-dark {
+    background-color: #343a40; /* Match modal content */
+}
+
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Make close button white */
+}
+
+/* Custom styles for input fields in the dark-themed modal */
+.modal-content-dark .form-control {
+    background-color: #495057; /* Darker grey background for input fields */
+    color: #ffffff; /* White text color for input text */
+    border: 0px solid #495057; /* Slightly lighter border color for contrast */
+}
+
+.modal-content-dark .form-control:focus {
+    background-color: #495057; /* Maintain darker grey background on focus */
+    border-color: #80bdff; /* Bootstrap's default focus border color, adjust as needed */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Bootstrap's default focus shadow, adjust color as needed */
+}
+
+.modal-content-dark .form-label {
+    color: #ffffff; /* Ensure labels are also white for visibility */
+}
+
+
 
 .grid-item {
     margin: 10px;
@@ -429,6 +476,11 @@ opacity: 1;
     background-color: #0400ff;
     color:#fff;
 }
+#side-menu-right .btn.mangaupdates {
+    background-color: #9a471e;
+    color:#fff;
+}
+
 /* Hover styles for service buttons, only overriding background color */
 #side-menu-right .btn.tapas:hover {
     background-color: #7d7507;
@@ -452,7 +504,10 @@ opacity: 1;
     background-color: rgb(1, 1, 83);
     color:#fff;
 }
-
+#side-menu-right .btn.mangaupdates:hover {
+    background-color: rgba(96, 45, 20, 0.952);
+    color:#fff;
+}
 
 #sidebar-links {
     justify-content: center; /* Center the button group */

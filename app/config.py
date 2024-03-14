@@ -25,6 +25,8 @@ class Config(object):
             else:
                 cls.host_name = secrets['db_host_name']
 
+            cls.flask_secret_key = secrets['flask_secret_key']
+
             print("VARIABLES SET FROM VAULT")
         except Exception as e:
             print("Couldn't set variables from Vault, error:")
