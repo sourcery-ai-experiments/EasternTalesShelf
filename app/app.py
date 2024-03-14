@@ -1,31 +1,57 @@
-
 import app.download_covers as download_covers
 from app.functions import sqlalchemy_fns as sqlalchemy_fns
-from flask import Flask, render_template, current_app, jsonify, request, url_for
+from flask import Flask, render_template, jsonify, request, url_for, redirect
+from flask_login import LoginManager, login_user, login_required, logout_user
 import json
 from app.config import is_development_mode, fastapi_updater_server_IP
-
 import os
 import requests
+from app.config import Config
+from app.functions import class_mangalist
+from datetime import timedelta
+from app.functions.sqlalchemy_fns import initialize_database
+
+initialize_database()
 
 app = Flask(__name__)
+app.secret_key = Config.flask_secret_key
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Or 'Lax'
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
+Users = class_mangalist.Users
 
-# @app.template_filter('versioned')
-# def versioned_static(filename):
-#     # Manually specify the path to the 'app/static' directory
-#     static_dir = 'app/static'  # Adjust this path based on your project structure
-#     file_path = os.path.join(app.root_path, static_dir, filename)
-#     print("file_path: ", file_path)
-#     try:
-#         last_modified_time = int(os.path.getmtime(file_path))
-#         return url_for('static', filename=filename) + f'?v={last_modified_time}'
-#     except OSError:
-#         return url_for('static', filename=filename)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
 
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return jsonify({'error': 'Unauthorized access'}), 401
 
+@app.route('/login', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = Users.query.filter_by(username=username).first()
+        
+        if user and user.check_password(password):
+            login_user(user, remember=True)
+            return jsonify({'success': True}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
 
+@app.route('/logout')
+def logout():
+    logout_user()  # Flask-Login's logout function
+    return redirect(url_for('home'))
 
 @app.context_processor
 def inject_debug():
@@ -38,21 +64,21 @@ def inject_debug():
 # Ensure this is only set for development
 app.config['DEBUG'] = bool(is_development_mode.DEBUG)
 
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Content-Security-Policy'] = "default-src 'self';"
+    return response
 
 
 # Route for your home page
 @app.route('/')
-def home():  # sourcery skip: use-named-expression
-    # Fetch the 10 newest manga entries.
-    # Example usage
-# manga_entries = ...
-# ids_to_download = ...
-# download_covers_concurrently(ids_to_download, manga_entries)
-    
+def home():  
+   
     manga_entries = sqlalchemy_fns.get_manga_list_alchemy()
       
     # Identify entries with missing covers and download them
-    
     ids_to_download = [entry['id_anilist'] for entry in manga_entries if not entry['is_cover_downloaded']]
     
     if ids_to_download:
@@ -83,22 +109,9 @@ def home():  # sourcery skip: use-named-expression
             title_english = title_romaji
             entry['title_english'] = title_romaji  # Don't forget to update the entry dict as well
 
-
-    # Pass the entries to the template.
-    return render_template('index.html', manga_entries=manga_entries)
-
-
-
-
-
-# @app.route('/homepage')
-# def homepage():
-    # Fetch the 10 newest manga entries.
-    # manga_entries = anilist_api_request.get_10_newest_entries('MANGA')
     
     # Pass the entries to the template.
-    #return render_template('portfoli_testing_something.html')
-
+    return render_template('index.html', manga_entries=manga_entries)
 
 
 # Route for handling the log sync functionality
@@ -109,15 +122,8 @@ def log_sync():
 
 
 @app.route('/sync', methods=['POST'])
+@login_required
 def sync_with_fastapi():
-    # Check if app is in development mode before proceeding
-    if not app.config['DEBUG']:
-        # If not in debug mode, return a custom message
-        return jsonify({
-            "status": "error",
-            "message": "Nice try, but you can't do that"
-        }), 403  # 403 Forbidden status code
-
     try:
         # Replace the URL with your actual FastAPI server address
         url = f"http://{fastapi_updater_server_IP}:8057/sync"
@@ -148,38 +154,20 @@ def sync_with_fastapi():
 
 
 @app.route('/add_bato', methods=['POST'])
+@login_required
 def add_bato_link():
-    # Check if app is in development mode before proceeding
-    if not app.config['DEBUG']:
-        # If not in debug mode, return a custom message
-        return jsonify({
-            "status": "error",
-            "message": "Nice try, but you can't do that"
-        }), 403  # 403 Forbidden status code
-
     try:
         data = request.get_json()
         anilist_id = data.get('anilistId')
         bato_link = data.get('batoLink')  # Make sure to send this from your JS
 
-
-
         # Then, update the manga entry with the provided Bato link
         sqlalchemy_fns.add_bato_link(anilist_id, bato_link)
 
         return jsonify({"message": "Bato link updated successfully."}), 200
-    except requests.exceptions.RequestException as e:
-        return (
-            jsonify(
-                {
-                    "status": "error",
-                    "message": f"An error occurred while adding bato link: {str(e)}",
-                }
-            ),
-            500,
-        )
-
-
+    except Exception as e:
+        app.logger.error(f"An error occurred: {str(e)}")
+        return jsonify({"status": "error", "message": "An internal error occurred."}), 500
     
 
 if __name__ == '__main__':
