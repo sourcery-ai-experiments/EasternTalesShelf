@@ -31,7 +31,7 @@ def update_cover_download_status_bulk(ids_to_download, status):
         print(f"Updated cover download status for {len(ids_to_download)} entries.")
     except Exception as e:
         db_session.rollback()
-        print(f"Error updating cover download statuses:", e)
+        print("Error updating cover download statuses:", e)
     finally:
         db_session.remove()
 
