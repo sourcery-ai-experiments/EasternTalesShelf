@@ -51,7 +51,15 @@ config_dict = {
 }
 
 is_development_mode = config_dict[os.getenv('FLASK_ENV', 'development')]
-fastapi_updater_server_IP = "eastern-updater-fastapi"
+is_development_boolen = is_development_mode.DEBUG
+
+print("is_development_mode: ", is_development_boolen)
+
+if is_development_boolen:
+    fastapi_updater_server_IP = "127.0.0.1"
+else:
+    fastapi_updater_server_IP = "eastern-updater-fastapi"
+# Database configurations
 database_type = "mariadb"  #  "mariadb" or "sql_lite"
 
 if database_type == "mariadb":
