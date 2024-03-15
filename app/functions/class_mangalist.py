@@ -5,8 +5,8 @@ from werkzeug.security import check_password_hash
 from app.config import DATABASE_URI
 
 
-
-engine = create_engine(DATABASE_URI, pool_recycle=3600, pool_pre_ping=True)  # Recycles connections after one hour
+engine = create_engine(DATABASE_URI, pool_recycle=3600, pool_pre_ping=True, echo=False)  # Recycles connections after one hour
+session_maker = sessionmaker(bind=engine)
 
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
