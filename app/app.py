@@ -9,7 +9,6 @@ import requests
 from app.config import Config
 from app.functions import class_mangalist
 from datetime import timedelta
-from app.functions.sqlalchemy_fns import initialize_database
 from app.functions.class_mangalist import  db_session
 
 
@@ -17,7 +16,7 @@ app = Flask(__name__)
 app.secret_key = Config.flask_secret_key
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Or 'Lax'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Or 'Lax'
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
