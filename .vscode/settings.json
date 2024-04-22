@@ -10,5 +10,9 @@
         ".",
         "-p",
         "test_*.py"
-    ]
+    ],
+    "sonarlint.connectedMode.project": {
+        "connectionId": "shiroepl",
+        "projectKey": "ShiroePL_EasternTalesShelf"
+    }
 }

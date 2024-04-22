@@ -10,6 +10,7 @@ from app.config import Config
 from app.functions import class_mangalist
 from datetime import timedelta
 from app.functions.class_mangalist import  db_session
+from datetime import datetime, timedelta
 
 
 app = Flask(__name__)
@@ -63,8 +64,17 @@ def logout():
 def inject_debug():
     # Directly print out the FLASK_ENV variable
     print("FLASK_ENV: ", os.getenv('FLASK_ENV'))
+    # Get the current time
+    now = datetime.now()
+    # Subtract one hour
+    if is_development_mode == "production":
+        time_of_load = now - timedelta(hours=1) # my vps is -1 hour to my local time
+    else:
+        time_of_load = now
+    # Print the time
+    print("Time of the page load: ", time_of_load)
     # printing in what mode the program is runned
-    print("isDevelopment?: ", is_development_mode.DEBUG)
+    #print("isDevelopment?: ", is_development_mode.DEBUG)
     return dict(isDevelopment=is_development_mode.DEBUG)
 
 # Ensure this is only set for development
@@ -72,10 +82,19 @@ app.config['DEBUG'] = bool(is_development_mode.DEBUG)
 
 @app.after_request
 def set_security_headers(response):
+    csp_policy = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com https://cdn.jsdelivr.net/npm; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+        "img-src 'self' data:; "
+        "font-src 'self' https://cdnjs.cloudflare.com;"
+    )
+
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Content-Security-Policy'] = "default-src 'self';"
+    response.headers['Content-Security-Policy'] = csp_policy
     return response
+
 
 
 # Route for your home page
@@ -84,18 +103,18 @@ def home():
    
     manga_entries = sqlalchemy_fns.get_manga_list_alchemy()
     
-    if is_development_mode == 'production': # on my win pc in wsl2, so in develpoement mode, it cant download and convert to avif
-        # Identify entries with missing covers and download them
-        ids_to_download = [entry['id_anilist'] for entry in manga_entries if not entry['is_cover_downloaded']]
-        
-        if ids_to_download:
-            try:
-                successful_ids = download_covers.download_covers_concurrently(ids_to_download, manga_entries)
-                # Bulk update the database to mark the covers as downloaded only for successful ones
-                if successful_ids:
-                    sqlalchemy_fns.update_cover_download_status_bulk(successful_ids, True)
-            except Exception as e:
-                print(f"Error during download or database update: {e}")
+    
+    # Identify entries with missing covers and download them
+    ids_to_download = [entry['id_anilist'] for entry in manga_entries if not entry['is_cover_downloaded']]
+    
+    if ids_to_download:
+        try:
+            successful_ids = download_covers.download_covers_concurrently(ids_to_download, manga_entries)
+            # Bulk update the database to mark the covers as downloaded only for successful ones
+            if successful_ids:
+                sqlalchemy_fns.update_cover_download_status_bulk(successful_ids, True)
+        except Exception as e:
+            print(f"Error during download or database update: {e}")
 
 
     #print(manga_entries)
