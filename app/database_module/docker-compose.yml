@@ -12,7 +12,7 @@ services:
       - /dev/net/tun
     environment:
       - OAUTH_CLIENT_SECRET
-      - VAULT_ADDR
+      - VAULT_ADDR=${VAULT_ADDR_tailscale}
       - VAULT_ROLE_ID_shiro_chan_project
       - VAULT_SECRET_ID_shiro_chan_project
       - FLASK_ENV
