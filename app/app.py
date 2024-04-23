@@ -8,9 +8,8 @@ import os
 import requests
 from app.config import Config
 from app.functions import class_mangalist
-from datetime import timedelta
+from datetime import timedelta, datetime
 from app.functions.class_mangalist import  db_session
-from datetime import datetime, timedelta
 
 
 app = Flask(__name__)
